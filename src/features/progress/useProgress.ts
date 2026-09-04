@@ -5,6 +5,8 @@ import {
   resetProgress,
   saveProgress,
   type ReviewerProgress,
+  type AmbientSound,
+  type AppearancePreference,
   type TestResultSummary,
 } from './storage';
 
@@ -41,10 +43,31 @@ export function useProgress() {
     emit({ ...currentProgress, timerPresetMinutes: minutes });
   }, []);
 
+  const setAppearance = useCallback((appearance: AppearancePreference) => {
+    emit({ ...currentProgress, appearance });
+  }, []);
+
+  const setAmbientSound = useCallback((ambientSound: AmbientSound) => {
+    emit({ ...currentProgress, ambientSound });
+  }, []);
+
+  const setAmbientVolume = useCallback((ambientVolume: number) => {
+    emit({ ...currentProgress, ambientVolume: Math.min(1, Math.max(0, ambientVolume)) });
+  }, []);
+
   const reset = useCallback(() => {
     currentProgress = resetProgress();
     listeners.forEach((listener) => listener());
   }, []);
 
-  return { progress, markTopicReviewed, recordResult, setTimerPreset, reset };
+  return {
+    progress,
+    markTopicReviewed,
+    recordResult,
+    setTimerPreset,
+    setAppearance,
+    setAmbientSound,
+    setAmbientVolume,
+    reset,
+  };
 }
