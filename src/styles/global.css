@@ -58,17 +58,40 @@ svg { width: 1.25rem; height: 1.25rem; stroke-width: 2; }
 }
 
 .header-note { color: var(--slate-500); font-size: 0.8rem; font-weight: 650; }
-.focus-timer { display: grid; grid-template-columns: auto auto; align-items: center; gap: 4px 12px; }
-.timer-readout { display: flex; align-items: baseline; gap: 8px; }
-.timer-readout span { color: var(--slate-500); font-size: 0.66rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
-.timer-readout strong { min-width: 52px; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
-.timer-controls { display: flex; gap: 4px; }
-.timer-controls button, .timer-presets button { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; border: 1px solid var(--slate-200); border-radius: 7px; color: var(--navy-900); background: white; cursor: pointer; font-size: 0.7rem; font-weight: 800; }
-.timer-controls button { gap: 5px; padding: 4px 8px; }
-.timer-controls button svg { width: 14px; height: 14px; }
-.timer-presets { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 4px; }
-.timer-presets button { min-width: 30px; padding: 3px 7px; }
-.timer-presets button[aria-pressed="true"] { border-color: var(--navy-900); background: var(--lime); }
+.focus-trigger { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 8px 12px; border: 1px solid var(--border, var(--slate-200)); border-radius: 10px; color: var(--text, var(--navy-900)); background: var(--surface, white); cursor: pointer; }
+.focus-trigger svg { width: 17px; height: 17px; }
+.focus-trigger strong { font-variant-numeric: tabular-nums; }
+.focus-dialog { width: min(640px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: 18px; color: var(--text, var(--navy-900)); background: transparent; box-shadow: var(--shadow, 0 28px 80px rgb(17 26 46 / 0.24)); }
+.focus-dialog::backdrop { background: rgb(12 14 21 / 0.62); backdrop-filter: blur(3px); }
+.focus-dialog-panel { padding: 28px; border: 1px solid var(--border, var(--slate-200)); border-radius: inherit; background: var(--surface-elevated, white); }
+.focus-dialog-header, .ambient-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.focus-dialog-header h2, .ambient-heading h3 { margin: 0; letter-spacing: -0.025em; }
+.focus-dialog-header h2 { font-size: 1.45rem; }
+.eyebrow { margin: 0 0 5px; color: var(--text-soft, var(--slate-500)); font-size: 0.72rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+.icon-button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--border, var(--slate-200)); border-radius: 10px; color: inherit; background: transparent; cursor: pointer; }
+.focus-mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 220px; margin: 26px auto 18px; padding: 4px; border: 1px solid var(--border, var(--slate-200)); border-radius: 12px; background: var(--surface, var(--slate-100)); }
+.focus-mode-switch button, .focus-presets button, .ambient-options button { min-height: 42px; border: 0; border-radius: 8px; color: var(--text-soft, var(--slate-500)); background: transparent; cursor: pointer; font-weight: 700; }
+.focus-mode-switch button[aria-pressed="true"], .focus-presets button[aria-pressed="true"], .ambient-options button[aria-pressed="true"] { color: var(--accent, var(--navy-900)); background: var(--accent-soft, var(--slate-100)); box-shadow: inset 0 0 0 1px var(--accent, var(--navy-900)); }
+.focus-dialog-clock { display: grid; place-items: center; width: 238px; height: 238px; margin: 0 auto 22px; border-radius: 50%; background: conic-gradient(var(--accent, var(--navy-900)) var(--timer-progress), var(--border, var(--slate-200)) 0); }
+.focus-dialog-clock-inner { display: grid; place-items: center; width: 224px; height: 224px; border-radius: 50%; background: var(--surface-elevated, white); }
+.focus-dialog-clock span, .focus-dialog-clock small { color: var(--text-soft, var(--slate-500)); }
+.focus-dialog-time { font-size: clamp(3.1rem, 12vw, 4.5rem); line-height: 1; letter-spacing: -0.055em; font-variant-numeric: tabular-nums; }
+.focus-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 350px; margin: 0 auto 18px; }
+.focus-primary-actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.focus-primary-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 750; }
+.focus-primary-actions button svg { width: 18px; height: 18px; }
+.primary-button { border: 1px solid var(--accent, var(--navy-900)); color: white; background: var(--accent, var(--navy-900)); }
+.secondary-button { border: 1px solid var(--border, var(--slate-200)); color: inherit; background: transparent; }
+.ambient-section { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border, var(--slate-200)); }
+.ambient-heading h3 { font-size: 1.05rem; }
+.ambient-heading > svg { color: var(--text-soft, var(--slate-500)); }
+.ambient-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 16px; }
+.ambient-options button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--border, var(--slate-200)); }
+.ambient-options button svg { width: 17px; height: 17px; }
+.volume-control { display: grid; grid-template-columns: auto 1fr 42px; align-items: center; gap: 12px; margin-top: 18px; color: var(--text-soft, var(--slate-500)); font-size: 0.82rem; font-weight: 650; }
+.volume-control input { width: 100%; accent-color: var(--accent, var(--navy-900)); }
+.volume-control output { text-align: right; font-variant-numeric: tabular-nums; }
+.ambient-status, .focus-running-note { margin: 12px 0 0; color: var(--text-soft, var(--slate-500)); font-size: 0.8rem; text-align: center; }
 .main-content { max-width: 1124px; margin: 0 auto; padding: 76px 28px 100px; }
 
 .home-page, .subject-page { max-width: 920px; margin: 0 auto; }
