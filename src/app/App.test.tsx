@@ -26,4 +26,19 @@ describe('App navigation', () => {
       '/subjects/cit017/test',
     );
   });
+
+  it('switches the complete app shell between dark and light themes', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /switch to dark mode/i }));
+
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(screen.getByRole('button', { name: /switch to light mode/i })).toBeVisible();
+  });
 });

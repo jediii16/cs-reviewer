@@ -1,17 +1,31 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { BookOpenText, Moon, Sun } from 'lucide-react';
+import { Link, Outlet } from 'react-router-dom';
+import { useAppearance } from '../features/appearance/useAppearance';
 import { FocusTimer } from '../features/timer/FocusTimer';
 
 export function AppShell() {
-  const location = useLocation();
-  const showTimer = location.pathname.startsWith('/subjects/cit017');
+  const { resolvedTheme, toggleTheme } = useAppearance();
+
   return (
     <div className="app-shell">
       <header className="site-header">
-        <Link className="brand" to="/" aria-label="Study Desk home">
-          <span className="brand-mark" aria-hidden="true">SD</span>
-          <span>Study Desk</span>
-        </Link>
-        {showTimer ? <FocusTimer /> : <span className="header-note">Private to this browser</span>}
+        <div className="site-header-inner">
+          <Link className="brand" to="/" aria-label="Study Desk home">
+            <BookOpenText aria-hidden="true" />
+            <span>Study Desk</span>
+          </Link>
+          <div className="header-actions">
+            <button
+              className="theme-toggle"
+              type="button"
+              aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+              onClick={toggleTheme}
+            >
+              {resolvedTheme === 'dark' ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+            </button>
+            <FocusTimer />
+          </div>
+        </div>
       </header>
       <main className="main-content">
         <Outlet />

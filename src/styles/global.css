@@ -1,16 +1,17 @@
 * { box-sizing: border-box; }
 
-html { background: var(--paper); }
+html { background: var(--bg); }
 
 body {
   margin: 0;
   min-height: 100vh;
-  color: var(--navy-900);
-  background: var(--paper);
+  color: var(--text);
+  background: var(--bg);
   font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button, input { font: inherit; }
@@ -18,44 +19,47 @@ a { color: inherit; }
 svg { width: 1.25rem; height: 1.25rem; stroke-width: 2; }
 
 :focus-visible {
-  outline: 3px solid var(--navy-900);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
 .app-shell { min-height: 100vh; }
 
 .site-header {
-  height: 76px;
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  height: 68px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.site-header-inner {
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1180px;
+  max-width: 1160px;
   margin: 0 auto;
-  padding: 0 28px;
-  border-bottom: 1px solid var(--slate-200);
+  padding: 0 24px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  color: var(--navy-900);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 720;
+  letter-spacing: -0.025em;
   text-decoration: none;
 }
 
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  color: var(--navy-950);
-  background: var(--lime);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-}
+.brand > svg { width: 20px; height: 20px; color: var(--accent); stroke-width: 1.8; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.theme-toggle { display: grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 1px solid var(--border); border-radius: 10px; color: var(--text-soft); background: var(--surface); cursor: pointer; }
+.theme-toggle:hover, .focus-trigger:hover, .icon-button:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface-elevated); }
+.theme-toggle svg { width: 17px; height: 17px; stroke-width: 1.8; }
 
 .header-note { color: var(--slate-500); font-size: 0.8rem; font-weight: 650; }
 .focus-trigger { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 8px 12px; border: 1px solid var(--border, var(--slate-200)); border-radius: 10px; color: var(--text, var(--navy-900)); background: var(--surface, white); cursor: pointer; }
@@ -80,7 +84,7 @@ svg { width: 1.25rem; height: 1.25rem; stroke-width: 2; }
 .focus-primary-actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
 .focus-primary-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 750; }
 .focus-primary-actions button svg { width: 18px; height: 18px; }
-.primary-button { border: 1px solid var(--accent, var(--navy-900)); color: white; background: var(--accent, var(--navy-900)); }
+.primary-button { border: 1px solid var(--accent, var(--navy-900)); color: var(--accent-contrast, white); background: var(--accent, var(--navy-900)); }
 .secondary-button { border: 1px solid var(--border, var(--slate-200)); color: inherit; background: transparent; }
 .ambient-section { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border, var(--slate-200)); }
 .ambient-heading h3 { font-size: 1.05rem; }
@@ -264,15 +268,22 @@ h1 { margin: 0; font-size: clamp(2.4rem, 7vw, 4.8rem); line-height: 0.98; letter
 }
 
 @media (max-width: 680px) {
-  .site-header { height: 66px; padding: 0 18px; }
+  .site-header { height: 64px; }
+  .site-header-inner { padding: 0 14px; }
   .header-note { display: none; }
-  .site-header:has(.focus-timer) { height: auto; min-height: 118px; padding-block: 12px; align-items: start; }
-  .focus-timer { grid-template-columns: auto auto; gap: 2px 6px; }
-  .timer-readout span { display: none; }
-  .timer-readout strong { font-size: 0.95rem; }
-  .timer-controls button, .timer-presets button { min-height: 44px; min-width: 44px; }
-  .timer-presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .timer-presets button { padding-inline: 4px; }
+  .theme-toggle, .focus-trigger { min-height: 44px; }
+  .theme-toggle { width: 44px; }
+  .focus-dialog { width: min(100% - 20px, 640px); max-height: calc(100dvh - 20px); }
+  .focus-dialog-panel { padding: 20px; }
+  .focus-dialog-clock { width: 218px; height: 218px; }
+  .focus-dialog-clock-inner { width: 204px; height: 204px; }
+  .focus-primary-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .focus-primary-actions .primary-button { grid-column: 1 / -1; }
+  .ambient-options { grid-template-columns: 1fr; }
+  .ambient-options button { min-height: 46px; }
+  .volume-control { grid-template-columns: 1fr auto; }
+  .volume-control input { grid-column: 1 / -1; grid-row: 2; min-height: 44px; }
+  .volume-control output { grid-column: 2; grid-row: 1; }
   .main-content { padding: 48px 18px 80px; }
   .home-intro { margin-bottom: 34px; }
   .subject-row { grid-template-columns: auto 1fr auto; gap: 14px; padding: 22px 18px; }
@@ -295,7 +306,14 @@ h1 { margin: 0; font-size: clamp(2.4rem, 7vw, 4.8rem); line-height: 0.98; letter
 }
 
 @media (max-width: 340px) {
-  .site-header:has(.focus-timer) .brand > span:last-child { display: none; }
+  .brand > span:last-child, .focus-trigger > span:not([aria-hidden="true"]) { display: none; }
+  .header-actions { gap: 5px; }
+  .focus-trigger { padding-inline: 9px; }
+  .focus-dialog-panel { padding: 16px; }
+  .focus-dialog-clock { width: 196px; height: 196px; }
+  .focus-dialog-clock-inner { width: 184px; height: 184px; }
+  .focus-primary-actions { grid-template-columns: 1fr; }
+  .focus-primary-actions .primary-button { grid-column: auto; }
   .review-summary { align-items: stretch; flex-direction: column; }
 }
 

@@ -3,8 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#111a2e" />
+    <meta name="theme-color" content="#f6f6f4" />
     <meta name="description" content="A focused CIT.017 information security reviewer." />
+    <script>
+      (() => {
+        let preference = 'system';
+        try {
+          const saved = JSON.parse(localStorage.getItem('cit017-reviewer-progress') || 'null');
+          if (saved?.version === 2 && ['system', 'light', 'dark'].includes(saved.appearance)) {
+            preference = saved.appearance;
+          }
+        } catch {
+          // Safe theme defaults keep the reviewer usable when storage is unavailable.
+        }
+        const systemDark = typeof matchMedia === 'function'
+          && matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = preference === 'system' ? (systemDark ? 'dark' : 'light') : preference;
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#141416' : '#f6f6f4';
+      })();
+    </script>
     <title>CIT.017 Reviewer</title>
   </head>
   <body>
