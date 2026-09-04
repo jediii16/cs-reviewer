@@ -69,8 +69,8 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
     const missed = getMissedQuestions(activeQuestions, answers);
     return (
       <section className="quiz-results" aria-labelledby="results-heading">
-        <p className="section-label">Review complete</p>
-        <h2 id="results-heading">{score.percent >= 80 ? 'Strong work.' : 'Now you know what to revisit.'}</h2>
+        <h2 id="results-heading">Review complete</h2>
+        <p className="results-summary">{score.percent >= 80 ? 'You have a solid grasp of this set.' : 'Use the breakdown below to choose what to review next.'}</p>
         <div className="score-lockup">
           <strong aria-label="Total score">{score.correct} / {score.total}</strong>
           <span>{score.percent}% correct</span>
@@ -164,7 +164,10 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
 
       {submitted ? (
         <div className={`answer-feedback ${selectedIsCorrect ? 'is-correct' : 'is-wrong'}`} role="status">
-          <strong>{selectedIsCorrect ? 'Correct' : `Not quite — ${getCorrectAnswerLabel(question)}`}</strong>
+          <strong>
+            {selectedIsCorrect ? <CheckCircle2 aria-hidden="true" /> : <XCircle aria-hidden="true" />}
+            <span>{selectedIsCorrect ? 'Correct' : `Not quite — ${getCorrectAnswerLabel(question)}`}</span>
+          </strong>
           <p>{question.explanation}</p>
         </div>
       ) : null}

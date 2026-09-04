@@ -33,9 +33,28 @@ test('quiz stays inside a 300px-wide browser panel', async ({ page }) => {
   expect(overflow).toBeLessThanOrEqual(0);
 
   await page.goto('/subjects/cit017');
-  await expect(page.getByRole('button', { name: /5 minute break/i })).toBeVisible();
-  const breakSize = await page.getByRole('button', { name: /5 minute break/i }).boundingBox();
+  await page.getByRole('button', { name: /open focus timer/i }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  const breakSize = await page.getByRole('button', { name: /^break$/i }).boundingBox();
   expect(breakSize?.height).toBeGreaterThanOrEqual(44);
+
+  const dialogOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(dialogOverflow).toBeLessThanOrEqual(0);
+});
+
+test('theme and focus setup persist across routes', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /switch to dark mode/i }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+  await page.getByRole('button', { name: /open focus timer/i }).click();
+  await page.getByRole('button', { name: /45 minutes/i }).click();
+  await expect(page.locator('.focus-dialog-time')).toHaveText('45:00');
+  await page.getByRole('button', { name: /close focus timer/i }).click();
+
+  await page.getByRole('link', { name: /cit\.017/i }).click();
+  await expect(page.getByRole('button', { name: /open focus timer.*45:00/i })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
 
 test('mixed review reaches results, retry missed, recent score, and reset', async ({ page }) => {

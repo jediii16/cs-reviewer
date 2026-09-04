@@ -15,8 +15,7 @@ export function StudyPage() {
       <div className="study-topbar">
         <Link className="back-link" to="/subjects/cit017"><ArrowLeft aria-hidden="true" /> CIT.017</Link>
         <div>
-          <p className="section-label">Study mode</p>
-          <h1 id="study-title">Learn it in layers.</h1>
+          <h1 id="study-title">Study CIT.017</h1>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { ArrowLeft, Brain, Layers3, ShieldCheck, UserRoundSearch } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Brain, Layers3, ShieldCheck, UserRoundSearch } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cit017Questions } from '../../content/cit017/questions';
@@ -39,20 +39,18 @@ export function TestPage() {
     <section className="test-page" aria-labelledby="test-title">
       <Link className="back-link" to="/subjects/cit017"><ArrowLeft aria-hidden="true" /> CIT.017</Link>
       <header className="test-heading">
-        <p className="section-label">Test mode</p>
-        <h1 id="test-title">Practice the way you’ll be asked.</h1>
+        <h1 id="test-title">Choose a practice set</h1>
         <p>Ten-question sets mixing multiple choice, identification, true or false, definitions, and scenarios—with feedback after every answer.</p>
       </header>
 
       <div className="test-mode-list">
-        {testModes.map((mode, index) => {
+        {testModes.map((mode) => {
           const Icon = mode.icon;
           return (
             <button key={mode.id} onClick={() => start(mode.id)}>
-              <span className="test-mode-index">{String(index + 1).padStart(2, '0')}</span>
               <span className="test-mode-icon"><Icon aria-hidden="true" /></span>
               <span><strong>{mode.label}</strong><small>{mode.description}</small></span>
-              <span className="test-mode-action">Start</span>
+              <ArrowRight className="test-mode-action" aria-hidden="true" />
             </button>
           );
         })}
