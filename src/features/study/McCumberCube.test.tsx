@@ -15,5 +15,6 @@ describe('McCumberCube', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       /technology.*confidentiality.*transmission/i,
     );
+    expect(screen.getByRole('status')).toHaveTextContent(/encrypt data while it travels/i);
   });
 });

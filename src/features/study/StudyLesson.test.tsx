@@ -14,6 +14,8 @@ const topic: LessonTopic = {
     summary: 'This summary does not reveal the recall response.',
     recallPrompt: 'Who should see protected information?',
     recallAnswer: 'Authorized individuals only.',
+    benefits: ['Detect attacks'],
+    applicablePrinciples: ['Least Privilege', 'Defense in Depth'],
   }],
 };
 
@@ -36,5 +38,14 @@ describe('StudyLesson', () => {
     await user.click(screen.getByRole('button', { name: /mark topic reviewed/i }));
 
     expect(onComplete).toHaveBeenCalledWith('sample');
+  });
+
+  it('uses source-faithful headings for benefits and applicable principles', () => {
+    render(<StudyLesson topic={topic} onComplete={vi.fn()} />);
+
+    expect(screen.getByRole('heading', { name: 'Benefits' })).toBeVisible();
+    expect(screen.getByText('Detect attacks')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Applicable security principles' })).toBeVisible();
+    expect(screen.getByText('Least Privilege')).toBeVisible();
   });
 });

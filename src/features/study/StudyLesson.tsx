@@ -57,6 +57,20 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
         </section>
       ) : null}
 
+      {section.benefits?.length ? (
+        <section className="lesson-block" aria-labelledby="benefits-title">
+          <h3 id="benefits-title">Benefits</h3>
+          <ul>{section.benefits.map((item) => <li key={item}>{item}</li>)}</ul>
+        </section>
+      ) : null}
+
+      {section.applicablePrinciples?.length ? (
+        <section className="lesson-block" aria-labelledby="applicable-principles-title">
+          <h3 id="applicable-principles-title">Applicable security principles</h3>
+          <ul>{section.applicablePrinciples.map((item) => <li key={item}>{item}</li>)}</ul>
+        </section>
+      ) : null}
+
       {section.id === 'mccumber-cube' ? <McCumberCube /> : null}
 
       <section className="recall-panel" aria-labelledby="recall-title">

@@ -90,7 +90,7 @@ export const foundationsTopic: LessonTopic = {
       title: 'Accounting (Auditing)',
       summary: 'Records all user activities performed within the system and provides accountability.',
       bullets: ['Who logged in', 'What was accessed', 'What changes were made', 'When activities occurred'],
-      controls: ['Detect attacks', 'Investigate incidents', 'Monitor employee activities', 'Support compliance', 'Produce audit reports'],
+      benefits: ['Detect attacks', 'Investigate incidents', 'Monitor employee activities', 'Support compliance', 'Produce audit reports'],
       recallPrompt: 'Which AAA function records user activity?',
       recallAnswer: 'Accounting, also called auditing.',
     },

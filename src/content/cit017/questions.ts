@@ -1,4 +1,4 @@
-import type { ChoiceQuestion, QuizTopic } from '../types';
+import type { ChoiceQuestion, IdentificationQuestion, QuizQuestion, QuizTopic, TrueFalseQuestion } from '../types';
 
 function optionId(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -13,6 +13,7 @@ function makeQuestion(
   explanation: string,
 ): ChoiceQuestion {
   return {
+    kind: 'multiple-choice',
     id,
     topicId,
     concept,
@@ -21,6 +22,37 @@ function makeQuestion(
     correctOptionId: optionId(concept),
     explanation,
   };
+}
+
+function makeIdentification(
+  id: string,
+  topicId: QuizTopic,
+  concept: string,
+  prompt: string,
+  explanation: string,
+  aliases: string[] = [],
+): IdentificationQuestion {
+  return {
+    kind: 'identification',
+    id,
+    topicId,
+    concept,
+    prompt,
+    correctAnswer: concept,
+    acceptableAnswers: [concept, ...aliases],
+    explanation,
+  };
+}
+
+function makeTrueFalse(
+  id: string,
+  topicId: QuizTopic,
+  concept: string,
+  prompt: string,
+  correctAnswer: boolean,
+  explanation: string,
+): TrueFalseQuestion {
+  return { kind: 'true-false', id, topicId, concept, prompt, correctAnswer, explanation };
 }
 
 const threatQuestions: ChoiceQuestion[] = [
@@ -38,6 +70,16 @@ const threatQuestions: ChoiceQuestion[] = [
   makeQuestion('threat-theft', 'threats', 'Theft', 'Someone takes a company laptop containing project information without permission. Which category fits best?', ['Theft', 'Espionage or trespass', 'Compromises to intellectual property', 'Sabotage or vandalism'], 'Illegal confiscation of equipment or information is theft.'),
 ];
 
+const threatDefinitionQuestions: QuizQuestion[] = [
+  makeIdentification('threat-id-extortion', 'threats', 'Information extortion', 'Identify the threat category: blackmail or threatened information disclosure.', 'Blackmail and threatened disclosure are information extortion.'),
+  makeIdentification('threat-id-obsolescence', 'threats', 'Technological obsolescence', 'Identify the threat category: the use of antiquated or outdated technologies.', 'Antiquated or outdated technology is technological obsolescence.'),
+  makeIdentification('threat-id-hardware', 'threats', 'Technical hardware failures or errors', 'Identify the threat category: equipment failure.', 'Equipment failure belongs to technical hardware failures or errors.', ['technical hardware failure', 'hardware failure']),
+  makeIdentification('threat-id-qos', 'threats', 'Deviations in quality of service', 'Identify the threat category associated with ISP, power, or WAN service problems.', 'ISP, power, and WAN service problems are deviations in quality of service.', ['quality of service', 'qos']),
+  makeTrueFalse('threat-tf-theft', 'threats', 'Theft', 'True or false: Theft can involve the illegal confiscation of equipment or information.', true, 'The source defines theft as illegal confiscation of equipment or information.'),
+  makeTrueFalse('threat-tf-bugs', 'threats', 'Technical software failures or errors', 'True or false: Bugs and code problems are classified as software attacks.', false, 'Bugs and code problems are technical software failures or errors, not software attacks.'),
+  makeTrueFalse('threat-tf-nature', 'threats', 'Forces of nature', 'True or false: Fire, floods, earthquakes, and lightning belong to forces of nature.', true, 'These events are examples of forces of nature.'),
+];
+
 const ciaOptions = ['Confidentiality', 'Integrity', 'Availability'];
 const ciaQuestions: ChoiceQuestion[] = [
   makeQuestion('cia-conf-grades', 'cia', 'Confidentiality', 'A university must ensure that only authorized faculty members can view student grades. Which CIA property is the priority?', ciaOptions, 'Confidentiality limits information access to authorized people, systems, or processes.'),
@@ -49,6 +91,20 @@ const ciaQuestions: ChoiceQuestion[] = [
   makeQuestion('cia-avail-bank', 'cia', 'Availability', 'Customers need access to online banking at any hour of the day. Which CIA property is the priority?', ciaOptions, 'Availability ensures services are accessible whenever authorized users need them.'),
   makeQuestion('cia-avail-hospital', 'cia', 'Availability', 'A hospital requires its clinical system to remain operational during a power interruption. Which CIA property is the priority?', ciaOptions, 'Keeping a hospital system operational protects availability.'),
   makeQuestion('cia-avail-backup', 'cia', 'Availability', 'An organization installs backup systems and a UPS so services remain accessible during failures. Which CIA property is strengthened?', ciaOptions, 'Backups and a UPS are controls that support availability.'),
+];
+
+const foundationDefinitionQuestions: QuizQuestion[] = [
+  makeIdentification('foundation-id-confidentiality', 'cia', 'Confidentiality', 'Identify the CIA property that prevents unauthorized disclosure of information.', 'Confidentiality ensures information is accessible only to authorized individuals, systems, or processes.'),
+  makeIdentification('foundation-id-integrity', 'cia', 'Integrity', 'Identify the CIA property that keeps information accurate, complete, and unaltered except by authorized users.', 'Integrity protects data from accidental or malicious unauthorized modification.'),
+  makeIdentification('foundation-id-availability', 'cia', 'Availability', 'Identify the CIA property that keeps information and services accessible whenever authorized users need them.', 'Availability ensures authorized users can access information and services when needed.'),
+  makeIdentification('foundation-id-authentication', 'cia', 'Authentication', 'Identify the AAA function that verifies who a user is.', 'Authentication verifies identity before access is granted.'),
+  makeIdentification('foundation-id-authorization', 'cia', 'Authorization', 'Identify the AAA function that determines what an authenticated user is allowed to access.', 'Authorization assigns and checks user permissions.'),
+  makeIdentification('foundation-id-accounting', 'cia', 'Accounting', 'Identify the AAA function that records user activities for accountability and auditing.', 'Accounting records who acted, what was accessed or changed, and when it occurred.', ['auditing', 'accounting auditing']),
+  makeQuestion('foundation-mccumber-dimensions', 'cia', 'Security goals, information states, and safeguards', 'Which set names the three dimensions of the McCumber Cube?', ['Security goals, information states, and safeguards', 'People, process, and technology', 'Authentication, authorization, and accounting', 'Prevention, detection, and recovery'], 'The cube connects security goals, information states, and safeguards across 27 intersections.'),
+  makeTrueFalse('foundation-tf-authentication', 'cia', 'Authentication', 'True or false: Authentication answers the question “What are you allowed to do?”', false, 'Authentication answers “Who are you?” Authorization determines what you are allowed to do.'),
+  makeTrueFalse('foundation-tf-integrity', 'cia', 'Integrity', 'True or false: Digital signatures, checksums, and version control can help protect integrity.', true, 'These controls help keep data accurate and detect unauthorized changes.'),
+  makeTrueFalse('foundation-tf-mccumber', 'cia', 'McCumber Cube', 'True or false: The McCumber Cube contains 27 intersections.', true, 'Three goals × three information states × three safeguard categories produce 27 intersections.'),
+  makeTrueFalse('foundation-tf-cube-states', 'cia', 'Information states', 'True or false: Storage, processing, and transmission are the safeguard categories of the McCumber Cube.', false, 'They are information states. The safeguard categories are technology; policy and practices; and education, training, and awareness.'),
 ];
 
 const principleOptions = [
@@ -68,6 +124,18 @@ const principleQuestions: ChoiceQuestion[] = [
   makeQuestion('principle-open', 'principles', 'Open Design', 'An encryption algorithm is publicly documented, while its secret key remains protected. Which principle applies?', principleOptions, 'Open design relies on strong implementation and secret keys rather than a secret system design.'),
 ];
 
+const principleDefinitionQuestions: QuizQuestion[] = [
+  makeIdentification('principle-id-least', 'principles', 'Least Privilege', 'Identify the principle: users receive only the minimum permissions necessary.', 'Least privilege minimizes permissions to reduce accidental damage, insider threats, and attack impact.', ['principle of least privilege']),
+  makeIdentification('principle-id-separation', 'principles', 'Separation of Duties', 'Identify the principle: critical tasks are divided among multiple individuals.', 'Separation of duties prevents one person from controlling an entire critical process.', ['separation of duty']),
+  makeIdentification('principle-id-depth', 'principles', 'Defense in Depth', 'Identify the principle: security uses multiple layers so other controls remain when one layer fails.', 'Defense in depth combines multiple security layers.', ['defence in depth']),
+  makeIdentification('principle-id-mediation', 'principles', 'Principle of Complete Mediation', 'Identify the principle: every request to access a resource is checked for authorization.', 'Complete mediation verifies authorization on every access request.', ['complete mediation']),
+  makeIdentification('principle-id-simple', 'principles', 'Economy of Mechanism', 'Identify the principle that keeps security mechanisms as simple as possible while remaining effective.', 'Economy of mechanism makes controls easier to understand, maintain, and verify.', ['economy of mechanism keep it simple', 'keep it simple']),
+  makeTrueFalse('principle-tf-open', 'principles', 'Open Design', 'True or false: Open Design requires the entire system design to remain secret.', false, 'Open design relies on strong algorithms, secure implementation, and protected keys—not secrecy of design.'),
+  makeTrueFalse('principle-tf-failsafe', 'principles', 'Fail-Safe (Secure by Default)', 'True or false: A fail-safe system denies access when authentication fails because of an error.', true, 'Fail-safe systems default to a secure state.'),
+  makeTrueFalse('principle-tf-design', 'principles', 'Security by Design', 'True or false: Security by Design adds security only after a system has been deployed.', false, 'Security by Design considers security from the beginning of development.'),
+  makeTrueFalse('principle-tf-need', 'principles', 'Need-to-Know Principle', 'True or false: Department membership automatically means a user should access every record in that department.', false, 'Need-to-know permits only the information required for a user’s specific tasks.'),
+];
+
 const socialQuestions: ChoiceQuestion[] = [
   makeQuestion('social-phishing', 'social', 'Phishing', 'A message that appears to be from a bank asks many customers to click a link and verify their credentials. Which technique is this?', ['Phishing', 'Smishing', 'Vishing', 'Pretexting'], 'Fraudulent messages that imitate a legitimate organization are phishing.'),
   makeQuestion('social-spear', 'social', 'Spear Phishing', 'A professor receives a personalized email mentioning their current research project and asking them to verify a login. Which technique is this?', ['Spear Phishing', 'Whaling', 'Phishing', 'Impersonation'], 'Personalized phishing aimed at a specific person or organization is spear phishing.'),
@@ -77,9 +145,27 @@ const socialQuestions: ChoiceQuestion[] = [
   makeQuestion('social-baiting', 'social', 'Baiting', 'A USB drive labeled “Employee Salary List” is left in a parking lot in the hope that someone will plug it in. Which technique is this?', ['Baiting', 'Quid Pro Quo', 'Scareware', 'Dumpster Diving'], 'Baiting offers something attractive to entice a victim into compromising security.'),
 ];
 
-export const cit017Questions: ChoiceQuestion[] = [
+const socialDefinitionQuestions: QuizQuestion[] = [
+  makeIdentification('social-id-smishing', 'social', 'Smishing', 'Identify the technique: phishing conducted through SMS or text messages.', 'Smishing is phishing delivered through SMS or text messages.'),
+  makeIdentification('social-id-pretexting', 'social', 'Pretexting', 'Identify the technique: an attacker invents a believable story or false identity to persuade a victim to disclose information.', 'Pretexting uses a fabricated situation or identity to gain trust.'),
+  makeIdentification('social-id-shoulder', 'social', 'Shoulder Surfing', 'Identify the technique: observing someone enter confidential information such as a password or PIN.', 'Shoulder surfing is direct observation of confidential input.'),
+  makeIdentification('social-id-dumpster', 'social', 'Dumpster Diving', 'Identify the technique: searching discarded documents or devices for confidential information.', 'Dumpster diving targets information thrown away without secure disposal.'),
+  makeIdentification('social-id-quid', 'social', 'Quid Pro Quo', 'Identify the technique: offering a service or benefit in exchange for information or access.', 'Quid pro quo offers something in exchange for information or access.'),
+  makeIdentification('social-id-scareware', 'social', 'Scareware', 'Identify the technique: fake warnings frighten users into installing malicious software or paying for fake services.', 'Scareware uses fear and fake alerts to provoke unsafe action.'),
+  makeIdentification('social-id-reverse', 'social', 'Reverse Social Engineering', 'Identify the technique: the attacker creates a problem, then presents themselves as the person who can solve it.', 'In reverse social engineering, victims are manipulated into seeking the attacker’s help.'),
+  makeTrueFalse('social-tf-whaling', 'social', 'Whaling', 'True or false: Whaling specifically targets high-ranking executives or senior officials.', true, 'Whaling is phishing aimed at senior or high-ranking targets.'),
+  makeTrueFalse('social-tf-tailgating', 'social', 'Tailgating (Piggybacking)', 'True or false: Tailgating is limited to email communication.', false, 'Tailgating is a physical attack that follows an authorized person into a restricted area.'),
+  makeTrueFalse('social-tf-bec', 'social', 'Business Email Compromise (BEC)', 'True or false: BEC can use a compromised or spoofed business email account to request transfers or confidential information.', true, 'That is the source definition of Business Email Compromise.'),
+  makeTrueFalse('social-tf-baiting', 'social', 'Baiting', 'True or false: Baiting offers something attractive to entice a victim into compromising security.', true, 'Baiting uses an attractive offer or object to trigger an unsafe action.'),
+];
+
+export const cit017Questions: QuizQuestion[] = [
   ...threatQuestions,
+  ...threatDefinitionQuestions,
   ...ciaQuestions,
+  ...foundationDefinitionQuestions,
   ...principleQuestions,
+  ...principleDefinitionQuestions,
   ...socialQuestions,
+  ...socialDefinitionQuestions,
 ];

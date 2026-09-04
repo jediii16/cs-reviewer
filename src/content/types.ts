@@ -5,6 +5,8 @@ export interface LessonSection {
   bullets?: string[];
   examples?: string[];
   controls?: string[];
+  benefits?: string[];
+  applicablePrinciples?: string[];
   recallPrompt: string;
   recallAnswer: string;
 }
@@ -38,12 +40,29 @@ export interface QuestionOption {
   label: string;
 }
 
-export interface ChoiceQuestion {
+interface BaseQuestion {
   id: string;
   topicId: QuizTopic;
   concept: string;
   prompt: string;
-  options: QuestionOption[];
-  correctOptionId: string;
   explanation: string;
 }
+
+export interface ChoiceQuestion extends BaseQuestion {
+  kind: 'multiple-choice';
+  options: QuestionOption[];
+  correctOptionId: string;
+}
+
+export interface IdentificationQuestion extends BaseQuestion {
+  kind: 'identification';
+  correctAnswer: string;
+  acceptableAnswers: string[];
+}
+
+export interface TrueFalseQuestion extends BaseQuestion {
+  kind: 'true-false';
+  correctAnswer: boolean;
+}
+
+export type QuizQuestion = ChoiceQuestion | IdentificationQuestion | TrueFalseQuestion;

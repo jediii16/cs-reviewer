@@ -7,11 +7,11 @@ import { createQuiz, type QuizFilter } from '../../features/test/quizEngine';
 import { useProgress } from '../../features/progress/useProgress';
 
 const testModes: Array<{ id: QuizFilter; label: string; description: string; icon: typeof Brain }> = [
-  { id: 'threats', label: 'Threat Categories', description: 'Identify all 12 categories from scenarios.', icon: ShieldCheck },
-  { id: 'cia', label: 'CIA Triad', description: 'Choose confidentiality, integrity, or availability.', icon: Layers3 },
-  { id: 'principles', label: 'Security Principles', description: 'Match scenarios to the nine principles.', icon: Brain },
-  { id: 'social', label: 'Social Engineering', description: 'Recognize manipulation techniques.', icon: UserRoundSearch },
-  { id: 'mixed', label: 'Mixed Review', description: 'A little of everything in ten questions.', icon: Brain },
+  { id: 'threats', label: 'Threat Categories', description: 'Scenarios, definitions, identification, and true or false.', icon: ShieldCheck },
+  { id: 'cia', label: 'Foundations & CIA', description: 'CIA, AAA, and the McCumber Cube in mixed formats.', icon: Layers3 },
+  { id: 'principles', label: 'Security Principles', description: 'Apply and define the nine security principles.', icon: Brain },
+  { id: 'social', label: 'Social Engineering', description: 'Recognize techniques, examples, and definitions.', icon: UserRoundSearch },
+  { id: 'mixed', label: 'Mixed Review', description: 'Ten questions across every topic and format.', icon: Brain },
 ];
 
 export function TestPage() {
@@ -41,7 +41,7 @@ export function TestPage() {
       <header className="test-heading">
         <p className="section-label">Test mode</p>
         <h1 id="test-title">Practice the way you’ll be asked.</h1>
-        <p>Short, scenario-based sets with feedback after every answer.</p>
+        <p>Ten-question sets mixing multiple choice, identification, true or false, definitions, and scenarios—with feedback after every answer.</p>
       </header>
 
       <div className="test-mode-list">

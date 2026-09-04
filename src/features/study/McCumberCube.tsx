@@ -11,6 +11,25 @@ const shortSafeguard: Record<Safeguard, string> = {
   'Education, training, and awareness': 'People',
 };
 
+const protectedInformation: Record<InformationState, string> = {
+  Storage: 'stored data and backups',
+  Processing: 'data while an application is using it',
+  Transmission: 'data while it travels between systems',
+};
+
+const technologyAction: Record<Goal, string> = {
+  Confidentiality: 'Encrypt',
+  Integrity: 'Digitally sign and verify',
+  Availability: 'Add redundancy and recovery for',
+};
+
+function concreteExample(goal: Goal, informationState: InformationState, safeguard: Safeguard) {
+  const target = protectedInformation[informationState];
+  if (safeguard === 'Technology') return `${technologyAction[goal]} ${target}.`;
+  if (safeguard === 'Policy and practices') return `Set and enforce procedures that protect ${goal.toLowerCase()} for ${target}.`;
+  return `Train people to protect ${goal.toLowerCase()} when working with ${target}.`;
+}
+
 export function McCumberCube() {
   const [goal, setGoal] = useState<Goal>('Confidentiality');
   const [informationState, setInformationState] = useState<InformationState>('Storage');
@@ -38,6 +57,7 @@ export function McCumberCube() {
 
       <p className="cube-result" role="status">
         Use <strong>{safeguard}</strong> to protect <strong>{goal}</strong> while information is in <strong>{informationState}</strong>.
+        <span> Example: {concreteExample(goal, informationState, safeguard)}</span>
       </p>
     </section>
   );
