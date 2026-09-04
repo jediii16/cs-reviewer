@@ -40,8 +40,9 @@ export function createAmbientAudio(
 ): AmbientAudioEngine {
   let context: AudioContext | undefined;
   let active: ActiveNodes | undefined;
+  let commandVersion = 0;
 
-  function stop() {
+  function stopActiveNodes() {
     if (!active || !context) return;
 
     const { source, filter, gain } = active;
@@ -56,12 +57,20 @@ export function createAmbientAudio(
     active = undefined;
   }
 
+  function stop() {
+    commandVersion += 1;
+    stopActiveNodes();
+  }
+
   return {
     async start(sound, volume) {
-      stop();
+      commandVersion += 1;
+      const startVersion = commandVersion;
+      stopActiveNodes();
       context ??= createContext();
 
       if (context.state === 'suspended') await context.resume();
+      if (startVersion !== commandVersion) return;
 
       const seconds = 2;
       const buffer = context.createBuffer(1, context.sampleRate * seconds, context.sampleRate);

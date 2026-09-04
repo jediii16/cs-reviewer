@@ -114,7 +114,7 @@ export function FocusDialog({
         <div className="focus-dialog-clock" style={timerStyle}>
           <div className="focus-dialog-clock-inner">
             <span>{state.mode === 'focus' ? 'Focus' : 'Break'}</span>
-            <strong className="focus-dialog-time" aria-live="polite">
+            <strong className="focus-dialog-time" aria-live="off">
               {formatTime(state.remainingSeconds)}
             </strong>
             <small>{state.running ? 'Session in progress' : 'Ready when you are'}</small>

@@ -1,6 +1,6 @@
 # Premium Study UI Redesign Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox syntax for tracking.
 
 **Goal:** Replace the current bright, game-like presentation with a calm premium light/dark interface, a large modal focus timer, and optional locally generated ambient sounds.
 
@@ -39,7 +39,7 @@
 - Produces: `useAppearance(): { appearance; resolvedTheme; setAppearance; toggleTheme }`
 - Preserves: version 1 scores, reviewed topics, and timer preset through migration
 
-- [ ] **Step 1: Write failing storage migration tests**
+- [x] **Step 1: Write failing storage migration tests**
 
 ```ts
 it('migrates version 1 progress without losing study data', () => {
@@ -61,13 +61,13 @@ it('migrates version 1 progress without losing study data', () => {
 });
 ```
 
-- [ ] **Step 2: Run the migration test and verify RED**
+- [x] **Step 2: Run the migration test and verify RED**
 
 Run: `npm test -- --run src/features/progress/storage.test.ts --reporter=default`
 
 Expected: FAIL because version 1 is currently rejected and version 2 preferences do not exist.
 
-- [ ] **Step 3: Implement version 2 validation and migration**
+- [x] **Step 3: Implement version 2 validation and migration**
 
 ```ts
 export type AppearancePreference = 'system' | 'light' | 'dark';
@@ -90,7 +90,7 @@ function migrateVersionOne(item: LegacyReviewerProgress): ReviewerProgress {
 
 Clamp volume to `0..1`, validate enums, keep malformed/unsupported fallback, and add `setAppearance`, `setAmbientSound`, and `setAmbientVolume` callbacks to `useProgress`.
 
-- [ ] **Step 4: Write and verify a failing appearance hook test**
+- [x] **Step 4: Write and verify a failing appearance hook test**
 
 ```tsx
 it('uses system dark mode, applies it to the root, and persists an explicit toggle', async () => {
@@ -105,11 +105,11 @@ it('uses system dark mode, applies it to the root, and persists an explicit togg
 
 Expected: FAIL because `useAppearance` does not exist.
 
-- [ ] **Step 5: Implement `useAppearance`**
+- [x] **Step 5: Implement `useAppearance`**
 
 Subscribe to `(prefers-color-scheme: dark)` changes, derive the resolved theme during render, apply `data-theme` and the `<meta name="theme-color">` value in an effect, and persist only explicit light/dark choices through `useProgress`.
 
-- [ ] **Step 6: Run Task 1 tests and commit**
+- [x] **Step 6: Run Task 1 tests and commit**
 
 Run: `npm test -- --run src/features/progress/storage.test.ts src/features/appearance/useAppearance.test.tsx --reporter=default`
 
@@ -133,7 +133,7 @@ Commit: `feat: add persisted appearance preferences`
 - Produces: `AmbientAudioEngine` with `start(sound, volume)`, `setVolume(volume)`, `stop()`, and `dispose()`
 - Produces: `useAmbientAudio(): { selectedSound; volume; playing; unavailable; chooseSound; setVolume; stop }`
 
-- [ ] **Step 1: Write failing engine lifecycle tests**
+- [x] **Step 1: Write failing engine lifecycle tests**
 
 Use a small fake `AudioContext` implementation and assert:
 
@@ -149,17 +149,17 @@ it('starts only when requested and disconnects every node on stop', async () => 
 });
 ```
 
-- [ ] **Step 2: Run the engine test and verify RED**
+- [x] **Step 2: Run the engine test and verify RED**
 
 Run: `npm test -- --run src/features/audio/ambientAudio.test.ts --reporter=default`
 
 Expected: FAIL because the engine does not exist.
 
-- [ ] **Step 3: Implement the engine**
+- [x] **Step 3: Implement the engine**
 
 Create one `AudioContext` lazily inside `start()`. Generate a looping noise buffer, use a low-pass filter and gain envelope, and vary filter/gain settings for rain versus brown noise. Clamp volume, fade gain briefly on start/stop, and disconnect/close nodes on dispose. Never start from construction or persisted state.
 
-- [ ] **Step 4: Write failing hook preference/fallback tests**
+- [x] **Step 4: Write failing hook preference/fallback tests**
 
 ```tsx
 it('stores a selection but never starts it until the user chooses it', async () => {
@@ -177,7 +177,7 @@ it('returns to off when Web Audio is unavailable', async () => {
 });
 ```
 
-- [ ] **Step 5: Implement `useAmbientAudio` and verify**
+- [x] **Step 5: Implement `useAmbientAudio` and verify**
 
 The hook creates one engine lazily, starts only inside `chooseSound`, persists selection/volume, stops for Off, exposes an unavailable state, and disposes on unmount.
 
@@ -185,7 +185,7 @@ Run: `npm test -- --run src/features/audio --reporter=default`
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Commit: `feat: add local ambient focus sounds`
 
@@ -206,7 +206,7 @@ Commit: `feat: add local ambient focus sounds`
 - Produces: native `<dialog aria-labelledby="focus-dialog-title">`
 - Preserves: timer state while the dialog closes and reopens
 
-- [ ] **Step 1: Replace the existing timer component test with failing modal tests**
+- [x] **Step 1: Replace the existing timer component test with failing modal tests**
 
 ```tsx
 it('opens a large focus dialog and keeps the timer running after close', async () => {
@@ -222,21 +222,21 @@ it('opens a large focus dialog and keeps the timer running after close', async (
 
 Also test preset selection, break switching, ambient choices, volume label, Escape/close, and reopening without reset.
 
-- [ ] **Step 2: Run and verify RED**
+- [x] **Step 2: Run and verify RED**
 
 Run: `npm test -- --run src/features/timer/FocusTimer.test.tsx --reporter=default`
 
 Expected: FAIL because the timer is inline and no dialog exists.
 
-- [ ] **Step 3: Implement `FocusDialog` and rebuild `FocusTimer`**
+- [x] **Step 3: Implement `FocusDialog` and rebuild `FocusTimer`**
 
 Use `dialog.showModal()`/`close()`, `Timer`, `X`, `Play`, `Pause`, `RotateCcw`, `Coffee`, `CloudRain`, and `Waves` icons. The trigger remains mounted with the timer hook. The dialog receives state/actions and ambient controls as props. Clicking the backdrop closes only when `event.target === event.currentTarget`.
 
-- [ ] **Step 4: Add progress presentation**
+- [x] **Step 4: Add progress presentation**
 
 Calculate the session duration from mode and preset, expose `--timer-progress` as a percentage, and render a quiet circular timer frame with tabular digits. Avoid animation when `prefers-reduced-motion` is active.
 
-- [ ] **Step 5: Run timer tests and commit**
+- [x] **Step 5: Run timer tests and commit**
 
 Run: `npm test -- --run src/features/timer --reporter=default`
 
@@ -263,13 +263,13 @@ Commit: `feat: add premium modal focus timer`
 - Produces: persistent theme toggle labelled for its destination state
 - Produces: complete semantic token sets for `[data-theme='light']` and `[data-theme='dark']`
 
-- [ ] **Step 1: Install and import Inter Variable**
+- [x] **Step 1: Install and import Inter Variable**
 
 Run: `npm install @fontsource-variable/inter`
 
 Import `@fontsource-variable/inter` before local styles in `src/main.tsx`. Keep the system font stack as fallback.
 
-- [ ] **Step 2: Write failing app-shell theme tests**
+- [x] **Step 2: Write failing app-shell theme tests**
 
 ```tsx
 it('switches the complete app shell between dark and light themes', async () => {
@@ -280,21 +280,21 @@ it('switches the complete app shell between dark and light themes', async () => 
 });
 ```
 
-- [ ] **Step 3: Run and verify RED**
+- [x] **Step 3: Run and verify RED**
 
 Run: `npm test -- --run src/app/App.test.tsx --reporter=default`
 
 Expected: FAIL because the shell lacks a theme control.
 
-- [ ] **Step 4: Implement the shell**
+- [x] **Step 4: Implement the shell**
 
 Use `BookOpenText` for the wordmark, `Sun`/`Moon` for appearance, and the new Focus trigger. Keep one header height on every route. Add an inline `index.html` bootstrap that reads the stored version 2 appearance and system preference before the app renders, sets `data-theme`, and updates `theme-color`.
 
-- [ ] **Step 5: Replace color tokens and restyle shared primitives**
+- [x] **Step 5: Replace color tokens and restyle shared primitives**
 
 Create semantic tokens including `--bg`, `--surface`, `--surface-elevated`, `--text`, `--text-soft`, `--border`, `--accent`, `--accent-soft`, `--success`, `--danger`, `--shadow`, and `--focus-ring` for both themes. Update body, links, buttons, inputs, focus rings, headers, dialogs, and feedback states to use only semantic tokens.
 
-- [ ] **Step 6: Run app tests and commit**
+- [x] **Step 6: Run app tests and commit**
 
 Run: `npm test -- --run src/app/App.test.tsx src/features/timer/FocusTimer.test.tsx --reporter=default`
 
@@ -321,7 +321,7 @@ Commit: `feat: add premium light and dark app shell`
 - Preserves all route URLs, accessible names used by existing tests, question data, and callbacks
 - Produces: BookOpen/ClipboardCheck navigation icon treatment and full theme support on all learning surfaces
 
-- [ ] **Step 1: Add failing browser assertions for theme and focus modal**
+- [x] **Step 1: Add failing browser assertions for theme and focus modal**
 
 ```ts
 test('theme and focus setup persist across routes', async ({ page }) => {
@@ -338,25 +338,25 @@ test('theme and focus setup persist across routes', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 2: Run the focused E2E test and verify RED**
+- [x] **Step 2: Run the focused E2E test and verify RED**
 
 Run: `npm run test:e2e -- --grep "theme and focus"`
 
 Expected: FAIL because the controls and modal do not exist.
 
-- [ ] **Step 3: Simplify route markup and icons**
+- [x] **Step 3: Simplify route markup and icons**
 
 Remove decorative status pills and numbered icon blocks where they do not aid navigation. Use restrained `BookOpen`, `ClipboardCheck`, `ArrowRight`, `CircleCheck`, and `CircleX` icons with adjacent labels. Keep the existing headings and all test-accessible labels stable unless the new test explicitly defines them.
 
-- [ ] **Step 4: Restyle every route with semantic tokens**
+- [x] **Step 4: Restyle every route with semantic tokens**
 
 Use a maximum reading width near 72ch, smaller `clamp()` heading ranges, flat/elevated surfaces, 12–16px radii, restrained 1px borders, and minimal shadows only for modal elevation. Replace neon selected states with `--accent-soft` plus border/icon indicators. Make results editorial and informational rather than celebratory.
 
-- [ ] **Step 5: Verify 300px reflow and touch sizes**
+- [x] **Step 5: Verify 300px reflow and touch sizes**
 
 Extend the existing narrow browser test to open the focus dialog, assert no document overflow, and check the primary timer controls are at least 44px high.
 
-- [ ] **Step 6: Run browser tests and commit**
+- [x] **Step 6: Run browser tests and commit**
 
 Run: `npm run test:e2e`
 
@@ -375,11 +375,11 @@ Commit: `style: create calm premium study experience`
 **Interfaces:**
 - Produces: documented theme, modal focus timer, ambient sound controls, and verification commands
 
-- [ ] **Step 1: Update README**
+- [x] **Step 1: Update README**
 
 Document light/dark appearance, the modal focus timer, locally generated Soft rain/Brown noise, audio-off default, and browser-local preferences.
 
-- [ ] **Step 2: Run the complete automated suite**
+- [x] **Step 2: Run the complete automated suite**
 
 Run each command and require exit code 0:
 
@@ -392,7 +392,7 @@ npm run test:e2e
 git diff --check
 ```
 
-- [ ] **Step 3: Run built-in browser QA**
+- [x] **Step 3: Run built-in browser QA**
 
 At `http://127.0.0.1:4173/`, inspect and interact with:
 
@@ -404,15 +404,15 @@ At `http://127.0.0.1:4173/`, inspect and interact with:
 6. Desktop, 390px mobile, and 300px narrow panel.
 7. Console warnings/errors and framework overlays.
 
-- [ ] **Step 4: Capture and inspect screenshots**
+- [x] **Step 4: Capture and inspect screenshots**
 
 Save current light Home, dark Study, dark Focus modal, and mobile Test screenshots outside the repository in the visualization output directory. Inspect each with `view_image` and fix clipping, hierarchy, contrast, spacing, and theme inconsistencies before completion.
 
-- [ ] **Step 5: Request independent code review**
+- [x] **Step 5: Request independent code review**
 
 Review the full implementation against the approved spec. Fix every Critical and Important issue, then rerun affected checks.
 
-- [ ] **Step 6: Mark plan complete and commit**
+- [x] **Step 6: Mark plan complete and commit**
 
 Check every completed task box, run `git status --short`, and commit documentation/final polish as:
 

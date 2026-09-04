@@ -73,4 +73,20 @@ describe('ambient audio engine', () => {
 
     expect(fake.gain.gain.linearRampToValueAtTime).toHaveBeenCalledWith(1, 0.08);
   });
+
+  it('does not create a source when a pending start is cancelled', async () => {
+    const fake = createFakeAudioContext();
+    let resumeContext: () => void = () => undefined;
+    fake.context.resume.mockReturnValue(new Promise<void>((resolve) => {
+      resumeContext = () => resolve();
+    }));
+    const engine = createAmbientAudio(() => fake.context as unknown as AudioContext);
+
+    const pendingStart = engine.start('rain', 0.2);
+    engine.stop();
+    resumeContext();
+    await pendingStart;
+
+    expect(fake.context.createBufferSource).not.toHaveBeenCalled();
+  });
 });

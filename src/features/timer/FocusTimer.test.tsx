@@ -11,7 +11,7 @@ describe('FocusTimer', () => {
     await user.click(screen.getByRole('button', { name: /open focus timer/i }));
 
     expect(screen.getByRole('dialog')).toBeVisible();
-    expect(screen.getByText('25:00', { selector: '.focus-dialog-time' })).toBeVisible();
+    expect(screen.getByText('25:00', { selector: '.focus-dialog-time' })).toHaveAttribute('aria-live', 'off');
     await user.click(screen.getByRole('button', { name: /^start$/i }));
     await user.click(screen.getByRole('button', { name: /close focus timer/i }));
 
