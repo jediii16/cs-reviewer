@@ -59,6 +59,17 @@ svg { width: 1.25rem; height: 1.25rem; stroke-width: 2; }
 }
 
 .header-note { color: var(--slate-500); font-size: 0.8rem; font-weight: 650; }
+.focus-timer { display: grid; grid-template-columns: auto auto; align-items: center; gap: 4px 12px; }
+.timer-readout { display: flex; align-items: baseline; gap: 8px; }
+.timer-readout span { color: var(--slate-500); font-size: 0.66rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
+.timer-readout strong { min-width: 52px; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.timer-controls { display: flex; gap: 4px; }
+.timer-controls button, .timer-presets button { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; border: 1px solid var(--slate-200); border-radius: 7px; color: var(--navy-900); background: white; cursor: pointer; font-size: 0.7rem; font-weight: 800; }
+.timer-controls button { gap: 5px; padding: 4px 8px; }
+.timer-controls button svg { width: 14px; height: 14px; }
+.timer-presets { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 4px; }
+.timer-presets button { min-width: 30px; padding: 3px 7px; }
+.timer-presets button[aria-pressed="true"] { border-color: var(--navy-900); background: var(--lime); }
 .main-content { max-width: 1124px; margin: 0 auto; padding: 76px 28px 100px; }
 
 .home-page, .subject-page { max-width: 920px; margin: 0 auto; }
@@ -220,6 +231,11 @@ h1 { margin: 0; font-size: clamp(2.4rem, 7vw, 4.8rem); line-height: 0.98; letter
 @media (max-width: 680px) {
   .site-header { height: 66px; padding: 0 18px; }
   .header-note { display: none; }
+  .site-header:has(.focus-timer) { height: 82px; }
+  .focus-timer { grid-template-columns: auto auto; gap: 2px 6px; }
+  .timer-readout span, .timer-presets { display: none; }
+  .timer-readout strong { font-size: 0.95rem; }
+  .timer-controls button { min-height: 34px; }
   .main-content { padding: 48px 18px 80px; }
   .home-intro { margin-bottom: 34px; }
   .subject-row { grid-template-columns: auto 1fr auto; gap: 14px; padding: 22px 18px; }
