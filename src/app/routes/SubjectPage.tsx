@@ -1,7 +1,11 @@
 import { ArrowLeft, Brain, PencilLine } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { cit017Subject } from '../../content/cit017';
+import { useProgress } from '../../features/progress/useProgress';
 
 export function SubjectPage() {
+  const { progress } = useProgress();
+  const progressPercent = Math.round((progress.reviewedTopicIds.length / cit017Subject.topics.length) * 100);
   return (
     <section className="subject-page" aria-labelledby="subject-title">
       <Link className="back-link" to="/"><ArrowLeft aria-hidden="true" /> Subjects</Link>
@@ -13,7 +17,7 @@ export function SubjectPage() {
         </div>
         <div className="progress-stamp">
           <span>Course progress</span>
-          <strong>0%</strong>
+          <strong>{progressPercent}%</strong>
         </div>
       </div>
 
