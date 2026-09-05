@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Music2 } from 'lucide-react';
 import { AudioDialog } from './AudioDialog';
 import { AudioDock } from './AudioDock';
@@ -21,8 +22,13 @@ export function AudioPlayerSurface({ audio }: { audio: FocusAudioController }) {
   return (
     <>
       <button ref={triggerRef} className="header-tool" type="button" aria-label="Open music and ambience" onClick={() => setDialogOpen(true)}><Music2 aria-hidden="true" /></button>
-      {dialogOpen ? <AudioDialog audio={audio} onClose={closeDialog} /> : null}
-      <AudioDock audio={audio} onOpenDialog={() => setDialogOpen(true)} />
+      {createPortal(
+        <>
+          {dialogOpen ? <AudioDialog audio={audio} onClose={closeDialog} /> : null}
+          <AudioDock audio={audio} onOpenDialog={() => setDialogOpen(true)} />
+        </>,
+        document.body,
+      )}
     </>
   );
 }

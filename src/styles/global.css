@@ -1725,6 +1725,7 @@ h1 {
   right: 50%;
   bottom: max(14px, env(safe-area-inset-bottom));
   width: min(940px, calc(100vw - 28px));
+  pointer-events: none;
   transform: translateX(50%);
 }
 
@@ -1772,6 +1773,7 @@ h1 {
   background: color-mix(in srgb, var(--surface-elevated) 91%, transparent);
   box-shadow: 0 18px 50px rgb(0 0 0 / 18%), 0 2px 10px rgb(0 0 0 / 8%);
   opacity: 1;
+  pointer-events: auto;
   transform: translateY(0);
   transition: opacity 190ms ease, transform 220ms cubic-bezier(.22, .8, .22, 1);
   -webkit-backdrop-filter: saturate(165%) blur(28px);
@@ -2579,8 +2581,8 @@ h1 {
   }
 
   .audio-dock-panel {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px 12px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
     min-height: 0;
     padding: 11px 12px;
     border-radius: 17px;
@@ -2592,17 +2594,14 @@ h1 {
   }
 
   .audio-dock-transport {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .audio-dock-transport > button:not(.audio-dock-play) {
-    display: none;
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: center;
   }
 
   .audio-dock-timeline {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    grid-column: 1;
+    grid-row: 3;
   }
 
   .audio-dock-secondary {
@@ -2610,8 +2609,17 @@ h1 {
   }
 }
 
+@media (max-width: 440px) {
+  .brand > span:last-child {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+}
+
 @media (max-width: 340px) {
-  .brand > span:last-child,
   .focus-trigger > span {
     display: none;
   }
