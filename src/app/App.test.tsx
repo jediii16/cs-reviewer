@@ -41,4 +41,18 @@ describe('App navigation', () => {
     expect(document.documentElement.dataset.theme).toBe('dark');
     expect(screen.getByRole('button', { name: /switch to light mode/i })).toBeVisible();
   });
+
+  it('keeps music controls available independently from the focus timer', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /^open music and ambience$/i }));
+    expect(screen.getByRole('dialog', { name: /music and ambience/i })).toBeVisible();
+    expect(screen.getByRole('region', { name: /music player/i })).toBeInTheDocument();
+  });
 });

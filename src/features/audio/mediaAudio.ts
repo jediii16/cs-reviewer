@@ -51,7 +51,8 @@ export function createMediaAudio(
     if (!element) return;
     if (endedListener) element.removeEventListener('ended', endedListener);
     if (timeChangeListener) {
-      telemetryEvents.forEach((event) => element?.removeEventListener(event, timeChangeListener));
+      const listener = timeChangeListener;
+      telemetryEvents.forEach((event) => element?.removeEventListener(event, listener));
     }
     endedListener = undefined;
     timeChangeListener = undefined;
@@ -77,7 +78,8 @@ export function createMediaAudio(
       if (endedListener) element.addEventListener('ended', endedListener);
       if (request.onTimeChange) {
         timeChangeListener = () => request.onTimeChange?.(snapshot(element));
-        telemetryEvents.forEach((event) => element?.addEventListener(event, timeChangeListener));
+        const listener = timeChangeListener;
+        telemetryEvents.forEach((event) => element?.addEventListener(event, listener));
       }
 
       await element.play();

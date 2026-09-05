@@ -1,6 +1,7 @@
 import { BookOpenText, Moon, Sun } from 'lucide-react';
 import { Link, Outlet } from 'react-router-dom';
 import { useAppearance } from '../features/appearance/useAppearance';
+import { AudioPlayer } from '../features/audio/AudioPlayer';
 import { FocusTimer } from '../features/timer/FocusTimer';
 
 export function AppShell() {
@@ -15,6 +16,7 @@ export function AppShell() {
             <span>Study Desk</span>
           </Link>
           <div className="header-actions">
+            <AudioPlayer />
             <button
               className="theme-toggle"
               type="button"

@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { Timer } from 'lucide-react';
-import { useAmbientAudio } from '../audio/useAmbientAudio';
 import { FocusDialog } from './FocusDialog';
 import { useFocusTimer } from './useFocusTimer';
 
@@ -12,7 +11,6 @@ function formatTime(seconds: number) {
 
 export function FocusTimer() {
   const { state, dispatch, selectPreset } = useFocusTimer();
-  const ambient = useAmbientAudio();
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const modeLabel = state.mode === 'focus' ? 'Focus' : 'Break';
@@ -43,7 +41,6 @@ export function FocusTimer() {
           dispatch={dispatch}
           selectPreset={selectPreset}
           onClose={closeDialog}
-          ambient={ambient}
         />
       ) : null}
     </div>

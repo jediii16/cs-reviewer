@@ -22,7 +22,7 @@ describe('FocusTimer', () => {
     expect(screen.getByRole('button', { name: /^pause$/i })).toBeVisible();
   });
 
-  it('supports presets, break mode, ambient choices, and backdrop close', async () => {
+  it('supports presets, break mode, and backdrop close without audio settings', async () => {
     const user = userEvent.setup();
     render(<FocusTimer />);
 
@@ -33,9 +33,8 @@ describe('FocusTimer', () => {
 
     await user.click(screen.getByRole('button', { name: /^break$/i }));
     expect(screen.getByText('05:00', { selector: '.focus-dialog-time' })).toBeVisible();
-    expect(screen.getByRole('button', { name: /soft rain/i })).toBeVisible();
-    expect(screen.getByRole('button', { name: /brown noise/i })).toBeVisible();
-    expect(screen.getByRole('slider', { name: /ambient volume/i })).toBeVisible();
+    expect(screen.queryByRole('heading', { name: /^music$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /background noise/i })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('dialog'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
