@@ -1,7 +1,9 @@
-import { BookOpenText, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { Link, Outlet } from 'react-router-dom';
+import { BappiMascot } from '../components/BappiMascot';
 import { useAppearance } from '../features/appearance/useAppearance';
 import { AudioPlayer } from '../features/audio/AudioPlayer';
+import { BlurtingNotes } from '../features/notes/BlurtingNotes';
 import { FocusTimer } from '../features/timer/FocusTimer';
 
 export function AppShell() {
@@ -11,11 +13,12 @@ export function AppShell() {
     <div className="app-shell">
       <header className="site-header">
         <div className="site-header-inner">
-          <Link className="brand" to="/" aria-label="Study Desk home">
-            <BookOpenText aria-hidden="true" />
-            <span>Study Desk</span>
+          <Link className="brand" to="/" aria-label="Bappi home">
+            <BappiMascot className="brand-mascot" eager />
+            <span>Bappi</span>
           </Link>
           <div className="header-actions">
+            <BlurtingNotes />
             <AudioPlayer />
             <button
               className="theme-toggle"
