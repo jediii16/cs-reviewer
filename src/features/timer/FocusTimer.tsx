@@ -12,24 +12,25 @@ function formatTime(seconds: number) {
 export function FocusTimer() {
   const { state, dispatch, selectPreset } = useFocusTimer();
   const [open, setOpen] = useState(false);
-  const [completionEffect, setCompletionEffect] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const previousCompletions = useRef(state.completedSessions);
   const modeLabel = state.mode === 'focus' ? 'Focus' : 'Break';
   const runningLabel = state.running ? 'running ' : '';
 
   useEffect(() => {
-    if (state.completedSessions === previousCompletions.current) return undefined;
-    previousCompletions.current = state.completedSessions;
-    if (!open) return undefined;
-    setCompletionEffect(true);
-    const timeout = window.setTimeout(() => setCompletionEffect(false), 900);
+    if (!state.completionEffect) return undefined;
+    const timeout = window.setTimeout(() => dispatch({ type: 'dismissCompletion' }), 900);
     return () => window.clearTimeout(timeout);
-  }, [open, state.completedSessions]);
+  }, [dispatch, state.completionEffect]);
 
   function closeDialog() {
+    dispatch({ type: 'dismissCompletion' });
     setOpen(false);
     window.setTimeout(() => triggerRef.current?.focus(), 0);
+  }
+
+  function openDialog() {
+    dispatch({ type: 'dismissCompletion' });
+    setOpen(true);
   }
 
   return (
@@ -39,7 +40,7 @@ export function FocusTimer() {
         className="focus-trigger"
         type="button"
         aria-label={`Open focus timer, ${runningLabel}${modeLabel}, ${formatTime(state.remainingSeconds)}`}
-        onClick={() => setOpen(true)}
+        onClick={openDialog}
       >
         <Timer aria-hidden="true" />
         <span>{modeLabel}</span>
@@ -52,7 +53,7 @@ export function FocusTimer() {
           dispatch={dispatch}
           selectPreset={selectPreset}
           onClose={closeDialog}
-          completionEffect={completionEffect}
+          completionEffect={state.completionEffect}
         />
       ) : null}
     </div>

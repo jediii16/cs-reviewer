@@ -9,6 +9,7 @@ describe('timerReducer', () => {
       presetMinutes: 25,
       running: true,
       completedSessions: 2,
+      completionEffect: false,
     } as const;
 
     expect(timerReducer(state, { type: 'tick' })).toEqual({
@@ -17,6 +18,7 @@ describe('timerReducer', () => {
       presetMinutes: 25,
       running: false,
       completedSessions: 3,
+      completionEffect: true,
     });
   });
 
@@ -29,6 +31,22 @@ describe('timerReducer', () => {
       presetMinutes: 45,
       running: false,
       completedSessions: 0,
+      completionEffect: false,
+    });
+  });
+
+  it('dismisses a completion effect without changing the next timer mode', () => {
+    const completed = {
+      ...initialTimerState,
+      mode: 'break' as const,
+      remainingSeconds: 300,
+      completedSessions: 1,
+      completionEffect: true,
+    };
+
+    expect(timerReducer(completed, { type: 'dismissCompletion' })).toEqual({
+      ...completed,
+      completionEffect: false,
     });
   });
 });

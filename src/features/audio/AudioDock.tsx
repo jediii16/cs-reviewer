@@ -1,4 +1,4 @@
-import type { FocusEvent, PointerEvent } from 'react';
+import type { FocusEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ListMusic, Pause, Play, Repeat, Repeat1, RotateCcw, Settings2, SkipBack, SkipForward, Volume2 } from 'lucide-react';
 import type { FocusAudioController } from './useFocusAudio';
@@ -53,7 +53,7 @@ export function AudioDock({ audio, onOpenDialog }: AudioDockProps) {
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) scheduleCollapse();
   }
 
-  function finishSeeking(_event: PointerEvent<HTMLInputElement>) {
+  function finishSeeking() {
     scheduleCollapse();
   }
 

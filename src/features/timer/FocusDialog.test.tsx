@@ -12,6 +12,7 @@ describe('FocusDialog effects', () => {
           presetMinutes: 25,
           running: false,
           completedSessions: 1,
+          completionEffect: true,
         }}
         dispatch={vi.fn()}
         selectPreset={vi.fn()}
@@ -30,6 +31,7 @@ describe('FocusDialog effects', () => {
           presetMinutes: 25,
           running: false,
           completedSessions: 1,
+          completionEffect: false,
         }}
         dispatch={vi.fn()}
         selectPreset={vi.fn()}

@@ -7,12 +7,14 @@ export interface TimerState {
   presetMinutes: FocusPreset;
   running: boolean;
   completedSessions: number;
+  completionEffect: boolean;
 }
 
 export type TimerAction =
   | { type: 'tick' }
   | { type: 'toggle' }
   | { type: 'reset' }
+  | { type: 'dismissCompletion' }
   | { type: 'switchMode'; mode: TimerMode }
   | { type: 'selectPreset'; minutes: FocusPreset };
 
@@ -22,6 +24,7 @@ export const initialTimerState: TimerState = {
   presetMinutes: 25,
   running: false,
   completedSessions: 0,
+  completionEffect: false,
 };
 
 export function timerReducer(state: TimerState, action: TimerAction): TimerState {
@@ -32,22 +35,26 @@ export function timerReducer(state: TimerState, action: TimerAction): TimerState
         return { ...state, remainingSeconds: state.remainingSeconds - 1 };
       }
       return state.mode === 'focus'
-        ? { ...state, mode: 'break', remainingSeconds: 5 * 60, running: false, completedSessions: state.completedSessions + 1 }
-        : { ...state, mode: 'focus', remainingSeconds: state.presetMinutes * 60, running: false, completedSessions: state.completedSessions + 1 };
+        ? { ...state, mode: 'break', remainingSeconds: 5 * 60, running: false, completedSessions: state.completedSessions + 1, completionEffect: true }
+        : { ...state, mode: 'focus', remainingSeconds: state.presetMinutes * 60, running: false, completedSessions: state.completedSessions + 1, completionEffect: true };
     case 'toggle':
-      return { ...state, running: !state.running };
+      return { ...state, running: !state.running, completionEffect: false };
     case 'reset':
       return {
         ...state,
         remainingSeconds: state.mode === 'focus' ? state.presetMinutes * 60 : 5 * 60,
         running: false,
+        completionEffect: false,
       };
+    case 'dismissCompletion':
+      return { ...state, completionEffect: false };
     case 'switchMode':
       return {
         ...state,
         mode: action.mode,
         remainingSeconds: action.mode === 'focus' ? state.presetMinutes * 60 : 5 * 60,
         running: false,
+        completionEffect: false,
       };
     case 'selectPreset':
       return {
@@ -56,6 +63,7 @@ export function timerReducer(state: TimerState, action: TimerAction): TimerState
         presetMinutes: action.minutes,
         running: false,
         completedSessions: state.completedSessions,
+        completionEffect: false,
       };
   }
 }
