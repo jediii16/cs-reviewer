@@ -9,6 +9,7 @@ export function useFocusTimer() {
     remainingSeconds: preset * 60,
     presetMinutes: preset,
     running: false,
+    completedSessions: 0,
   }));
 
   useEffect(() => {

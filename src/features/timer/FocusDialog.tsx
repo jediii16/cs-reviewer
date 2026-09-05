@@ -10,6 +10,7 @@ export interface FocusDialogProps {
   dispatch: Dispatch<TimerAction>;
   selectPreset: (minutes: FocusPreset) => void;
   onClose: () => void;
+  completionEffect?: boolean;
 }
 
 function formatTime(seconds: number) {
@@ -18,7 +19,7 @@ function formatTime(seconds: number) {
   return `${minutes}:${remainder}`;
 }
 
-export function FocusDialog({ state, dispatch, selectPreset, onClose }: FocusDialogProps) {
+export function FocusDialog({ state, dispatch, selectPreset, onClose, completionEffect = false }: FocusDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const totalSeconds = state.mode === 'focus' ? state.presetMinutes * 60 : 5 * 60;
   const elapsedRatio = Math.min(1, Math.max(0, (totalSeconds - state.remainingSeconds) / totalSeconds));
@@ -64,12 +65,16 @@ export function FocusDialog({ state, dispatch, selectPreset, onClose }: FocusDia
           <button type="button" aria-pressed={state.mode === 'break'} onClick={() => dispatch({ type: 'switchMode', mode: 'break' })}>Break</button>
         </div>
 
-        <div className="focus-dialog-clock" style={timerStyle}>
+        <div
+          className={`focus-dialog-clock is-${state.mode}${state.running ? ' is-running' : ''}`}
+          style={timerStyle}
+        >
           <div className="focus-dialog-clock-inner">
             <span>{state.mode === 'focus' ? 'Focus' : 'Break'}</span>
             <strong className="focus-dialog-time" aria-live="off">{formatTime(state.remainingSeconds)}</strong>
             <small>{state.running ? 'Session in progress' : 'Ready when you are'}</small>
           </div>
+          {completionEffect ? <span className="focus-completion-ripple" aria-hidden="true" /> : null}
         </div>
 
         <div className="focus-presets" aria-label="Focus length">

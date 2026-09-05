@@ -6,6 +6,7 @@ export interface TimerState {
   remainingSeconds: number;
   presetMinutes: FocusPreset;
   running: boolean;
+  completedSessions: number;
 }
 
 export type TimerAction =
@@ -20,6 +21,7 @@ export const initialTimerState: TimerState = {
   remainingSeconds: 25 * 60,
   presetMinutes: 25,
   running: false,
+  completedSessions: 0,
 };
 
 export function timerReducer(state: TimerState, action: TimerAction): TimerState {
@@ -30,8 +32,8 @@ export function timerReducer(state: TimerState, action: TimerAction): TimerState
         return { ...state, remainingSeconds: state.remainingSeconds - 1 };
       }
       return state.mode === 'focus'
-        ? { ...state, mode: 'break', remainingSeconds: 5 * 60, running: false }
-        : { ...state, mode: 'focus', remainingSeconds: state.presetMinutes * 60, running: false };
+        ? { ...state, mode: 'break', remainingSeconds: 5 * 60, running: false, completedSessions: state.completedSessions + 1 }
+        : { ...state, mode: 'focus', remainingSeconds: state.presetMinutes * 60, running: false, completedSessions: state.completedSessions + 1 };
     case 'toggle':
       return { ...state, running: !state.running };
     case 'reset':
@@ -53,6 +55,7 @@ export function timerReducer(state: TimerState, action: TimerAction): TimerState
         remainingSeconds: action.minutes * 60,
         presetMinutes: action.minutes,
         running: false,
+        completedSessions: state.completedSessions,
       };
   }
 }

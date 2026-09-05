@@ -13,6 +13,7 @@ describe('FocusTimer', () => {
     expect(screen.getByRole('dialog')).toBeVisible();
     expect(screen.getByText('25:00', { selector: '.focus-dialog-time' })).toHaveAttribute('aria-live', 'off');
     await user.click(screen.getByRole('button', { name: /^start$/i }));
+    expect(document.querySelector('.focus-dialog-clock')).toHaveClass('is-running');
     await user.click(screen.getByRole('button', { name: /close focus timer/i }));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Timer } from 'lucide-react';
 import { FocusDialog } from './FocusDialog';
 import { useFocusTimer } from './useFocusTimer';
@@ -12,9 +12,20 @@ function formatTime(seconds: number) {
 export function FocusTimer() {
   const { state, dispatch, selectPreset } = useFocusTimer();
   const [open, setOpen] = useState(false);
+  const [completionEffect, setCompletionEffect] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const previousCompletions = useRef(state.completedSessions);
   const modeLabel = state.mode === 'focus' ? 'Focus' : 'Break';
   const runningLabel = state.running ? 'running ' : '';
+
+  useEffect(() => {
+    if (state.completedSessions === previousCompletions.current) return undefined;
+    previousCompletions.current = state.completedSessions;
+    if (!open) return undefined;
+    setCompletionEffect(true);
+    const timeout = window.setTimeout(() => setCompletionEffect(false), 900);
+    return () => window.clearTimeout(timeout);
+  }, [open, state.completedSessions]);
 
   function closeDialog() {
     setOpen(false);
@@ -41,6 +52,7 @@ export function FocusTimer() {
           dispatch={dispatch}
           selectPreset={selectPreset}
           onClose={closeDialog}
+          completionEffect={completionEffect}
         />
       ) : null}
     </div>
