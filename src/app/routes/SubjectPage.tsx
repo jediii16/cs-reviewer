@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, ClipboardCheck } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, GalleryHorizontalEnd } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BappiMascot } from '../../components/BappiMascot';
 import { cit017Subject } from '../../content/cit017';
@@ -20,7 +20,7 @@ export function SubjectPage() {
       <div className="subject-heading">
         <div>
           <h1 id="subject-title">CIT.017</h1>
-          <p>Learn the concepts, then practice with scenarios, definitions, identification, multiple choice, and true or false.</p>
+          <p>Learn each concept, self-check with flashcards, then practice complete multiple-choice sets.</p>
         </div>
         <BappiMascot
           className="subject-heading-mascot"
@@ -47,10 +47,15 @@ export function SubjectPage() {
           <span><strong>Study</strong><small>Review lessons and use active recall</small></span>
           <span className="mode-action">Open notes</span>
         </Link>
+        <Link aria-label="Flashcards" className="mode-row" to="/subjects/cit017/flashcards">
+          <span className="mode-icon" aria-hidden="true"><GalleryHorizontalEnd /></span>
+          <span><strong>Flashcards</strong><small>Practice identification at your own pace</small></span>
+          <span className="mode-action">Choose a deck</span>
+        </Link>
         <Link aria-label="Test" className="mode-row" to="/subjects/cit017/test">
           <span className="mode-icon" aria-hidden="true"><ClipboardCheck /></span>
-          <span><strong>Test</strong><small>Mix question formats and review mistakes</small></span>
-          <span className="mode-action">Start practice</span>
+          <span><strong>Test</strong><small>Complete focused multiple-choice sets</small></span>
+          <span className="mode-action">Choose a set</span>
         </Link>
       </div>
     </section>

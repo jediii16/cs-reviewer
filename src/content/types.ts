@@ -54,15 +54,27 @@ export interface ChoiceQuestion extends BaseQuestion {
   correctOptionId: string;
 }
 
-export interface IdentificationQuestion extends BaseQuestion {
-  kind: 'identification';
-  correctAnswer: string;
-  acceptableAnswers: string[];
+export interface TestSet {
+  id: string;
+  topicId: QuizTopic;
+  title: string;
+  description: string;
+  questions: ChoiceQuestion[];
 }
 
-export interface TrueFalseQuestion extends BaseQuestion {
-  kind: 'true-false';
-  correctAnswer: boolean;
+export interface Flashcard {
+  id: string;
+  topicId: QuizTopic;
+  prompt: string;
+  answer: string;
+  detail?: string;
 }
 
-export type QuizQuestion = ChoiceQuestion | IdentificationQuestion | TrueFalseQuestion;
+export interface FlashcardDeck {
+  id: string;
+  title: string;
+  description: string;
+  cards: Flashcard[];
+}
+
+export type QuizQuestion = ChoiceQuestion;

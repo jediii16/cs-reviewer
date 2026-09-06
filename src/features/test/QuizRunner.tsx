@@ -1,13 +1,14 @@
 import { CheckCircle2, RotateCcw, XCircle } from 'lucide-react';
-import { useState } from 'react';
-import type { QuizQuestion, QuizTopic } from '../../content/types';
+import { useRef, useState } from 'react';
+import type { ChoiceQuestion, QuizTopic } from '../../content/types';
 import { BappiMascot } from '../../components/BappiMascot';
 import { Button } from '../../components/Button';
 import { ProgressBar } from '../../components/ProgressBar';
 import { getCorrectAnswerLabel, getMissedQuestions, isQuestionCorrect, scoreQuiz, type QuizAnswers } from './quizEngine';
 
 interface QuizRunnerProps {
-  questions: QuizQuestion[];
+  questions: ChoiceQuestion[];
+  setTitle?: string;
   onComplete: (result: { correct: number; total: number }) => void;
   onExit?: () => void;
 }
@@ -19,13 +20,8 @@ const topicLabels: Record<QuizTopic, string> = {
   social: 'Social engineering',
 };
 
-const kindLabels: Record<QuizQuestion['kind'], string> = {
-  'multiple-choice': 'Multiple choice',
-  identification: 'Identification',
-  'true-false': 'True or false',
-};
-
-export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
+export function QuizRunner({ questions, setTitle, onComplete, onExit }: QuizRunnerProps) {
+  const runnerRef = useRef<HTMLElement>(null);
   const [activeQuestions, setActiveQuestions] = useState(questions);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answerValue, setAnswerValue] = useState('');
@@ -36,8 +32,14 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
   const question = activeQuestions[questionIndex];
   const score = scoreQuiz(activeQuestions, answers);
 
+  function returnToQuestion() {
+    window.requestAnimationFrame?.(() => {
+      runnerRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
   function submitAnswer() {
-    if (!answerValue.trim()) return;
+    if (!answerValue) return;
     setAnswers((current) => ({ ...current, [question.id]: answerValue }));
     setSubmitted(true);
   }
@@ -54,6 +56,7 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
     setQuestionIndex((current) => current + 1);
     setAnswerValue('');
     setSubmitted(false);
+    returnToQuestion();
   }
 
   function retryMissed() {
@@ -64,6 +67,7 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
     setAnswers({});
     setSubmitted(false);
     setShowResults(false);
+    returnToQuestion();
   }
 
   if (showResults) {
@@ -114,16 +118,14 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
   }
 
   const selectedIsCorrect = isQuestionCorrect(question, answerValue);
-  const choiceOptions = question.kind === 'multiple-choice'
-    ? question.options
-    : question.kind === 'true-false'
-      ? [{ id: 'true', label: 'True' }, { id: 'false', label: 'False' }]
-      : null;
 
   return (
-    <section className="quiz-runner" aria-labelledby="question-heading">
+    <section ref={runnerRef} className="quiz-runner" aria-labelledby="question-heading">
       <div className="quiz-progress-row">
-        <span className="quiz-meta"><span>{topicLabels[question.topicId]}</span><strong>{kindLabels[question.kind]}</strong></span>
+        <span className="quiz-meta">
+          <span>{topicLabels[question.topicId]}</span>
+          {setTitle ? <strong>{setTitle}</strong> : null}
+        </span>
         <span>Question {questionIndex + 1} of {activeQuestions.length}</span>
       </div>
       <ProgressBar value={questionIndex + 1} max={activeQuestions.length} label="Test progress" />
@@ -137,10 +139,9 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
 
       <h2 id="question-heading">{question.prompt}</h2>
 
-      {choiceOptions ? (
-        <fieldset className="answer-list" disabled={submitted}>
-          <legend>{question.kind === 'true-false' ? 'Choose true or false' : 'Choose the best answer'}</legend>
-          {choiceOptions.map((option) => {
+      <fieldset className="answer-list" disabled={submitted}>
+        <legend>Choose the best answer</legend>
+        {question.options.map((option) => {
           const isSelected = answerValue === option.id;
           const isCorrectOption = isQuestionCorrect(question, option.id);
           const stateClass = submitted
@@ -160,25 +161,8 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
               {submitted && isSelected && !isCorrectOption ? <XCircle aria-hidden="true" /> : null}
             </label>
           );
-          })}
-        </fieldset>
-      ) : (
-        <div className="identification-answer">
-          <label htmlFor={`answer-${question.id}`}>Your answer</label>
-          <input
-            id={`answer-${question.id}`}
-            type="text"
-            value={answerValue}
-            disabled={submitted}
-            autoComplete="off"
-            placeholder="Type the term or concept"
-            onChange={(event) => setAnswerValue(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' && answerValue.trim()) submitAnswer();
-            }}
-          />
-        </div>
-      )}
+        })}
+      </fieldset>
 
       {submitted ? (
         <div className={`answer-feedback ${selectedIsCorrect ? 'is-correct' : 'is-wrong'}`} role="status">
@@ -194,7 +178,7 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
         {submitted ? (
           <Button onClick={advance}>{questionIndex === activeQuestions.length - 1 ? 'See results' : 'Next question'}</Button>
         ) : (
-          <Button disabled={!answerValue.trim()} onClick={submitAnswer}>Submit answer</Button>
+          <Button disabled={!answerValue} onClick={submitAnswer}>Submit answer</Button>
         )}
       </div>
     </section>
