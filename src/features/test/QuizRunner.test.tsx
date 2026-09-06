@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ChoiceQuestion } from '../../content/types';
 import { QuizRunner } from './QuizRunner';
 
@@ -28,6 +28,10 @@ const secondQuestion: ChoiceQuestion = {
   explanation: 'Integrity keeps records accurate.',
 };
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe('QuizRunner', () => {
   it('shows the set title and focused Bappi while a question is active', () => {
     render(
@@ -49,6 +53,25 @@ describe('QuizRunner', () => {
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     expect(screen.queryByText('Identification')).not.toBeInTheDocument();
     expect(screen.queryByText('True or false')).not.toBeInTheDocument();
+  });
+
+  it('dismisses the test instruction automatically without blocking the question', () => {
+    vi.useFakeTimers();
+
+    render(
+      <QuizRunner
+        questions={[sampleQuestion]}
+        instruction="Identify the CIA property in each scenario."
+        onComplete={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('Identify the CIA property in each scenario.');
+    expect(screen.getByRole('group', { name: /choose the best answer/i })).toBeEnabled();
+
+    act(() => vi.advanceTimersByTime(4000));
+
+    expect(screen.queryByText('Identify the CIA property in each scenario.')).not.toBeInTheDocument();
   });
 
   it('requires submission, explains the answer, and records the full set total', async () => {

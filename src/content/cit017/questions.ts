@@ -273,7 +273,7 @@ const principleDefinitionQuestions = securityPrinciples.map((principle, index) =
   `principle-definition-${principle.id}`,
   'principles',
   principle.name,
-  `Which security principle matches this definition? ${principle.definition}`,
+  principle.definition,
   nearbyOptions(principleNames, index),
   `${principle.name}: ${principle.definition}`,
 ));
@@ -298,7 +298,7 @@ const socialDefinitionQuestions = socialTechniques.map((technique, index) => mak
   `social-definition-${technique.id}`,
   'social',
   technique.name,
-  `Which social-engineering technique matches this description? ${technique.description}`,
+  technique.description,
   nearbyOptions(socialNames, index),
   `${technique.name}: ${technique.description}`,
 ));
@@ -307,7 +307,7 @@ const socialExampleQuestions = socialTechniques.map((technique, index) => makeQu
   `social-example-${technique.id}`,
   'social',
   technique.name,
-  `Which social-engineering technique is shown in this example? ${technique.example}`,
+  technique.example,
   nearbyOptions(socialNames, index),
   `This is ${technique.name}. ${technique.description}`,
 ));
@@ -317,7 +317,7 @@ const socialTacticQuestions = psychologicalTactics.map((tactic, index) => makeQu
   `social-tactic-${optionId(tactic.name)}`,
   'social',
   tactic.name,
-  `Which psychological tactic is shown in this example? ${tactic.example}`,
+  tactic.example,
   nearbyOptions(tacticNames, index),
   `${tactic.name} is the tactic used in this example.`,
 ));
@@ -342,6 +342,7 @@ export const cit017TestSets: TestSet[] = [
     topicId: 'principles',
     title: 'Principle Definitions',
     description: 'Identify each of the nine Security Principles from its definition.',
+    instruction: 'Identify the security principle described in each question.',
     questions: principleDefinitionQuestions,
   },
   {
@@ -356,6 +357,7 @@ export const cit017TestSets: TestSet[] = [
     topicId: 'social',
     title: 'Technique Definitions',
     description: 'Identify all 17 social-engineering techniques from their descriptions.',
+    instruction: 'Identify the social-engineering technique described in each question.',
     questions: socialDefinitionQuestions,
   },
   {
@@ -363,6 +365,7 @@ export const cit017TestSets: TestSet[] = [
     topicId: 'social',
     title: 'Technique Examples',
     description: 'Identify all 17 social-engineering techniques from their supplied examples.',
+    instruction: 'Identify the social-engineering technique shown in each example.',
     questions: socialExampleQuestions,
   },
   {
@@ -370,6 +373,7 @@ export const cit017TestSets: TestSet[] = [
     topicId: 'social',
     title: 'Psychological Tactics',
     description: 'Recognize all nine psychological tactics from their examples.',
+    instruction: 'Identify the psychological tactic shown in each example.',
     questions: socialTacticQuestions,
   },
 ];

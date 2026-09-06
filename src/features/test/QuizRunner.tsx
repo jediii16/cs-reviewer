@@ -1,5 +1,5 @@
-import { CheckCircle2, RotateCcw, XCircle } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { CheckCircle2, ListChecks, RotateCcw, XCircle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChoiceQuestion, QuizTopic } from '../../content/types';
 import { BappiMascot } from '../../components/BappiMascot';
 import { Button } from '../../components/Button';
@@ -9,6 +9,7 @@ import { getCorrectAnswerLabel, getMissedQuestions, isQuestionCorrect, scoreQuiz
 interface QuizRunnerProps {
   questions: ChoiceQuestion[];
   setTitle?: string;
+  instruction?: string;
   onComplete: (result: { correct: number; total: number }) => void;
   onExit?: () => void;
 }
@@ -25,7 +26,7 @@ const topicLabels: Record<QuizTopic, string> = {
   multiplexing: 'Multiplexing',
 };
 
-export function QuizRunner({ questions, setTitle, onComplete, onExit }: QuizRunnerProps) {
+export function QuizRunner({ questions, setTitle, instruction, onComplete, onExit }: QuizRunnerProps) {
   const runnerRef = useRef<HTMLElement>(null);
   const [activeQuestions, setActiveQuestions] = useState(questions);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -33,9 +34,17 @@ export function QuizRunner({ questions, setTitle, onComplete, onExit }: QuizRunn
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [showInstruction, setShowInstruction] = useState(() => Boolean(instruction));
 
   const question = activeQuestions[questionIndex];
   const score = scoreQuiz(activeQuestions, answers);
+
+  useEffect(() => {
+    if (!instruction) return undefined;
+
+    const timeoutId = window.setTimeout(() => setShowInstruction(false), 3200);
+    return () => window.clearTimeout(timeoutId);
+  }, [instruction]);
 
   function returnToQuestion() {
     window.requestAnimationFrame?.(() => {
@@ -126,6 +135,12 @@ export function QuizRunner({ questions, setTitle, onComplete, onExit }: QuizRunn
 
   return (
     <section ref={runnerRef} className="quiz-runner" aria-labelledby="question-heading">
+      {showInstruction && instruction ? (
+        <div className="quiz-instruction" role="status">
+          <ListChecks aria-hidden="true" />
+          <span>{instruction}</span>
+        </div>
+      ) : null}
       <div className="quiz-progress-row">
         <span className="quiz-meta">
           <span>{topicLabels[question.topicId] ?? question.topicId}</span>

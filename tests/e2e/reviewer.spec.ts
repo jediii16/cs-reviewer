@@ -67,10 +67,18 @@ test('practice page exposes complete focused multiple-choice sets', async ({ pag
   await page.getByRole('button', { name: /technique definitions.*17 questions/i }).click();
   await expect(page.getByText('Question 1 of 17')).toBeVisible();
   await expect(page.getByText('Technique Definitions')).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('Identify the social-engineering technique described in each question.');
+  await expect(page.getByRole('heading', { level: 2 })).not.toContainText('Which social-engineering technique');
   await expect(page.getByRole('textbox')).toHaveCount(0);
+
+  await page.getByRole('button', { name: /back to practice sets/i }).click();
+  await expect(page.getByRole('heading', { name: /choose a practice set/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/subjects\/cit017\/test$/);
+
+  await page.getByRole('button', { name: /technique definitions.*17 questions/i }).click();
   await page.getByRole('radio').first().check();
   await page.getByRole('button', { name: /submit answer/i }).click();
-  await expect(page.getByRole('status')).toBeVisible();
+  await expect(page.locator('.answer-feedback')).toBeVisible();
 });
 
 test('flashcards provide ungraded identification practice', async ({ page }) => {
@@ -155,6 +163,7 @@ test('a complete CIA set records its full result and can be reset', async ({ pag
   }
 
   await expect(page.getByLabel('Total score')).toContainText('/ 10');
+  await page.getByRole('button', { name: /back to practice sets/i }).click();
   await page.getByRole('link', { name: /cit\.017/i }).click();
   await expect(page.getByText(/latest score/i)).toBeVisible();
   page.once('dialog', (dialog) => dialog.accept());

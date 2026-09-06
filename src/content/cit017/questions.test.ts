@@ -62,6 +62,9 @@ describe('CIT.017 graded practice sets', () => {
     expect(set?.questions.map((question) => question.concept)).toEqual(
       securityPrinciples.map((principle) => principle.name),
     );
+    expect(set?.questions.map((question) => question.prompt)).toEqual(
+      securityPrinciples.map((principle) => principle.definition),
+    );
   });
 
   it('covers every exact threat category once with a scenario', () => {
@@ -79,6 +82,12 @@ describe('CIT.017 graded practice sets', () => {
 
     expect(definitions?.questions.map((question) => question.concept)).toEqual(names);
     expect(examples?.questions.map((question) => question.concept)).toEqual(names);
+    expect(definitions?.questions.map((question) => question.prompt)).toEqual(
+      socialTechniques.map((technique) => technique.description),
+    );
+    expect(examples?.questions.map((question) => question.prompt)).toEqual(
+      socialTechniques.map((technique) => technique.example),
+    );
   });
 
   it('covers every supplied psychological tactic example', () => {
@@ -86,6 +95,9 @@ describe('CIT.017 graded practice sets', () => {
 
     expect(set?.questions.map((question) => question.concept)).toEqual(
       psychologicalTactics.map((tactic) => tactic.name),
+    );
+    expect(set?.questions.map((question) => question.prompt)).toEqual(
+      psychologicalTactics.map((tactic) => tactic.example),
     );
   });
 });
