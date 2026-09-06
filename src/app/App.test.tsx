@@ -1,10 +1,71 @@
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 
 describe('App navigation', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('presents Bappi as the reviewer brand and home mascot', () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('link', { name: /bappi home/i })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /bappi, a cheerful kimbap mascot/i })).toBeVisible();
+  });
+
+  it('rolls landing-page Bappi and shows the startled face while upside down', () => {
+    vi.useFakeTimers();
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+
+    const bappi = screen.getByRole('button', { name: /play with bappi/i });
+    expect(bappi).toHaveAttribute('data-roll-step', '0');
+    expect(bappi).toHaveStyle('--bappi-roll: 0deg');
+    expect(screen.getByRole('img', { name: /bappi, a cheerful kimbap mascot/i })).toBeVisible();
+
+    act(() => vi.advanceTimersByTime(900));
+
+    expect(bappi).toHaveAttribute('data-roll-step', '1');
+    expect(bappi).toHaveStyle('--bappi-roll: 90deg');
+    expect(screen.getByRole('img', { name: /bappi is thinking/i })).toBeVisible();
+
+    act(() => vi.advanceTimersByTime(900));
+
+    expect(bappi).toHaveAttribute('data-roll-step', '2');
+    expect(bappi).toHaveStyle('--bappi-roll: 180deg');
+    expect(screen.getByRole('img', { name: /bappi looks startled/i })).toBeVisible();
+  });
+
+  it('keeps Bappi startled briefly after a tap', () => {
+    vi.useFakeTimers();
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+
+    const bappi = screen.getByRole('button', { name: /play with bappi/i });
+    fireEvent.click(bappi);
+
+    expect(screen.getByRole('img', { name: /bappi looks startled/i })).toBeVisible();
+
+    act(() => vi.advanceTimersByTime(1_200));
+
+    expect(screen.queryByRole('img', { name: /bappi looks startled/i })).not.toBeInTheDocument();
+  });
+
   it('opens CIT.017 and exposes the two primary study actions', async () => {
     const user = userEvent.setup();
 

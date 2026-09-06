@@ -1,6 +1,7 @@
 import { CheckCircle2, RotateCcw, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import type { QuizQuestion, QuizTopic } from '../../content/types';
+import { BappiMascot } from '../../components/BappiMascot';
 import { Button } from '../../components/Button';
 import { ProgressBar } from '../../components/ProgressBar';
 import { getCorrectAnswerLabel, getMissedQuestions, isQuestionCorrect, scoreQuiz, type QuizAnswers } from './quizEngine';
@@ -69,8 +70,18 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
     const missed = getMissedQuestions(activeQuestions, answers);
     return (
       <section className="quiz-results" aria-labelledby="results-heading">
-        <h2 id="results-heading">Review complete</h2>
-        <p className="results-summary">{score.percent >= 80 ? 'You have a solid grasp of this set.' : 'Use the breakdown below to choose what to review next.'}</p>
+        <div className="results-heading-lockup">
+          <div>
+            <h2 id="results-heading">Review complete</h2>
+            <p className="results-summary">{score.percent >= 80 ? 'You have a solid grasp of this set.' : 'Use the breakdown below to choose what to review next.'}</p>
+          </div>
+          <BappiMascot
+            className="results-mascot"
+            pose={score.percent >= 80 ? 'celebrating' : 'worried'}
+            alt={score.percent >= 80 ? 'Bappi is celebrating' : 'Bappi looks worried'}
+            eager
+          />
+        </div>
         <div className="score-lockup">
           <strong aria-label="Total score">{score.correct} / {score.total}</strong>
           <span>{score.percent}% correct</span>
@@ -116,6 +127,13 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
         <span>Question {questionIndex + 1} of {activeQuestions.length}</span>
       </div>
       <ProgressBar value={questionIndex + 1} max={activeQuestions.length} label="Test progress" />
+
+      <BappiMascot
+        className="quiz-state-mascot"
+        pose={submitted ? (selectedIsCorrect ? 'celebrating' : 'worried') : 'focused'}
+        alt={submitted ? (selectedIsCorrect ? 'Bappi is celebrating' : 'Bappi looks worried') : 'Bappi is focused'}
+        eager
+      />
 
       <h2 id="question-heading">{question.prompt}</h2>
 

@@ -1,6 +1,6 @@
-# CIT.017 Reviewer
+# Bappi — CIT.017 Reviewer
 
-A focused, browser-only reviewer for Foundations of Information Security. It includes source-faithful study notes, active recall, mixed-format tests (multiple choice, identification, true or false, definitions, and scenarios), an interactive McCumber Cube, and a modal focus timer.
+Bappi is a focused, browser-only reviewer for Foundations of Information Security, with a kimbap mascot that reacts throughout the study flow. It includes source-faithful study notes, active recall, mixed-format tests (multiple choice, identification, true or false, definitions, and scenarios), an interactive McCumber Cube, and a modal focus timer.
 
 The interface supports persistent light and dark themes. The focus timer includes 15-, 25-, and 45-minute sessions, a five-minute break, and optional Soft rain or Brown noise generated locally with the browser's Web Audio API. Ambient sound is Off by default and never starts automatically.
 

@@ -20,6 +20,12 @@ const topic: LessonTopic = {
 };
 
 describe('StudyLesson', () => {
+  it('uses Bappi to frame the active-recall prompt', () => {
+    render(<StudyLesson topic={topic} onComplete={vi.fn()} />);
+
+    expect(screen.getByRole('img', { name: /bappi is thinking/i })).toBeVisible();
+  });
+
   it('keeps an active-recall answer hidden until requested', async () => {
     const user = userEvent.setup();
     render(<StudyLesson topic={topic} onComplete={vi.fn()} />);

@@ -1,5 +1,6 @@
 import { ArrowLeft, BookOpen, ClipboardCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { BappiMascot } from '../../components/BappiMascot';
 import { cit017Subject } from '../../content/cit017';
 import { useProgress } from '../../features/progress/useProgress';
 
@@ -21,6 +22,11 @@ export function SubjectPage() {
           <h1 id="subject-title">CIT.017</h1>
           <p>Learn the concepts, then practice with scenarios, definitions, identification, multiple choice, and true or false.</p>
         </div>
+        <BappiMascot
+          className="subject-heading-mascot"
+          pose={progressPercent > 0 ? 'celebrating' : 'cool'}
+          alt={progressPercent > 0 ? 'Bappi cheers on your progress' : 'Bappi is ready to review'}
+        />
       </div>
 
       <section className="review-summary" aria-label="Saved review progress">

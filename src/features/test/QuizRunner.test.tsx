@@ -41,6 +41,12 @@ const trueFalseQuestion: TrueFalseQuestion = {
 };
 
 describe('QuizRunner', () => {
+  it('shows focused Bappi while a question is active', () => {
+    render(<QuizRunner questions={[sampleQuestion]} onComplete={vi.fn()} />);
+
+    expect(screen.getByRole('img', { name: /bappi is focused/i })).toBeVisible();
+  });
+
   it('requires submission, explains the answer, and reaches a scored result', async () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
@@ -56,7 +62,18 @@ describe('QuizRunner', () => {
     await user.click(screen.getByRole('button', { name: /see results/i }));
 
     expect(screen.getByLabelText('Total score')).toHaveTextContent('1 / 1');
+    expect(screen.getByRole('img', { name: /bappi is celebrating/i })).toBeVisible();
     expect(onComplete).toHaveBeenCalledWith({ correct: 1, total: 1 });
+  });
+
+  it('shows worried Bappi after an incorrect answer', async () => {
+    const user = userEvent.setup();
+    render(<QuizRunner questions={[sampleQuestion]} onComplete={vi.fn()} />);
+
+    await user.click(screen.getByRole('radio', { name: /integrity/i }));
+    await user.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    expect(screen.getByRole('img', { name: /bappi looks worried/i })).toBeVisible();
   });
 
   it('accepts a typed identification answer', async () => {

@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Brain, Layers3, ShieldCheck, UserRoundSearch } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { BappiMascot } from '../../components/BappiMascot';
 import { cit017Questions } from '../../content/cit017/questions';
 import { QuizRunner } from '../../features/test/QuizRunner';
 import { createQuiz, type QuizFilter } from '../../features/test/quizEngine';
@@ -38,9 +39,12 @@ export function TestPage() {
   return (
     <section className="test-page" aria-labelledby="test-title">
       <Link className="back-link" to="/subjects/cit017"><ArrowLeft aria-hidden="true" /> CIT.017</Link>
-      <header className="test-heading">
-        <h1 id="test-title">Choose a practice set</h1>
-        <p>Ten-question sets mixing multiple choice, identification, true or false, definitions, and scenarios—with feedback after every answer.</p>
+      <header className="test-heading test-heading-with-bappi">
+        <div>
+          <h1 id="test-title">Choose a practice set</h1>
+          <p>Ten-question sets mixing multiple choice, identification, true or false, definitions, and scenarios—with feedback after every answer.</p>
+        </div>
+        <BappiMascot className="test-heading-mascot" pose="cool" alt="Bappi is ready for practice" />
       </header>
 
       <div className="test-mode-list">

@@ -30,21 +30,46 @@ describe('reviewer progress storage', () => {
     }));
 
     expect(loadProgress()).toMatchObject({
-      version: 2,
+      version: 3,
       reviewedTopicIds: ['foundations'],
       recentResults: [{ completedAt: '2026-09-04T12:00:00.000Z', correct: 8, total: 10 }],
       timerPresetMinutes: 45,
       appearance: 'system',
-      ambientSound: 'off',
-      ambientVolume: 0.22,
+      musicTrackId: null,
+      musicLoopMode: 'playlist',
+      musicVolume: 0.28,
+      noiseTrackId: null,
+      noiseVolume: 0.22,
     });
   });
 
-  it('rejects invalid version 2 preferences', () => {
+  it('migrates version 2 sound volume into the independent noise layer', () => {
+    localStorage.setItem(progressStorageKey, JSON.stringify({
+      version: 2,
+      reviewedTopicIds: ['principles'],
+      recentResults: [],
+      timerPresetMinutes: 25,
+      appearance: 'dark',
+      ambientSound: 'brown-noise',
+      ambientVolume: 0.37,
+    }));
+
+    expect(loadProgress()).toMatchObject({
+      version: 3,
+      reviewedTopicIds: ['principles'],
+      appearance: 'dark',
+      musicTrackId: null,
+      musicLoopMode: 'playlist',
+      noiseTrackId: 'brown-noise',
+      noiseVolume: 0.37,
+    });
+  });
+
+  it('rejects invalid version 3 preferences', () => {
     localStorage.setItem(progressStorageKey, JSON.stringify({
       ...defaultProgress,
       appearance: 'sepia',
-      ambientVolume: 4,
+      noiseVolume: 4,
     }));
 
     expect(loadProgress()).toEqual(defaultProgress);

@@ -5,16 +5,19 @@ export interface TestResultSummary {
 }
 
 export type AppearancePreference = 'system' | 'light' | 'dark';
-export type AmbientSound = 'off' | 'rain' | 'brown-noise';
+export type MusicLoopMode = 'playlist' | 'track';
 
 export interface ReviewerProgress {
-  version: 2;
+  version: 3;
   reviewedTopicIds: string[];
   recentResults: TestResultSummary[];
   timerPresetMinutes: 15 | 25 | 45;
   appearance: AppearancePreference;
-  ambientSound: AmbientSound;
-  ambientVolume: number;
+  musicTrackId: string | null;
+  musicLoopMode: MusicLoopMode;
+  musicVolume: number;
+  noiseTrackId: string | null;
+  noiseVolume: number;
 }
 
 interface LegacyReviewerProgress {
@@ -24,16 +27,29 @@ interface LegacyReviewerProgress {
   timerPresetMinutes: 15 | 25 | 45;
 }
 
+interface VersionTwoReviewerProgress {
+  version: 2;
+  reviewedTopicIds: string[];
+  recentResults: TestResultSummary[];
+  timerPresetMinutes: 15 | 25 | 45;
+  appearance: AppearancePreference;
+  ambientSound: 'off' | 'rain' | 'brown-noise';
+  ambientVolume: number;
+}
+
 export const progressStorageKey = 'cit017-reviewer-progress';
 
 export const defaultProgress: ReviewerProgress = {
-  version: 2,
+  version: 3,
   reviewedTopicIds: [],
   recentResults: [],
   timerPresetMinutes: 25,
   appearance: 'system',
-  ambientSound: 'off',
-  ambientVolume: 0.22,
+  musicTrackId: null,
+  musicLoopMode: 'playlist',
+  musicVolume: 0.28,
+  noiseTrackId: null,
+  noiseVolume: 0.22,
 };
 
 function getDefaultStorage(): Storage | undefined {
@@ -64,17 +80,31 @@ function isLegacyProgress(value: unknown): value is LegacyReviewerProgress {
   return item.version === 1 && hasValidStudyData(item);
 }
 
-function isProgress(value: unknown): value is ReviewerProgress {
+function isVersionTwoProgress(value: unknown): value is VersionTwoReviewerProgress {
   if (!value || typeof value !== 'object') return false;
   const item = value as Record<string, unknown>;
   return item.version === 2
     && hasValidStudyData(item)
     && ['system', 'light', 'dark'].includes(item.appearance as string)
     && ['off', 'rain', 'brown-noise'].includes(item.ambientSound as string)
-    && typeof item.ambientVolume === 'number'
-    && Number.isFinite(item.ambientVolume)
-    && item.ambientVolume >= 0
-    && item.ambientVolume <= 1;
+    && isVolume(item.ambientVolume);
+}
+
+function isVolume(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
+function isProgress(value: unknown): value is ReviewerProgress {
+  if (!value || typeof value !== 'object') return false;
+  const item = value as Record<string, unknown>;
+  return item.version === 3
+    && hasValidStudyData(item)
+    && ['system', 'light', 'dark'].includes(item.appearance as string)
+    && (item.musicTrackId === null || typeof item.musicTrackId === 'string')
+    && ['playlist', 'track'].includes(item.musicLoopMode as string)
+    && isVolume(item.musicVolume)
+    && (item.noiseTrackId === null || typeof item.noiseTrackId === 'string')
+    && isVolume(item.noiseVolume);
 }
 
 function cloneProgress(progress: ReviewerProgress): ReviewerProgress {
@@ -88,12 +118,30 @@ function cloneProgress(progress: ReviewerProgress): ReviewerProgress {
 function migrateVersionOne(progress: LegacyReviewerProgress): ReviewerProgress {
   return {
     ...progress,
-    version: 2,
+    version: 3,
     reviewedTopicIds: [...progress.reviewedTopicIds],
     recentResults: [...progress.recentResults],
     appearance: 'system',
-    ambientSound: 'off',
-    ambientVolume: 0.22,
+    musicTrackId: null,
+    musicLoopMode: 'playlist',
+    musicVolume: 0.28,
+    noiseTrackId: null,
+    noiseVolume: 0.22,
+  };
+}
+
+function migrateVersionTwo(progress: VersionTwoReviewerProgress): ReviewerProgress {
+  return {
+    version: 3,
+    reviewedTopicIds: [...progress.reviewedTopicIds],
+    recentResults: [...progress.recentResults],
+    timerPresetMinutes: progress.timerPresetMinutes,
+    appearance: progress.appearance,
+    musicTrackId: null,
+    musicLoopMode: 'playlist',
+    musicVolume: 0.28,
+    noiseTrackId: progress.ambientSound === 'off' ? null : progress.ambientSound,
+    noiseVolume: progress.ambientVolume,
   };
 }
 
@@ -104,6 +152,7 @@ export function loadProgress(storage = getDefaultStorage()): ReviewerProgress {
     if (!raw) return { ...defaultProgress };
     const parsed: unknown = JSON.parse(raw);
     if (isProgress(parsed)) return cloneProgress(parsed);
+    if (isVersionTwoProgress(parsed)) return migrateVersionTwo(parsed);
     if (isLegacyProgress(parsed)) return migrateVersionOne(parsed);
     return cloneProgress(defaultProgress);
   } catch {

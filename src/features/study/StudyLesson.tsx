@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, Eye, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import type { LessonTopic } from '../../content/types';
+import { BappiMascot } from '../../components/BappiMascot';
 import { Button } from '../../components/Button';
 import { ProgressBar } from '../../components/ProgressBar';
 import { McCumberCube } from './McCumberCube';
@@ -74,9 +75,12 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
       {section.id === 'mccumber-cube' ? <McCumberCube /> : null}
 
       <section className="recall-panel" aria-labelledby="recall-title">
-        <div>
-          <span>Active recall</span>
-          <h3 id="recall-title">{section.recallPrompt}</h3>
+        <div className="recall-prompt">
+          <BappiMascot className="recall-mascot" pose="thinking" alt="Bappi is thinking" />
+          <div>
+            <span>Active recall</span>
+            <h3 id="recall-title">{section.recallPrompt}</h3>
+          </div>
         </div>
         {revealed ? (
           <div className="recall-answer">

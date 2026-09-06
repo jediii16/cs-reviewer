@@ -5,8 +5,8 @@ import {
   resetProgress,
   saveProgress,
   type ReviewerProgress,
-  type AmbientSound,
   type AppearancePreference,
+  type MusicLoopMode,
   type TestResultSummary,
 } from './storage';
 
@@ -47,12 +47,24 @@ export function useProgress() {
     emit({ ...currentProgress, appearance });
   }, []);
 
-  const setAmbientSound = useCallback((ambientSound: AmbientSound) => {
-    emit({ ...currentProgress, ambientSound });
+  const setMusicTrackId = useCallback((musicTrackId: string | null) => {
+    emit({ ...currentProgress, musicTrackId });
   }, []);
 
-  const setAmbientVolume = useCallback((ambientVolume: number) => {
-    emit({ ...currentProgress, ambientVolume: Math.min(1, Math.max(0, ambientVolume)) });
+  const setMusicLoopMode = useCallback((musicLoopMode: MusicLoopMode) => {
+    emit({ ...currentProgress, musicLoopMode });
+  }, []);
+
+  const setMusicVolume = useCallback((musicVolume: number) => {
+    emit({ ...currentProgress, musicVolume: Math.min(1, Math.max(0, musicVolume)) });
+  }, []);
+
+  const setNoiseTrackId = useCallback((noiseTrackId: string | null) => {
+    emit({ ...currentProgress, noiseTrackId });
+  }, []);
+
+  const setNoiseVolume = useCallback((noiseVolume: number) => {
+    emit({ ...currentProgress, noiseVolume: Math.min(1, Math.max(0, noiseVolume)) });
   }, []);
 
   const reset = useCallback(() => {
@@ -66,8 +78,11 @@ export function useProgress() {
     recordResult,
     setTimerPreset,
     setAppearance,
-    setAmbientSound,
-    setAmbientVolume,
+    setMusicTrackId,
+    setMusicLoopMode,
+    setMusicVolume,
+    setNoiseTrackId,
+    setNoiseVolume,
     reset,
   };
 }
