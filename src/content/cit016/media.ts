@@ -1,0 +1,82 @@
+import type { LessonTopic } from '../types';
+
+export const transmissionMediaTopic: LessonTopic = {
+  id: 'transmission-media',
+  title: 'Transmission Media',
+  description: 'Guided and unguided paths used to carry data.',
+  sections: [
+    {
+      id: 'guided-and-unguided',
+      title: 'Guided and Unguided Media',
+      summary: 'A transmission medium is the path or channel between transmitter and receiver.',
+      bullets: [
+        'Guided media is wired or bounded: physical links confine signals to a narrow path.',
+        'Unguided media is wireless or unbounded: electromagnetic signals travel without a physical medium.',
+      ],
+      recallPrompt: 'What separates guided from unguided transmission media?',
+      recallAnswer: 'Guided media uses a physical path; unguided media transmits electromagnetic signals without one.',
+    },
+    {
+      id: 'twisted-pair',
+      title: 'Twisted-Pair Cable',
+      summary: 'Twisted-pair cable consists of pairs of insulated copper wires twisted together.',
+      examples: ['Telephone networks', 'Local area networks (LANs)'],
+      recallPrompt: 'Which guided medium uses insulated copper-wire pairs twisted together?',
+      recallAnswer: 'Twisted-pair cable.',
+    },
+    {
+      id: 'coaxial-cable',
+      title: 'Coaxial Cable',
+      summary: 'Coaxial cable has a central conductor, insulating layer, metallic shield, and outer insulating layer.',
+      examples: ['Cable television', 'Broadband internet'],
+      recallPrompt: 'Which guided medium surrounds a central conductor with insulation and a metallic shield?',
+      recallAnswer: 'Coaxial cable.',
+    },
+    {
+      id: 'fiber-optic-cable',
+      title: 'Fiber-Optic Cable',
+      summary: 'Fiber-optic cable transmits data as light through glass or plastic fibers.',
+      examples: ['High-speed data', 'Long-distance communication'],
+      recallPrompt: 'Which guided medium carries data using light?',
+      recallAnswer: 'Fiber-optic cable.',
+    },
+    {
+      id: 'stripline',
+      title: 'Stripline',
+      summary: 'Stripline carries high-frequency waves through a conductor placed between two ground-plane layers, commonly shorted for EMI immunity.',
+      recallPrompt: 'Where is the conductor positioned in stripline?',
+      recallAnswer: 'Between two ground-plane layers.',
+    },
+    {
+      id: 'microstripline',
+      title: 'Microstripline',
+      summary: 'Microstripline separates its conducting material from a ground plane with a dielectric layer.',
+      recallPrompt: 'What separates the conductor from the ground plane in microstripline?',
+      recallAnswer: 'A dielectric layer.',
+    },
+    {
+      id: 'radio-waves',
+      title: 'Radio Waves',
+      summary: 'Radio waves support broad-area wireless communication in the supplied range of 3 kHz to 1 GHz.',
+      examples: ['Wi-Fi', 'Bluetooth', 'Radio broadcasting'],
+      recallPrompt: 'Which unguided medium spans 3 kHz to 1 GHz in the supplied material?',
+      recallAnswer: 'Radio waves.',
+    },
+    {
+      id: 'microwaves',
+      title: 'Microwaves',
+      summary: 'Microwaves operate from 1 GHz to 300 GHz and are used for line-of-sight point-to-point communication.',
+      examples: ['Satellite communication'],
+      recallPrompt: 'Which unguided medium normally requires line of sight?',
+      recallAnswer: 'Microwaves.',
+    },
+    {
+      id: 'infrared',
+      title: 'Infrared',
+      summary: 'Infrared operates from 300 GHz to 400 THz, just below visible light, and supports short-range communication.',
+      examples: ['Remote controls', 'Short-range wireless data links'],
+      recallPrompt: 'Which unguided medium is used for short-range links just below visible light?',
+      recallAnswer: 'Infrared.',
+    },
+  ],
+};

@@ -1,18 +1,23 @@
 import { ArrowLeft, ArrowRight, GalleryHorizontalEnd } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { BappiMascot } from '../../components/BappiMascot';
-import { cit017FlashcardDecks } from '../../content/cit017/flashcards';
+import { getSubject, getSubjectFlashcards } from '../../content/subjects';
 import type { FlashcardDeck as FlashcardDeckModel } from '../../content/types';
 import { FlashcardDeck } from '../../features/flashcards/FlashcardDeck';
 
 export function FlashcardsPage() {
+  const { subjectId } = useParams();
+  const subject = getSubject(subjectId);
+  const decks = getSubjectFlashcards(subjectId);
   const [activeDeck, setActiveDeck] = useState<FlashcardDeckModel | null>(null);
+
+  if (!subject || !decks) return <Navigate to="/" replace />;
 
   if (activeDeck) {
     return (
       <section className="flashcards-page flashcards-page-running">
-        <Link className="back-link" to="/subjects/cit017"><ArrowLeft aria-hidden="true" /> CIT.017</Link>
+        <Link className="back-link" to={`/subjects/${subject.id}`}><ArrowLeft aria-hidden="true" /> {subject.code}</Link>
         <FlashcardDeck deck={activeDeck} onExit={() => setActiveDeck(null)} />
       </section>
     );
@@ -20,7 +25,7 @@ export function FlashcardsPage() {
 
   return (
     <section className="flashcards-page" aria-labelledby="flashcards-title">
-      <Link className="back-link" to="/subjects/cit017"><ArrowLeft aria-hidden="true" /> CIT.017</Link>
+      <Link className="back-link" to={`/subjects/${subject.id}`}><ArrowLeft aria-hidden="true" /> {subject.code}</Link>
       <header className="test-heading test-heading-with-bappi">
         <div>
           <p className="section-label">Identification, without grading</p>
@@ -31,7 +36,7 @@ export function FlashcardsPage() {
       </header>
 
       <div className="flashcard-deck-list">
-        {cit017FlashcardDecks.map((deck) => (
+        {decks.map((deck) => (
           <button type="button" key={deck.id} onClick={() => setActiveDeck(deck)}>
             <span className="test-mode-icon" aria-hidden="true"><GalleryHorizontalEnd /></span>
             <span>

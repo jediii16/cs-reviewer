@@ -1,19 +1,24 @@
-import { ArrowLeft, ArrowRight, Brain, Layers3, MessagesSquare, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Brain, Layers3, MessagesSquare, Network, RadioTower, ScanSearch, ShieldCheck, Split, Waves } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { BappiMascot } from '../../components/BappiMascot';
-import { cit017TestSets, testSetTopicLabels } from '../../content/cit017/questions';
-import type { ChoiceQuestion, QuizTopic, TestSet } from '../../content/types';
+import { getSubject, getSubjectTests } from '../../content/subjects';
+import type { ChoiceQuestion, TestSet } from '../../content/types';
 import { useProgress } from '../../features/progress/useProgress';
 import { QuizRunner } from '../../features/test/QuizRunner';
 import { createQuiz } from '../../features/test/quizEngine';
 
-const testGroups: Array<{ topicId: QuizTopic; icon: typeof Brain }> = [
-  { topicId: 'cia', icon: Layers3 },
-  { topicId: 'principles', icon: Brain },
-  { topicId: 'threats', icon: ShieldCheck },
-  { topicId: 'social', icon: MessagesSquare },
-];
+const topicIcons: Record<string, typeof Brain> = {
+  cia: Layers3,
+  principles: Brain,
+  threats: ShieldCheck,
+  social: MessagesSquare,
+  'digital-analog': Waves,
+  'error-control': ScanSearch,
+  'tcp-ip': Network,
+  'transmission-media': RadioTower,
+  multiplexing: Split,
+};
 
 interface ActiveTest {
   title: string;
@@ -34,8 +39,15 @@ function SetRow({ set, onStart }: { set: TestSet; onStart: (set: TestSet) => voi
 }
 
 export function TestPage() {
+  const { subjectId } = useParams();
+  const subject = getSubject(subjectId);
+  const testContent = getSubjectTests(subjectId);
   const [activeTest, setActiveTest] = useState<ActiveTest | null>(null);
   const { recordResult } = useProgress();
+
+  if (!subject || !testContent) return <Navigate to="/" replace />;
+
+  const testTopicIds = Array.from(new Set(testContent.sets.map((set) => set.topicId)));
 
   function start(set: TestSet) {
     setActiveTest({ title: set.title, questions: createQuiz(set.questions) });
@@ -44,11 +56,15 @@ export function TestPage() {
   if (activeTest) {
     return (
       <section className="test-page test-page-running">
-        <Link className="back-link" to="/subjects/cit017"><ArrowLeft aria-hidden="true" /> CIT.017</Link>
+        <Link className="back-link" to={`/subjects/${subject.id}`}><ArrowLeft aria-hidden="true" /> {subject.code}</Link>
         <QuizRunner
           questions={activeTest.questions}
           setTitle={activeTest.title}
-          onComplete={(result) => recordResult({ ...result, completedAt: new Date().toISOString() })}
+          onComplete={(result) => recordResult({
+            ...result,
+            subjectId: subject.id,
+            completedAt: new Date().toISOString(),
+          })}
           onExit={() => setActiveTest(null)}
         />
       </section>
@@ -57,7 +73,7 @@ export function TestPage() {
 
   return (
     <section className="test-page" aria-labelledby="test-title">
-      <Link className="back-link" to="/subjects/cit017"><ArrowLeft aria-hidden="true" /> CIT.017</Link>
+      <Link className="back-link" to={`/subjects/${subject.id}`}><ArrowLeft aria-hidden="true" /> {subject.code}</Link>
       <header className="test-heading test-heading-with-bappi">
         <div>
           <h1 id="test-title">Choose a practice set</h1>
@@ -67,13 +83,14 @@ export function TestPage() {
       </header>
 
       <div className="test-groups">
-        {testGroups.map(({ topicId, icon: Icon }) => {
-          const sets = cit017TestSets.filter((set) => set.topicId === topicId);
+        {testTopicIds.map((topicId) => {
+          const Icon = topicIcons[topicId] ?? Brain;
+          const sets = testContent.sets.filter((set) => set.topicId === topicId);
           return (
             <section className="test-group" key={topicId} aria-labelledby={`test-group-${topicId}`}>
               <header>
                 <span className="test-mode-icon" aria-hidden="true"><Icon /></span>
-                <h2 id={`test-group-${topicId}`}>{testSetTopicLabels[topicId]}</h2>
+                <h2 id={`test-group-${topicId}`}>{testContent.labels[topicId]}</h2>
                 <span>{sets.reduce((total, set) => total + set.questions.length, 0)} total</span>
               </header>
               <div className="test-mode-list">

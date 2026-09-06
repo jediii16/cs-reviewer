@@ -33,7 +33,7 @@ export interface SubjectManifest {
   mccumber: McCumberDimensions;
 }
 
-export type QuizTopic = 'threats' | 'cia' | 'principles' | 'social';
+export type QuizTopic = string;
 
 export interface QuestionOption {
   id: string;

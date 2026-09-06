@@ -11,10 +11,10 @@ export function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
-        <Route path="subjects/cit017" element={<SubjectPage />} />
-        <Route path="subjects/cit017/study" element={<StudyPage />} />
-        <Route path="subjects/cit017/flashcards" element={<FlashcardsPage />} />
-        <Route path="subjects/cit017/test" element={<TestPage />} />
+      <Route path="subjects/:subjectId" element={<SubjectPage />} />
+      <Route path="subjects/:subjectId/study" element={<StudyPage />} />
+      <Route path="subjects/:subjectId/flashcards" element={<FlashcardsPage />} />
+      <Route path="subjects/:subjectId/test" element={<TestPage />} />
       </Route>
     </Routes>
   );

@@ -1,16 +1,22 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { TestPage } from './TestPage';
 
 describe('TestPage', () => {
-  it('groups every focused test set and shows its full question count', () => {
-    render(
-      <MemoryRouter>
-        <TestPage />
+  function renderCit017TestPage() {
+    return render(
+      <MemoryRouter initialEntries={['/subjects/cit017/test']}>
+        <Routes>
+          <Route path="subjects/:subjectId/test" element={<TestPage />} />
+        </Routes>
       </MemoryRouter>,
     );
+  }
+
+  it('groups every focused test set and shows its full question count', () => {
+    renderCit017TestPage();
 
     for (const heading of [
       'Foundations of Information Security',
@@ -32,11 +38,7 @@ describe('TestPage', () => {
 
   it('starts every question in the chosen set', async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <TestPage />
-      </MemoryRouter>,
-    );
+    renderCit017TestPage();
 
     await user.click(screen.getByRole('button', { name: /technique definitions.*17 questions/i }));
 
