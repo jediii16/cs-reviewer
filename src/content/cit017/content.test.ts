@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cit017Subject } from './index';
-import { principleScenarios, securityPrinciples } from './principles';
+import { securityPrinciples } from './principles';
 import { foundationsTopic } from './foundations';
 import { psychologicalTactics, socialTechniques } from './social';
 import { threatCategories } from './threats';
@@ -36,12 +36,17 @@ describe('CIT.017 course content', () => {
     ]);
   });
 
-  it('preserves every applicable principle for the three supplied scenarios', () => {
-    expect(principleScenarios.map((scenario) => scenario.applicablePrinciples)).toEqual([
-      ['Principle of Complete Mediation', 'Separation of Duties', 'Least Privilege', 'Security by Design'],
-      ['Separation of Duties', 'Least Privilege', 'Principle of Complete Mediation', 'Defense in Depth'],
-      ['Principle of Complete Mediation', 'Separation of Duties', 'Least Privilege', 'Security by Design'],
-    ]);
+  it('keeps Security Principles to the nine supplied principles without case studies', () => {
+    const principles = cit017Subject.topics.find((topic) => topic.id === 'security-principles');
+
+    expect(principles?.sections.map((section) => section.id)).toEqual(
+      securityPrinciples.map((principle) => principle.id),
+    );
+    expect(principles?.sections.map((section) => section.id)).not.toEqual(expect.arrayContaining([
+      'payroll-audit',
+      'procurement-control',
+      'exam-records',
+    ]));
   });
 
   it('labels the supplied accounting outcomes as benefits', () => {

@@ -67,33 +67,6 @@ export const securityPrinciples: SecurityPrinciple[] = [
   },
 ];
 
-export const principleScenarios = [
-  {
-    id: 'payroll-audit',
-    title: 'Municipality payroll audit',
-    scenario: 'A municipality uses an online payroll system. Salary adjustments, overtime approvals, and payroll releases are recorded, but audit reports do not show who approved a change, which workstation was used, or when it happened. Auditors cannot reconstruct the sequence of events.',
-    answer: 'Principle of Complete Mediation',
-    applicablePrinciples: ['Principle of Complete Mediation', 'Separation of Duties', 'Least Privilege', 'Security by Design'],
-    implementation: 'Record details for every salary adjustment, overtime approval, and payroll correction, and re-check authorization whenever a sensitive payroll record is accessed or modified.',
-  },
-  {
-    id: 'procurement-control',
-    title: 'Government procurement control',
-    scenario: 'A senior procurement officer can initiate purchase requests, approve supplier selection, certify delivery, and authorize payment. Auditors identify the concentration of responsibilities as a risk.',
-    answer: 'Separation of Duties',
-    applicablePrinciples: ['Separation of Duties', 'Least Privilege', 'Principle of Complete Mediation', 'Defense in Depth'],
-    implementation: 'Use separate employees to create requests, approve suppliers, certify deliveries, and authorize payments.',
-  },
-  {
-    id: 'exam-records',
-    title: 'University examination records',
-    scenario: 'An examination system stores final scores but does not preserve previous versions after changes. Administrators cannot determine whether differences came from review-stage changes or data-entry errors.',
-    answer: 'Principle of Complete Mediation',
-    applicablePrinciples: ['Principle of Complete Mediation', 'Separation of Duties', 'Least Privilege', 'Security by Design'],
-    implementation: 'Record original and modified scores, who made each change, who approved it, and require authorization before a submitted grade can be changed.',
-  },
-] as const;
-
 export const principlesTopic: LessonTopic = {
   id: 'security-principles',
   title: 'Security Principles',
@@ -107,15 +80,6 @@ export const principlesTopic: LessonTopic = {
       examples: [principle.example],
       recallPrompt: `What does ${principle.name} require?`,
       recallAnswer: principle.definition,
-    })),
-    ...principleScenarios.map((scenario) => ({
-      id: scenario.id,
-      title: scenario.title,
-      summary: scenario.scenario,
-      applicablePrinciples: [...scenario.applicablePrinciples],
-      examples: [scenario.implementation],
-      recallPrompt: 'Which security principle best applies?',
-      recallAnswer: scenario.answer,
     })),
   ],
 };

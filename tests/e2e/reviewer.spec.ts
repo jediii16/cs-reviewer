@@ -1,45 +1,102 @@
 import { expect, test } from '@playwright/test';
 
-test('student can study CIT.017 and answer a mixed-format question', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('link', { name: /cit\.017/i }).click();
-  await page.getByRole('link', { name: /^study$/i }).click();
+test('active recall reveals without resizing and lesson navigation returns to its anchor', async ({ page }) => {
+  await page.goto('/subjects/cit017/study');
 
   await expect(page.getByRole('heading', { name: 'CIA Triad', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: /reveal answer/i }).click();
-  await expect(page.getByText('Confidentiality, Integrity, and Availability.')).toBeVisible();
+  const recall = page.locator('.recall-panel');
+  const answer = page.locator('.recall-answer');
+  await expect(page.getByText('Confidentiality, Integrity, and Availability.')).toBeAttached();
+  const before = await recall.boundingBox();
+  await expect(answer).toHaveCSS('opacity', '0');
 
-  await page.getByRole('link', { name: /cit\.017/i }).click();
-  await page.getByRole('link', { name: /^test$/i }).click();
-  await page.getByRole('button', { name: /foundations & cia/i }).click();
-  await expect(page.locator('.quiz-meta strong')).toHaveText(/multiple choice|identification|true or false/i);
-  const typedAnswer = page.getByRole('textbox', { name: /your answer/i });
-  if (await typedAnswer.count()) {
-    await typedAnswer.fill('Confidentiality');
-  } else {
-    await page.getByRole('radio').first().check();
-  }
+  await recall.hover();
+  await expect(answer).toHaveCSS('opacity', '1');
+  const after = await recall.boundingBox();
+  expect(after?.height).toBe(before?.height);
+
+  await page.locator('.lesson-footer').scrollIntoViewIfNeeded();
+  await page.getByRole('button', { name: /^next$/i }).click();
+  await expect(page.getByRole('heading', { name: 'Confidentiality', exact: true })).toBeVisible();
+  await expect(page.getByText('2 of 9')).toBeVisible();
+
+  await expect.poll(async () => page.locator('.lesson-anchor').evaluate((element) => (
+    Math.round(element.getBoundingClientRect().top)
+  ))).toBeGreaterThanOrEqual(64);
+  expect(await page.locator('.lesson-anchor').evaluate((element) => element.getBoundingClientRect().top))
+    .toBeLessThan(150);
+});
+
+test('Security Principles study contains only the nine supplied principles', async ({ page }) => {
+  await page.goto('/subjects/cit017/study');
+  await page.getByRole('button', { name: /security principles/i }).click();
+
+  await expect(page.getByText('1 of 9')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Least Privilege', exact: true })).toBeVisible();
+  await expect(page.getByText('Municipality payroll audit')).toHaveCount(0);
+  await expect(page.getByText('Government procurement control')).toHaveCount(0);
+  await expect(page.getByText('University examination records')).toHaveCount(0);
+});
+
+test('practice page exposes complete focused multiple-choice sets', async ({ page }) => {
+  await page.goto('/subjects/cit017/test');
+
+  await expect(page.getByRole('button', { name: /cia scenario practice.*10 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /foundations concepts.*24 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /principle definitions.*9 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /threat scenarios.*12 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /technique definitions.*17 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /technique examples.*17 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /psychological tactics.*9 questions/i })).toBeVisible();
+
+  await page.getByRole('button', { name: /technique definitions.*17 questions/i }).click();
+  await expect(page.getByText('Question 1 of 17')).toBeVisible();
+  await expect(page.getByText('Technique Definitions')).toBeVisible();
+  await expect(page.getByRole('textbox')).toHaveCount(0);
+  await page.getByRole('radio').first().check();
   await page.getByRole('button', { name: /submit answer/i }).click();
-
   await expect(page.getByRole('status')).toBeVisible();
 });
 
-test('quiz stays inside a 300px-wide browser panel', async ({ page }) => {
+test('flashcards provide ungraded identification practice', async ({ page }) => {
+  await page.goto('/subjects/cit017');
+  await page.getByRole('link', { name: /^flashcards$/i }).click();
+
+  await expect(page.getByRole('button', { name: /threat categories.*12 cards/i })).toBeVisible();
+  await page.getByRole('button', { name: /threat categories.*12 cards/i }).click();
+  await expect(page.getByText('Card 1 of 12')).toBeVisible();
+
+  const frontText = await page.locator('.flashcard-prompt').textContent();
+  await page.getByRole('button', { name: /reveal answer/i }).click();
+  await expect(page.locator('.flashcard-answer')).toBeVisible();
+  await expect(page.getByText(/correct|score/i)).toHaveCount(0);
+
+  await page.getByRole('button', { name: /next card/i }).click();
+  await expect(page.getByText('Card 2 of 12')).toBeVisible();
+  await expect(page.locator('.flashcard-prompt')).not.toHaveText(frontText ?? '');
+  await page.getByRole('button', { name: /return to decks/i }).click();
+  await expect(page.getByRole('heading', { name: /choose a flashcard deck/i })).toBeVisible();
+});
+
+test('review modes stay inside a 300px-wide browser panel', async ({ page }) => {
   await page.setViewportSize({ width: 300, height: 720 });
   await page.goto('/subjects/cit017/test');
-  await page.getByRole('button', { name: /foundations & cia/i }).click();
+  await page.getByRole('button', { name: /cia scenario practice.*10 questions/i }).click();
 
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-  expect(overflow).toBeLessThanOrEqual(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+
+  await page.goto('/subjects/cit017/flashcards');
+  await page.getByRole('button', { name: /foundations.*17 cards/i }).click();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+  await page.getByRole('button', { name: /reveal answer/i }).click();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 
   await page.goto('/subjects/cit017');
   await page.getByRole('button', { name: /open focus timer/i }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   const breakSize = await page.getByRole('button', { name: /^break$/i }).boundingBox();
   expect(breakSize?.height).toBeGreaterThanOrEqual(44);
-
-  const dialogOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-  expect(dialogOverflow).toBeLessThanOrEqual(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 
   await page.getByRole('button', { name: /close focus timer/i }).click();
   await page.getByRole('button', { name: /open blurting notes/i }).click();
@@ -53,11 +110,7 @@ test('quiz stays inside a 300px-wide browser panel', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const brandLabel = await page.locator('.brand > span:last-child').boundingBox();
   const headerActions = await page.locator('.header-actions').boundingBox();
-  expect(
-    brandLabel === null
-      || headerActions === null
-      || brandLabel.x + brandLabel.width <= headerActions.x,
-  ).toBe(true);
+  expect(brandLabel === null || headerActions === null || brandLabel.x + brandLabel.width <= headerActions.x).toBe(true);
 });
 
 test('theme and focus setup persist across routes', async ({ page }) => {
@@ -75,27 +128,18 @@ test('theme and focus setup persist across routes', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
 
-test('mixed review reaches results, retry missed, recent score, and reset', async ({ page }) => {
+test('a complete CIA set records its full result and can be reset', async ({ page }) => {
   await page.goto('/subjects/cit017/test');
-  await page.getByRole('button', { name: /mixed review/i }).click();
-  const formats = new Set<string>();
+  await page.getByRole('button', { name: /cia scenario practice.*10 questions/i }).click();
 
   for (let index = 0; index < 10; index += 1) {
-    formats.add((await page.locator('.quiz-meta strong').textContent()) ?? '');
-    const typedAnswer = page.getByRole('textbox', { name: /your answer/i });
-    if (await typedAnswer.count()) await typedAnswer.fill('definitely incorrect');
-    else await page.getByRole('radio').first().check();
+    await page.getByRole('radio').first().check();
     await page.getByRole('button', { name: /submit answer/i }).click();
     await expect(page.getByRole('status')).toBeVisible();
     await page.getByRole('button', { name: index === 9 ? /see results/i : /next question/i }).click();
   }
 
-  expect(formats).toEqual(new Set(['Multiple choice', 'Identification', 'True or false']));
   await expect(page.getByLabel('Total score')).toContainText('/ 10');
-  await expect(page.locator('.topic-breakdown > div')).toHaveCount(4);
-  await page.getByRole('button', { name: /retry missed/i }).click();
-  await expect(page.getByText(/question 1 of/i)).toBeVisible();
-
   await page.getByRole('link', { name: /cit\.017/i }).click();
   await expect(page.getByText(/latest score/i)).toBeVisible();
   page.once('dialog', (dialog) => dialog.accept());

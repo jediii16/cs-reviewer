@@ -66,7 +66,7 @@ describe('App navigation', () => {
     expect(screen.queryByRole('img', { name: /bappi looks startled/i })).not.toBeInTheDocument();
   });
 
-  it('opens CIT.017 and exposes the two primary study actions', async () => {
+  it('opens CIT.017 and exposes all three review paths', async () => {
     const user = userEvent.setup();
 
     render(
@@ -81,6 +81,10 @@ describe('App navigation', () => {
     expect(screen.getByRole('link', { name: /^study$/i })).toHaveAttribute(
       'href',
       '/subjects/cit017/study',
+    );
+    expect(screen.getByRole('link', { name: /^flashcards$/i })).toHaveAttribute(
+      'href',
+      '/subjects/cit017/flashcards',
     );
     expect(screen.getByRole('link', { name: /^test$/i })).toHaveAttribute(
       'href',

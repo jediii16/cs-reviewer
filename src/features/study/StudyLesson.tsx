@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight, Eye, RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRef, useState } from 'react';
 import type { LessonTopic } from '../../content/types';
 import { BappiMascot } from '../../components/BappiMascot';
 import { Button } from '../../components/Button';
@@ -13,24 +13,25 @@ interface StudyLessonProps {
 }
 
 export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLessonProps) {
+  const lessonAnchorRef = useRef<HTMLDivElement>(null);
   const [sectionIndex, setSectionIndex] = useState(0);
-  const [revealed, setRevealed] = useState(false);
   const section = topic.sections[sectionIndex];
   const isLast = sectionIndex === topic.sections.length - 1;
 
   function moveTo(nextIndex: number) {
     setSectionIndex(nextIndex);
-    setRevealed(false);
-    window.scrollTo?.({ top: 0, behavior: 'smooth' });
+    lessonAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   return (
     <article className="lesson">
-      <div className="lesson-kicker">
-        <span>{topic.title}</span>
-        <span>{sectionIndex + 1} of {topic.sections.length}</span>
+      <div ref={lessonAnchorRef} className="lesson-anchor">
+        <div className="lesson-kicker">
+          <span>{topic.title}</span>
+          <span>{sectionIndex + 1} of {topic.sections.length}</span>
+        </div>
+        <ProgressBar value={sectionIndex + 1} max={topic.sections.length} label="Lesson progress" />
       </div>
-      <ProgressBar value={sectionIndex + 1} max={topic.sections.length} label="Lesson progress" />
 
       <header className="lesson-header">
         <h2>{section.title}</h2>
@@ -74,22 +75,19 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
 
       {section.id === 'mccumber-cube' ? <McCumberCube /> : null}
 
-      <section className="recall-panel" aria-labelledby="recall-title">
-        <div className="recall-prompt">
+      <section className="recall-panel" aria-labelledby="recall-title" tabIndex={0}>
+        <div className="recall-face recall-prompt">
           <BappiMascot className="recall-mascot" pose="thinking" alt="Bappi is thinking" />
           <div>
             <span>Active recall</span>
             <h3 id="recall-title">{section.recallPrompt}</h3>
           </div>
         </div>
-        {revealed ? (
-          <div className="recall-answer">
-            <p>{section.recallAnswer}</p>
-            <Button variant="ghost" onClick={() => setRevealed(false)}><RotateCcw aria-hidden="true" /> Hide answer</Button>
-          </div>
-        ) : (
-          <Button onClick={() => setRevealed(true)}><Eye aria-hidden="true" /> Reveal answer</Button>
-        )}
+        <div className="recall-face recall-answer">
+          <span>Answer</span>
+          <p>{section.recallAnswer}</p>
+        </div>
+        <small className="recall-hint">Hover or tap to reveal</small>
       </section>
 
       <footer className="lesson-footer">

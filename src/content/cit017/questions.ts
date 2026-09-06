@@ -1,4 +1,7 @@
-import type { ChoiceQuestion, IdentificationQuestion, QuizQuestion, QuizTopic, TrueFalseQuestion } from '../types';
+import type { ChoiceQuestion, QuizTopic, TestSet } from '../types';
+import { securityPrinciples } from './principles';
+import { psychologicalTactics, socialTechniques } from './social';
+import { threatCategories } from './threats';
 
 function optionId(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -9,7 +12,7 @@ function makeQuestion(
   topicId: QuizTopic,
   concept: string,
   prompt: string,
-  labels: string[],
+  labels: readonly string[],
   explanation: string,
 ): ChoiceQuestion {
   return {
@@ -24,42 +27,262 @@ function makeQuestion(
   };
 }
 
-function makeIdentification(
-  id: string,
-  topicId: QuizTopic,
-  concept: string,
-  prompt: string,
-  explanation: string,
-  aliases: string[] = [],
-): IdentificationQuestion {
-  return {
-    kind: 'identification',
-    id,
-    topicId,
-    concept,
-    prompt,
-    correctAnswer: concept,
-    acceptableAnswers: [concept, ...aliases],
-    explanation,
-  };
+function nearbyOptions(labels: readonly string[], correctIndex: number): string[] {
+  return Array.from({ length: Math.min(4, labels.length) }, (_, offset) => (
+    labels[(correctIndex + offset) % labels.length]
+  ));
 }
 
-function makeTrueFalse(
-  id: string,
-  topicId: QuizTopic,
-  concept: string,
-  prompt: string,
-  correctAnswer: boolean,
-  explanation: string,
-): TrueFalseQuestion {
-  return { kind: 'true-false', id, topicId, concept, prompt, correctAnswer, explanation };
-}
+const ciaOptions = ['Confidentiality', 'Integrity', 'Availability'] as const;
+
+const ciaScenarioQuestions: ChoiceQuestion[] = [
+  makeQuestion('cia-conf-grades', 'cia', 'Confidentiality', 'A university must ensure that only authorized faculty members can view student grades. Which CIA property is the priority?', ciaOptions, 'Confidentiality ensures information is accessible only to authorized individuals, systems, or processes.'),
+  makeQuestion('cia-conf-records', 'cia', 'Confidentiality', 'A hospital encrypts patient records so unauthorized people cannot read them. Which CIA property is being protected?', ciaOptions, 'Preventing unauthorized disclosure protects confidentiality.'),
+  makeQuestion('cia-conf-payroll', 'cia', 'Confidentiality', 'Payroll information must be visible only to HR personnel. Which CIA property is the priority?', ciaOptions, 'Restricting payroll data to authorized HR personnel protects confidentiality.'),
+  makeQuestion('cia-int-bank', 'cia', 'Integrity', 'A bank needs assurance that account balances remain accurate and are not changed without authorization. Which CIA property is the priority?', ciaOptions, 'Integrity keeps information accurate, complete, and unaltered except by authorized users.'),
+  makeQuestion('cia-int-election', 'cia', 'Integrity', 'Election results must not be altered after votes are counted. Which CIA property is the priority?', ciaOptions, 'Preventing unauthorized modification protects integrity.'),
+  makeQuestion('cia-int-prescription', 'cia', 'Integrity', 'A medical prescription must not be changed unless an authorized clinician approves it. Which CIA property is the priority?', ciaOptions, 'Protecting a prescription from unauthorized change preserves integrity.'),
+  makeQuestion('cia-int-checksum', 'cia', 'Integrity', 'A file is checked with a checksum so unauthorized or accidental changes can be detected. Which CIA property is being protected?', ciaOptions, 'Checksums help ensure information remains accurate, complete, and unaltered.'),
+  makeQuestion('cia-avail-bank', 'cia', 'Availability', 'Customers need access to online banking at any hour of the day. Which CIA property is the priority?', ciaOptions, 'Availability ensures services are accessible whenever authorized users need them.'),
+  makeQuestion('cia-avail-hospital', 'cia', 'Availability', 'A hospital requires its clinical system to remain operational during a power interruption. Which CIA property is the priority?', ciaOptions, 'Keeping a hospital system operational protects availability.'),
+  makeQuestion('cia-avail-backup', 'cia', 'Availability', 'An organization installs backup systems and a UPS so services remain accessible during failures. Which CIA property is strengthened?', ciaOptions, 'Backup systems and a UPS are controls that support availability.'),
+];
+
+const foundationConceptQuestions: ChoiceQuestion[] = [
+  makeQuestion(
+    'foundation-cia-framework',
+    'cia',
+    'CIA Triad',
+    'Which fundamental cybersecurity framework guides policies, strategies, and controls to protect data and maintain secure, reliable systems?',
+    ['CIA Triad', 'AAA Framework', 'McCumber Cube', 'Defense in Depth'],
+    'The CIA Triad is a fundamental framework used to guide policies, strategies, and controls.',
+  ),
+  makeQuestion(
+    'foundation-cia-components',
+    'cia',
+    'Confidentiality, Integrity, and Availability',
+    'Which three properties make up the CIA Triad?',
+    ['Confidentiality, Integrity, and Availability', 'Authentication, Authorization, and Accounting', 'Storage, Processing, and Transmission', 'Technology, Policy, and Education'],
+    'CIA stands for Confidentiality, Integrity, and Availability.',
+  ),
+  makeQuestion(
+    'foundation-confidentiality-definition',
+    'cia',
+    'Confidentiality',
+    'Which CIA property ensures information is accessible only to authorized individuals, systems, or processes?',
+    ciaOptions,
+    'Confidentiality prevents unauthorized disclosure of sensitive information.',
+  ),
+  makeQuestion(
+    'foundation-integrity-definition',
+    'cia',
+    'Integrity',
+    'Which CIA property ensures information remains accurate, complete, and unaltered except by authorized users?',
+    ciaOptions,
+    'Integrity protects information from accidental or malicious unauthorized modification.',
+  ),
+  makeQuestion(
+    'foundation-availability-definition',
+    'cia',
+    'Availability',
+    'Which CIA property ensures information and services are accessible whenever authorized users need them?',
+    ciaOptions,
+    'Availability keeps information and services accessible to legitimate users when needed.',
+  ),
+  makeQuestion(
+    'foundation-confidentiality-controls',
+    'cia',
+    'User authentication, access control, encryption, and strong passwords',
+    'Which set contains controls supplied for Confidentiality?',
+    [
+      'User authentication, access control, encryption, and strong passwords',
+      'Digital signatures, checksums, version control, and access controls',
+      'Backup systems, UPS, cloud services, and preventive maintenance',
+      'Firewalls, antivirus, physical security, and training',
+    ],
+    'The supplied Confidentiality controls are user authentication, access control, encryption, and strong passwords.',
+  ),
+  makeQuestion(
+    'foundation-integrity-controls',
+    'cia',
+    'Digital signatures, checksums, version control, and access controls',
+    'Which set contains controls supplied for Integrity?',
+    [
+      'Digital signatures, checksums, version control, and access controls',
+      'User authentication, access control, encryption, and strong passwords',
+      'Backup systems, UPS, cloud services, and preventive maintenance',
+      'Account locks, biometrics, audit reports, and firewalls',
+    ],
+    'Digital signatures, checksums, version control, and access controls help preserve Integrity.',
+  ),
+  makeQuestion(
+    'foundation-availability-controls',
+    'cia',
+    'Backup systems, UPS, cloud services, and preventive maintenance',
+    'Which set contains controls supplied for Availability?',
+    [
+      'Backup systems, UPS, cloud services, and preventive maintenance',
+      'Digital signatures, checksums, version control, and access controls',
+      'User authentication, access control, encryption, and strong passwords',
+      'Passwords, PINs, fingerprints, and face recognition',
+    ],
+    'The supplied Availability controls are backup systems, UPS, cloud services, and preventive maintenance.',
+  ),
+  makeQuestion(
+    'foundation-aaa-framework',
+    'cia',
+    'AAA Framework',
+    'Which framework manages access to computer resources, enforces policies, and audits user activity?',
+    ['AAA Framework', 'CIA Triad', 'McCumber Cube', 'Defense in Depth'],
+    'The AAA Framework manages access, enforces policies, and audits user activity.',
+  ),
+  makeQuestion(
+    'foundation-aaa-components',
+    'cia',
+    'Authentication, Authorization, and Accounting',
+    'Which three functions make up the AAA Framework?',
+    ['Authentication, Authorization, and Accounting', 'Confidentiality, Integrity, and Availability', 'Storage, Processing, and Transmission', 'Prevention, Detection, and Recovery'],
+    'AAA stands for Authentication, Authorization, and Accounting.',
+  ),
+  makeQuestion(
+    'foundation-authentication',
+    'cia',
+    'Authentication',
+    'Which AAA function verifies a user’s identity before access is granted?',
+    ['Authentication', 'Authorization', 'Accounting (Auditing)', 'Confidentiality'],
+    'Authentication confirms that users are who they claim to be.',
+  ),
+  makeQuestion(
+    'foundation-factor-know',
+    'cia',
+    'Something You Know',
+    'Passwords and PINs belong to which authentication-factor group?',
+    ['Something You Know', 'Something You Have', 'Something You Are', 'Something You Do'],
+    'A password or PIN is Something You Know.',
+  ),
+  makeQuestion(
+    'foundation-factor-have',
+    'cia',
+    'Something You Have',
+    'A smart card, OTP, and mobile phone belong to which authentication-factor group?',
+    ['Something You Have', 'Something You Know', 'Something You Are', 'Something You Share'],
+    'A smart card, OTP, or mobile phone is Something You Have.',
+  ),
+  makeQuestion(
+    'foundation-factor-are',
+    'cia',
+    'Something You Are',
+    'A fingerprint, face recognition, and iris scan belong to which authentication-factor group?',
+    ['Something You Are', 'Something You Know', 'Something You Have', 'Something You Share'],
+    'Fingerprint, face recognition, and iris scans are Something You Are.',
+  ),
+  makeQuestion(
+    'foundation-authorization',
+    'cia',
+    'Authorization',
+    'Which AAA function determines what an authenticated user is allowed to access?',
+    ['Authorization', 'Authentication', 'Accounting (Auditing)', 'Availability'],
+    'Authorization determines permissions after identity has been authenticated.',
+  ),
+  makeQuestion(
+    'foundation-authorization-example',
+    'cia',
+    'Authorization',
+    'A student may view grades and register courses but may not edit grades. Which AAA function defines these permissions?',
+    ['Authorization', 'Authentication', 'Accounting (Auditing)', 'Integrity'],
+    'Different allowed actions for different roles are enforced through Authorization.',
+  ),
+  makeQuestion(
+    'foundation-accounting',
+    'cia',
+    'Accounting (Auditing)',
+    'Which AAA function records all user activities performed within a system and provides accountability?',
+    ['Accounting (Auditing)', 'Authentication', 'Authorization', 'Availability'],
+    'Accounting, also called Auditing, records user activity for accountability.',
+  ),
+  makeQuestion(
+    'foundation-accounting-records',
+    'cia',
+    'Who logged in, what was accessed, what changed, and when it occurred',
+    'Which set of details should Accounting (Auditing) allow an organization to know?',
+    [
+      'Who logged in, what was accessed, what changed, and when it occurred',
+      'Who owns the software, what it costs, and when it expires',
+      'Which data is public, private, archived, and deleted',
+      'Which server is fastest, newest, closest, and least expensive',
+    ],
+    'The source lists who logged in, what was accessed, what changes were made, and when activities occurred.',
+  ),
+  makeQuestion(
+    'foundation-accounting-benefits',
+    'cia',
+    'Detect attacks, investigate incidents, monitor employee activities, support compliance, and produce audit reports',
+    'Which set lists the supplied benefits of Accounting (Auditing)?',
+    [
+      'Detect attacks, investigate incidents, monitor employee activities, support compliance, and produce audit reports',
+      'Encrypt records, create passwords, scan irises, and restrict network access',
+      'Back up systems, provide UPS power, use cloud services, and perform maintenance',
+      'Approve payroll, register courses, edit grades, and manage classes',
+    ],
+    'These five outcomes are the supplied benefits of Accounting (Auditing).',
+  ),
+  makeQuestion(
+    'foundation-mccumber-dimensions',
+    'cia',
+    'Security goals, information states, and safeguards',
+    'Which set names the three dimensions of the McCumber Cube?',
+    ['Security goals, information states, and safeguards', 'People, process, and technology', 'Authentication, authorization, and accounting', 'Prevention, detection, and recovery'],
+    'The McCumber Cube connects security goals, information states, and safeguards.',
+  ),
+  makeQuestion(
+    'foundation-mccumber-goals',
+    'cia',
+    'Confidentiality, Integrity, and Availability',
+    'Which items form the security-goals dimension of the McCumber Cube?',
+    ['Confidentiality, Integrity, and Availability', 'Storage, Processing, and Transmission', 'Technology, Policy, and Education', 'Authentication, Authorization, and Accounting'],
+    'The cube uses the CIA Triad as its security-goals dimension.',
+  ),
+  makeQuestion(
+    'foundation-mccumber-states',
+    'cia',
+    'Storage, Processing, and Transmission',
+    'Which items form the information-states dimension of the McCumber Cube?',
+    ['Storage, Processing, and Transmission', 'Confidentiality, Integrity, and Availability', 'Technology, Policy, and Education', 'Authentication, Authorization, and Accounting'],
+    'The information states are Storage, Processing, and Transmission.',
+  ),
+  makeQuestion(
+    'foundation-mccumber-safeguards',
+    'cia',
+    'Technology; Policy and practices; Education, training, and awareness',
+    'Which items form the safeguards dimension of the McCumber Cube?',
+    ['Technology; Policy and practices; Education, training, and awareness', 'Storage; Processing; Transmission', 'Confidentiality; Integrity; Availability', 'Authentication; Authorization; Accounting'],
+    'The safeguard categories are Technology; Policy and practices; and Education, training, and awareness.',
+  ),
+  makeQuestion(
+    'foundation-mccumber-intersections',
+    'cia',
+    '27 intersections',
+    'How many intersections are produced by the three dimensions of the McCumber Cube?',
+    ['27 intersections', '9 intersections', '12 intersections', '81 intersections'],
+    'Three goals × three information states × three safeguard categories produce 27 intersections.',
+  ),
+];
+
+const principleNames = securityPrinciples.map((principle) => principle.name);
+const principleDefinitionQuestions = securityPrinciples.map((principle, index) => makeQuestion(
+  `principle-definition-${principle.id}`,
+  'principles',
+  principle.name,
+  `Which security principle matches this definition? ${principle.definition}`,
+  nearbyOptions(principleNames, index),
+  `${principle.name}: ${principle.definition}`,
+));
 
 const threatQuestions: ChoiceQuestion[] = [
   makeQuestion('threat-ip', 'threats', 'Compromises to intellectual property', 'A student copies licensed software and distributes it online without permission. Which category best describes the threat?', ['Compromises to intellectual property', 'Theft', 'Software attacks', 'Espionage or trespass'], 'Piracy and copyright infringement are compromises to intellectual property.'),
   makeQuestion('threat-qos', 'threats', 'Deviations in quality of service', 'A school portal becomes unreachable because its internet service provider is experiencing a major outage. Which category fits best?', ['Deviations in quality of service', 'Software attacks', 'Technical hardware failures or errors', 'Forces of nature'], 'ISP, power, and WAN service problems are deviations in quality of service.'),
   makeQuestion('threat-espionage', 'threats', 'Espionage or trespass', 'An unauthorized visitor enters a restricted records room and photographs confidential files. Which category fits best?', ['Espionage or trespass', 'Theft', 'Human error or failure', 'Information extortion'], 'Unauthorized access or data collection is espionage or trespass.'),
-  makeQuestion('threat-nature', 'threats', 'Forces of nature', 'Floodwater enters a data center and damages several servers. Which category fits best?', ['Forces of nature', 'Sabotage or vandalism', 'Technical hardware failures or errors', 'Deviations in quality of service'], 'Floods, fires, earthquakes, and lightning are forces of nature.'),
+  makeQuestion('threat-nature', 'threats', 'Forces of nature', 'Floodwater enters a data center and damages several servers. Which category fits best?', ['Forces of nature', 'Sabotage or vandalism', 'Technical hardware failures or errors', 'Deviations in quality of service'], 'Fire, floods, earthquakes, and lightning are forces of nature.'),
   makeQuestion('threat-human', 'threats', 'Human error or failure', 'An employee accidentally deletes a shared folder while reorganizing files. Which category fits best?', ['Human error or failure', 'Sabotage or vandalism', 'Technical software failures or errors', 'Theft'], 'Accidents and employee mistakes are human error or failure.'),
   makeQuestion('threat-extortion', 'threats', 'Information extortion', 'An attacker threatens to publish private customer data unless the company pays money. Which category fits best?', ['Information extortion', 'Espionage or trespass', 'Theft', 'Software attacks'], 'Blackmail and threatened information disclosure are information extortion.'),
   makeQuestion('threat-sabotage', 'threats', 'Sabotage or vandalism', 'A disgruntled worker intentionally destroys a company database before leaving. Which category fits best?', ['Sabotage or vandalism', 'Human error or failure', 'Software attacks', 'Theft'], 'Intentional destruction of systems or information is sabotage or vandalism.'),
@@ -70,102 +293,99 @@ const threatQuestions: ChoiceQuestion[] = [
   makeQuestion('threat-theft', 'threats', 'Theft', 'Someone takes a company laptop containing project information without permission. Which category fits best?', ['Theft', 'Espionage or trespass', 'Compromises to intellectual property', 'Sabotage or vandalism'], 'Illegal confiscation of equipment or information is theft.'),
 ];
 
-const threatDefinitionQuestions: QuizQuestion[] = [
-  makeIdentification('threat-id-extortion', 'threats', 'Information extortion', 'Identify the threat category: blackmail or threatened information disclosure.', 'Blackmail and threatened disclosure are information extortion.'),
-  makeIdentification('threat-id-obsolescence', 'threats', 'Technological obsolescence', 'Identify the threat category: the use of antiquated or outdated technologies.', 'Antiquated or outdated technology is technological obsolescence.'),
-  makeIdentification('threat-id-hardware', 'threats', 'Technical hardware failures or errors', 'Identify the threat category: equipment failure.', 'Equipment failure belongs to technical hardware failures or errors.', ['technical hardware failure', 'hardware failure']),
-  makeIdentification('threat-id-qos', 'threats', 'Deviations in quality of service', 'Identify the threat category associated with ISP, power, or WAN service problems.', 'ISP, power, and WAN service problems are deviations in quality of service.', ['quality of service', 'qos']),
-  makeTrueFalse('threat-tf-theft', 'threats', 'Theft', 'True or false: Theft can involve the illegal confiscation of equipment or information.', true, 'The source defines theft as illegal confiscation of equipment or information.'),
-  makeTrueFalse('threat-tf-bugs', 'threats', 'Technical software failures or errors', 'True or false: Bugs and code problems are classified as software attacks.', false, 'Bugs and code problems are technical software failures or errors, not software attacks.'),
-  makeTrueFalse('threat-tf-nature', 'threats', 'Forces of nature', 'True or false: Fire, floods, earthquakes, and lightning belong to forces of nature.', true, 'These events are examples of forces of nature.'),
+const socialNames = socialTechniques.map((technique) => technique.name);
+const socialDefinitionQuestions = socialTechniques.map((technique, index) => makeQuestion(
+  `social-definition-${technique.id}`,
+  'social',
+  technique.name,
+  `Which social-engineering technique matches this description? ${technique.description}`,
+  nearbyOptions(socialNames, index),
+  `${technique.name}: ${technique.description}`,
+));
+
+const socialExampleQuestions = socialTechniques.map((technique, index) => makeQuestion(
+  `social-example-${technique.id}`,
+  'social',
+  technique.name,
+  `Which social-engineering technique is shown in this example? ${technique.example}`,
+  nearbyOptions(socialNames, index),
+  `This is ${technique.name}. ${technique.description}`,
+));
+
+const tacticNames = psychologicalTactics.map((tactic) => tactic.name);
+const socialTacticQuestions = psychologicalTactics.map((tactic, index) => makeQuestion(
+  `social-tactic-${optionId(tactic.name)}`,
+  'social',
+  tactic.name,
+  `Which psychological tactic is shown in this example? ${tactic.example}`,
+  nearbyOptions(tacticNames, index),
+  `${tactic.name} is the tactic used in this example.`,
+));
+
+export const cit017TestSets: TestSet[] = [
+  {
+    id: 'foundations-cia-scenarios',
+    topicId: 'cia',
+    title: 'CIA Scenario Practice',
+    description: 'Choose the CIA property that best describes each of 10 situations.',
+    questions: ciaScenarioQuestions,
+  },
+  {
+    id: 'foundations-concepts',
+    topicId: 'cia',
+    title: 'Foundations Concepts',
+    description: 'Complete coverage of CIA, AAA, authentication factors, auditing, and the McCumber Cube.',
+    questions: foundationConceptQuestions,
+  },
+  {
+    id: 'principles-definitions',
+    topicId: 'principles',
+    title: 'Principle Definitions',
+    description: 'Identify each of the nine Security Principles from its definition.',
+    questions: principleDefinitionQuestions,
+  },
+  {
+    id: 'threat-scenarios',
+    topicId: 'threats',
+    title: 'Threat Scenarios',
+    description: 'Classify one scenario for every category of threat to information security.',
+    questions: threatQuestions,
+  },
+  {
+    id: 'social-definitions',
+    topicId: 'social',
+    title: 'Technique Definitions',
+    description: 'Identify all 17 social-engineering techniques from their descriptions.',
+    questions: socialDefinitionQuestions,
+  },
+  {
+    id: 'social-examples',
+    topicId: 'social',
+    title: 'Technique Examples',
+    description: 'Identify all 17 social-engineering techniques from their supplied examples.',
+    questions: socialExampleQuestions,
+  },
+  {
+    id: 'social-tactics',
+    topicId: 'social',
+    title: 'Psychological Tactics',
+    description: 'Recognize all nine psychological tactics from their examples.',
+    questions: socialTacticQuestions,
+  },
 ];
 
-const ciaOptions = ['Confidentiality', 'Integrity', 'Availability'];
-const ciaQuestions: ChoiceQuestion[] = [
-  makeQuestion('cia-conf-grades', 'cia', 'Confidentiality', 'A university must ensure that only authorized faculty members can view student grades. Which CIA property is the priority?', ciaOptions, 'Confidentiality limits information access to authorized people, systems, or processes.'),
-  makeQuestion('cia-conf-records', 'cia', 'Confidentiality', 'A hospital encrypts patient records so unauthorized people cannot read them. Which CIA property is being protected?', ciaOptions, 'Preventing unauthorized disclosure protects confidentiality.'),
-  makeQuestion('cia-conf-payroll', 'cia', 'Confidentiality', 'Payroll information must be visible only to HR personnel. Which CIA property is the priority?', ciaOptions, 'Restricting payroll data to authorized HR personnel protects confidentiality.'),
-  makeQuestion('cia-int-bank', 'cia', 'Integrity', 'A bank needs assurance that account balances remain accurate and are not changed without authorization. Which CIA property is the priority?', ciaOptions, 'Integrity keeps information accurate, complete, and unaltered except by authorized users.'),
-  makeQuestion('cia-int-election', 'cia', 'Integrity', 'Election results must not be altered after votes are counted. Which CIA property is the priority?', ciaOptions, 'Preventing unauthorized modification protects integrity.'),
-  makeQuestion('cia-int-prescription', 'cia', 'Integrity', 'A medical prescription must not be changed unless an authorized clinician approves it. Which CIA property is the priority?', ciaOptions, 'Protecting a prescription from unauthorized change preserves integrity.'),
-  makeQuestion('cia-avail-bank', 'cia', 'Availability', 'Customers need access to online banking at any hour of the day. Which CIA property is the priority?', ciaOptions, 'Availability ensures services are accessible whenever authorized users need them.'),
-  makeQuestion('cia-avail-hospital', 'cia', 'Availability', 'A hospital requires its clinical system to remain operational during a power interruption. Which CIA property is the priority?', ciaOptions, 'Keeping a hospital system operational protects availability.'),
-  makeQuestion('cia-avail-backup', 'cia', 'Availability', 'An organization installs backup systems and a UPS so services remain accessible during failures. Which CIA property is strengthened?', ciaOptions, 'Backups and a UPS are controls that support availability.'),
-];
+export const cit017Questions = cit017TestSets.flatMap((set) => set.questions);
 
-const foundationDefinitionQuestions: QuizQuestion[] = [
-  makeIdentification('foundation-id-confidentiality', 'cia', 'Confidentiality', 'Identify the CIA property that prevents unauthorized disclosure of information.', 'Confidentiality ensures information is accessible only to authorized individuals, systems, or processes.'),
-  makeIdentification('foundation-id-integrity', 'cia', 'Integrity', 'Identify the CIA property that keeps information accurate, complete, and unaltered except by authorized users.', 'Integrity protects data from accidental or malicious unauthorized modification.'),
-  makeIdentification('foundation-id-availability', 'cia', 'Availability', 'Identify the CIA property that keeps information and services accessible whenever authorized users need them.', 'Availability ensures authorized users can access information and services when needed.'),
-  makeIdentification('foundation-id-authentication', 'cia', 'Authentication', 'Identify the AAA function that verifies who a user is.', 'Authentication verifies identity before access is granted.'),
-  makeIdentification('foundation-id-authorization', 'cia', 'Authorization', 'Identify the AAA function that determines what an authenticated user is allowed to access.', 'Authorization assigns and checks user permissions.'),
-  makeIdentification('foundation-id-accounting', 'cia', 'Accounting', 'Identify the AAA function that records user activities for accountability and auditing.', 'Accounting records who acted, what was accessed or changed, and when it occurred.', ['auditing', 'accounting auditing']),
-  makeQuestion('foundation-mccumber-dimensions', 'cia', 'Security goals, information states, and safeguards', 'Which set names the three dimensions of the McCumber Cube?', ['Security goals, information states, and safeguards', 'People, process, and technology', 'Authentication, authorization, and accounting', 'Prevention, detection, and recovery'], 'The cube connects security goals, information states, and safeguards across 27 intersections.'),
-  makeTrueFalse('foundation-tf-authentication', 'cia', 'Authentication', 'True or false: Authentication answers the question “What are you allowed to do?”', false, 'Authentication answers “Who are you?” Authorization determines what you are allowed to do.'),
-  makeTrueFalse('foundation-tf-integrity', 'cia', 'Integrity', 'True or false: Digital signatures, checksums, and version control can help protect integrity.', true, 'These controls help keep data accurate and detect unauthorized changes.'),
-  makeTrueFalse('foundation-tf-mccumber', 'cia', 'McCumber Cube', 'True or false: The McCumber Cube contains 27 intersections.', true, 'Three goals × three information states × three safeguard categories produce 27 intersections.'),
-  makeTrueFalse('foundation-tf-cube-states', 'cia', 'Information states', 'True or false: Storage, processing, and transmission are the safeguard categories of the McCumber Cube.', false, 'They are information states. The safeguard categories are technology; policy and practices; and education, training, and awareness.'),
-];
+export const testSetTopicLabels: Record<QuizTopic, string> = {
+  cia: 'Foundations of Information Security',
+  principles: 'Security Principles',
+  threats: 'Categories of Threats',
+  social: 'Social Engineering',
+};
 
-const principleOptions = [
-  'Least Privilege', 'Need-to-Know Principle', 'Separation of Duties', 'Defense in Depth',
-  'Fail-Safe (Secure by Default)', 'Security by Design', 'Principle of Complete Mediation',
-  'Economy of Mechanism (Keep it Simple)', 'Open Design',
-];
-const principleQuestions: ChoiceQuestion[] = [
-  makeQuestion('principle-least', 'principles', 'Least Privilege', 'An accounting clerk can use payroll tools but cannot open HR medical records. Which principle applies?', principleOptions, 'Least privilege gives users only the minimum permissions necessary.'),
-  makeQuestion('principle-need', 'principles', 'Need-to-Know Principle', 'A nurse can access only the records of patients currently under their care. Which principle applies?', principleOptions, 'Need-to-know limits information access to what a specific task requires.'),
-  makeQuestion('principle-separation', 'principles', 'Separation of Duties', 'One employee creates purchase requests, another approves suppliers, and a third authorizes payment. Which principle applies?', principleOptions, 'Separation of duties divides critical tasks among multiple people.'),
-  makeQuestion('principle-depth', 'principles', 'Defense in Depth', 'A company combines physical security, firewalls, antivirus, encryption, access controls, and staff training. Which principle applies?', principleOptions, 'Defense in depth uses multiple security layers so other controls remain if one fails.'),
-  makeQuestion('principle-fail-safe', 'principles', 'Fail-Safe (Secure by Default)', 'An authentication service encounters an error and denies access instead of letting the user through. Which principle applies?', principleOptions, 'Fail-safe design defaults to a secure state when an error occurs.'),
-  makeQuestion('principle-design', 'principles', 'Security by Design', 'A development team performs threat modeling and input validation before deploying a new system. Which principle applies?', principleOptions, 'Security by design considers security from the beginning of development.'),
-  makeQuestion('principle-mediation', 'principles', 'Principle of Complete Mediation', 'The system checks a user’s permission every time they open a confidential document. Which principle applies?', principleOptions, 'Complete mediation checks authorization on every resource access request.'),
-  makeQuestion('principle-economy', 'principles', 'Economy of Mechanism (Keep it Simple)', 'A team replaces a confusing chain of authentication steps with one well-designed process that is easier to verify. Which principle applies?', principleOptions, 'Economy of mechanism keeps security mechanisms as simple as possible while remaining effective.'),
-  makeQuestion('principle-open', 'principles', 'Open Design', 'An encryption algorithm is publicly documented, while its secret key remains protected. Which principle applies?', principleOptions, 'Open design relies on strong implementation and secret keys rather than a secret system design.'),
-];
-
-const principleDefinitionQuestions: QuizQuestion[] = [
-  makeIdentification('principle-id-least', 'principles', 'Least Privilege', 'Identify the principle: users receive only the minimum permissions necessary.', 'Least privilege minimizes permissions to reduce accidental damage, insider threats, and attack impact.', ['principle of least privilege']),
-  makeIdentification('principle-id-separation', 'principles', 'Separation of Duties', 'Identify the principle: critical tasks are divided among multiple individuals.', 'Separation of duties prevents one person from controlling an entire critical process.', ['separation of duty']),
-  makeIdentification('principle-id-depth', 'principles', 'Defense in Depth', 'Identify the principle: security uses multiple layers so other controls remain when one layer fails.', 'Defense in depth combines multiple security layers.', ['defence in depth']),
-  makeIdentification('principle-id-mediation', 'principles', 'Principle of Complete Mediation', 'Identify the principle: every request to access a resource is checked for authorization.', 'Complete mediation verifies authorization on every access request.', ['complete mediation']),
-  makeIdentification('principle-id-simple', 'principles', 'Economy of Mechanism', 'Identify the principle that keeps security mechanisms as simple as possible while remaining effective.', 'Economy of mechanism makes controls easier to understand, maintain, and verify.', ['economy of mechanism keep it simple', 'keep it simple']),
-  makeTrueFalse('principle-tf-open', 'principles', 'Open Design', 'True or false: Open Design requires the entire system design to remain secret.', false, 'Open design relies on strong algorithms, secure implementation, and protected keys—not secrecy of design.'),
-  makeTrueFalse('principle-tf-failsafe', 'principles', 'Fail-Safe (Secure by Default)', 'True or false: A fail-safe system denies access when authentication fails because of an error.', true, 'Fail-safe systems default to a secure state.'),
-  makeTrueFalse('principle-tf-design', 'principles', 'Security by Design', 'True or false: Security by Design adds security only after a system has been deployed.', false, 'Security by Design considers security from the beginning of development.'),
-  makeTrueFalse('principle-tf-need', 'principles', 'Need-to-Know Principle', 'True or false: Department membership automatically means a user should access every record in that department.', false, 'Need-to-know permits only the information required for a user’s specific tasks.'),
-];
-
-const socialQuestions: ChoiceQuestion[] = [
-  makeQuestion('social-phishing', 'social', 'Phishing', 'A message that appears to be from a bank asks many customers to click a link and verify their credentials. Which technique is this?', ['Phishing', 'Smishing', 'Vishing', 'Pretexting'], 'Fraudulent messages that imitate a legitimate organization are phishing.'),
-  makeQuestion('social-spear', 'social', 'Spear Phishing', 'A professor receives a personalized email mentioning their current research project and asking them to verify a login. Which technique is this?', ['Spear Phishing', 'Whaling', 'Phishing', 'Impersonation'], 'Personalized phishing aimed at a specific person or organization is spear phishing.'),
-  makeQuestion('social-whaling', 'social', 'Whaling', 'A fake urgent financial request is sent specifically to a company CEO. Which technique is this?', ['Whaling', 'Business Email Compromise (BEC)', 'Spear Phishing', 'Quid Pro Quo'], 'Whaling is phishing that specifically targets high-ranking executives or senior officials.'),
-  makeQuestion('social-vishing', 'social', 'Vishing', 'A caller pretending to work for a bank asks for an account number and OTP. Which technique is this?', ['Vishing', 'Smishing', 'Pretexting', 'Phishing'], 'Voice phishing through calls or voice messages is vishing.'),
-  makeQuestion('social-tailgating', 'social', 'Tailgating (Piggybacking)', 'A person carrying boxes asks an employee to hold open the secure office door so they can follow inside. Which technique is this?', ['Tailgating (Piggybacking)', 'Impersonation', 'Shoulder Surfing', 'Baiting'], 'Following an authorized person into a restricted area is tailgating or piggybacking.'),
-  makeQuestion('social-baiting', 'social', 'Baiting', 'A USB drive labeled “Employee Salary List” is left in a parking lot in the hope that someone will plug it in. Which technique is this?', ['Baiting', 'Quid Pro Quo', 'Scareware', 'Dumpster Diving'], 'Baiting offers something attractive to entice a victim into compromising security.'),
-];
-
-const socialDefinitionQuestions: QuizQuestion[] = [
-  makeIdentification('social-id-smishing', 'social', 'Smishing', 'Identify the technique: phishing conducted through SMS or text messages.', 'Smishing is phishing delivered through SMS or text messages.'),
-  makeIdentification('social-id-pretexting', 'social', 'Pretexting', 'Identify the technique: an attacker invents a believable story or false identity to persuade a victim to disclose information.', 'Pretexting uses a fabricated situation or identity to gain trust.'),
-  makeIdentification('social-id-shoulder', 'social', 'Shoulder Surfing', 'Identify the technique: observing someone enter confidential information such as a password or PIN.', 'Shoulder surfing is direct observation of confidential input.'),
-  makeIdentification('social-id-dumpster', 'social', 'Dumpster Diving', 'Identify the technique: searching discarded documents or devices for confidential information.', 'Dumpster diving targets information thrown away without secure disposal.'),
-  makeIdentification('social-id-quid', 'social', 'Quid Pro Quo', 'Identify the technique: offering a service or benefit in exchange for information or access.', 'Quid pro quo offers something in exchange for information or access.'),
-  makeIdentification('social-id-scareware', 'social', 'Scareware', 'Identify the technique: fake warnings frighten users into installing malicious software or paying for fake services.', 'Scareware uses fear and fake alerts to provoke unsafe action.'),
-  makeIdentification('social-id-reverse', 'social', 'Reverse Social Engineering', 'Identify the technique: the attacker creates a problem, then presents themselves as the person who can solve it.', 'In reverse social engineering, victims are manipulated into seeking the attacker’s help.'),
-  makeTrueFalse('social-tf-whaling', 'social', 'Whaling', 'True or false: Whaling specifically targets high-ranking executives or senior officials.', true, 'Whaling is phishing aimed at senior or high-ranking targets.'),
-  makeTrueFalse('social-tf-tailgating', 'social', 'Tailgating (Piggybacking)', 'True or false: Tailgating is limited to email communication.', false, 'Tailgating is a physical attack that follows an authorized person into a restricted area.'),
-  makeTrueFalse('social-tf-bec', 'social', 'Business Email Compromise (BEC)', 'True or false: BEC can use a compromised or spoofed business email account to request transfers or confidential information.', true, 'That is the source definition of Business Email Compromise.'),
-  makeTrueFalse('social-tf-baiting', 'social', 'Baiting', 'True or false: Baiting offers something attractive to entice a victim into compromising security.', true, 'Baiting uses an attractive offer or object to trigger an unsafe action.'),
-];
-
-export const cit017Questions: QuizQuestion[] = [
-  ...threatQuestions,
-  ...threatDefinitionQuestions,
-  ...ciaQuestions,
-  ...foundationDefinitionQuestions,
-  ...principleQuestions,
-  ...principleDefinitionQuestions,
-  ...socialQuestions,
-  ...socialDefinitionQuestions,
-];
+export const sourceInventory = {
+  threatCategories,
+  securityPrinciples,
+  socialTechniques,
+  psychologicalTactics,
+};

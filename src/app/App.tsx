@@ -4,6 +4,7 @@ import { HomePage } from './routes/HomePage';
 import { SubjectPage } from './routes/SubjectPage';
 import { StudyPage } from './routes/StudyPage';
 import { TestPage } from './routes/TestPage';
+import { FlashcardsPage } from './routes/FlashcardsPage';
 
 export function App() {
   return (
@@ -12,6 +13,7 @@ export function App() {
         <Route index element={<HomePage />} />
         <Route path="subjects/cit017" element={<SubjectPage />} />
         <Route path="subjects/cit017/study" element={<StudyPage />} />
+        <Route path="subjects/cit017/flashcards" element={<FlashcardsPage />} />
         <Route path="subjects/cit017/test" element={<TestPage />} />
       </Route>
     </Routes>

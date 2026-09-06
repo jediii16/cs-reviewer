@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import type { ChoiceQuestion, IdentificationQuestion, TrueFalseQuestion } from '../../content/types';
+import type { ChoiceQuestion } from '../../content/types';
 import { QuizRunner } from './QuizRunner';
 
 const sampleQuestion: ChoiceQuestion = {
@@ -19,82 +19,74 @@ const sampleQuestion: ChoiceQuestion = {
   explanation: 'Confidentiality prevents unauthorized disclosure.',
 };
 
-const identificationQuestion: IdentificationQuestion = {
-  kind: 'identification',
-  id: 'sample-identification',
-  topicId: 'cia',
-  concept: 'Authentication',
-  prompt: 'What AAA function verifies identity?',
-  correctAnswer: 'Authentication',
-  acceptableAnswers: ['authentication'],
-  explanation: 'Authentication confirms identity.',
-};
-
-const trueFalseQuestion: TrueFalseQuestion = {
-  kind: 'true-false',
-  id: 'sample-true-false',
-  topicId: 'cia',
-  concept: 'Availability',
-  prompt: 'Availability keeps services accessible when needed.',
-  correctAnswer: true,
-  explanation: 'That is the definition of availability.',
+const secondQuestion: ChoiceQuestion = {
+  ...sampleQuestion,
+  id: 'sample-integrity',
+  concept: 'Integrity',
+  prompt: 'Records must remain accurate.',
+  correctOptionId: 'integrity',
+  explanation: 'Integrity keeps records accurate.',
 };
 
 describe('QuizRunner', () => {
-  it('shows focused Bappi while a question is active', () => {
-    render(<QuizRunner questions={[sampleQuestion]} onComplete={vi.fn()} />);
+  it('shows the set title and focused Bappi while a question is active', () => {
+    render(
+      <QuizRunner
+        questions={[sampleQuestion]}
+        setTitle="CIA Scenario Practice"
+        onComplete={vi.fn()}
+      />,
+    );
 
+    expect(screen.getByText('CIA Scenario Practice')).toBeVisible();
     expect(screen.getByRole('img', { name: /bappi is focused/i })).toBeVisible();
   });
 
-  it('requires submission, explains the answer, and reaches a scored result', async () => {
+  it('renders only multiple-choice controls', () => {
+    render(<QuizRunner questions={[sampleQuestion]} onComplete={vi.fn()} />);
+
+    expect(screen.getByRole('group', { name: /choose the best answer/i })).toBeVisible();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.queryByText('Identification')).not.toBeInTheDocument();
+    expect(screen.queryByText('True or false')).not.toBeInTheDocument();
+  });
+
+  it('requires submission, explains the answer, and records the full set total', async () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
-    render(<QuizRunner questions={[sampleQuestion]} onComplete={onComplete} />);
+    render(<QuizRunner questions={[sampleQuestion, secondQuestion]} onComplete={onComplete} />);
 
+    expect(screen.getByText('Question 1 of 2')).toBeVisible();
     expect(screen.getByRole('button', { name: /submit answer/i })).toBeDisabled();
     await user.click(screen.getByRole('radio', { name: /confidentiality/i }));
     await user.click(screen.getByRole('button', { name: /submit answer/i }));
 
     expect(screen.getByRole('status')).toHaveTextContent(/correct/i);
     expect(screen.getByText(sampleQuestion.explanation)).toBeVisible();
+    await user.click(screen.getByRole('button', { name: /next question/i }));
 
+    expect(screen.getByText('Question 2 of 2')).toBeVisible();
+    await user.click(screen.getByRole('radio', { name: /integrity/i }));
+    await user.click(screen.getByRole('button', { name: /submit answer/i }));
     await user.click(screen.getByRole('button', { name: /see results/i }));
 
-    expect(screen.getByLabelText('Total score')).toHaveTextContent('1 / 1');
+    expect(screen.getByLabelText('Total score')).toHaveTextContent('2 / 2');
     expect(screen.getByRole('img', { name: /bappi is celebrating/i })).toBeVisible();
-    expect(onComplete).toHaveBeenCalledWith({ correct: 1, total: 1 });
+    expect(onComplete).toHaveBeenCalledWith({ correct: 2, total: 2 });
   });
 
-  it('shows worried Bappi after an incorrect answer', async () => {
+  it('shows worried Bappi and allows retrying only missed questions', async () => {
     const user = userEvent.setup();
     render(<QuizRunner questions={[sampleQuestion]} onComplete={vi.fn()} />);
 
     await user.click(screen.getByRole('radio', { name: /integrity/i }));
     await user.click(screen.getByRole('button', { name: /submit answer/i }));
-
     expect(screen.getByRole('img', { name: /bappi looks worried/i })).toBeVisible();
-  });
 
-  it('accepts a typed identification answer', async () => {
-    const user = userEvent.setup();
-    render(<QuizRunner questions={[identificationQuestion]} onComplete={vi.fn()} />);
+    await user.click(screen.getByRole('button', { name: /see results/i }));
+    await user.click(screen.getByRole('button', { name: /retry missed/i }));
 
-    expect(screen.getByText('Identification')).toBeVisible();
-    await user.type(screen.getByRole('textbox', { name: /your answer/i }), 'AUTHENTICATION');
-    await user.click(screen.getByRole('button', { name: /submit answer/i }));
-
-    expect(screen.getByRole('status')).toHaveTextContent(/correct/i);
-  });
-
-  it('renders true-or-false choices', async () => {
-    const user = userEvent.setup();
-    render(<QuizRunner questions={[trueFalseQuestion]} onComplete={vi.fn()} />);
-
-    expect(screen.getByText('True or false')).toBeVisible();
-    await user.click(screen.getByRole('radio', { name: 'True' }));
-    await user.click(screen.getByRole('button', { name: /submit answer/i }));
-
-    expect(screen.getByRole('status')).toHaveTextContent(/correct/i);
+    expect(screen.getByText('Question 1 of 1')).toBeVisible();
+    expect(screen.getByText(sampleQuestion.prompt)).toBeVisible();
   });
 });
