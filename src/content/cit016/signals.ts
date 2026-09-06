@@ -67,7 +67,7 @@ export const digitalAnalogTopic: LessonTopic = {
     {
       id: 'modulation',
       title: 'Modulation',
-      summary: 'Modulation adds information to an electrical or optical carrier signal so data can be transformed into radio waves.',
+      summary: 'Modulation adds information to an electrical or optical carrier signal. For radio transmission, it places the data onto a carrier wave.',
       bullets: ['A carrier has a consistent frequency and amplitude before information changes one of its properties.'],
       recallPrompt: 'What does modulation add to a carrier signal?',
       recallAnswer: 'Information, by varying a property of the carrier signal.',

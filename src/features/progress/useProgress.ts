@@ -1,6 +1,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
 import {
   defaultProgress,
+  limitRecentResults,
   loadProgress,
   resetProgress,
   saveProgress,
@@ -36,7 +37,10 @@ export function useProgress() {
   }, []);
 
   const recordResult = useCallback((result: TestResultSummary) => {
-    emit({ ...currentProgress, recentResults: [result, ...currentProgress.recentResults].slice(0, 5) });
+    emit({
+      ...currentProgress,
+      recentResults: limitRecentResults([result, ...currentProgress.recentResults]),
+    });
   }, []);
 
   const setTimerPreset = useCallback((minutes: 15 | 25 | 45) => {

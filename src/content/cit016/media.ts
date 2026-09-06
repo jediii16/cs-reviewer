@@ -57,7 +57,7 @@ export const transmissionMediaTopic: LessonTopic = {
     {
       id: 'radio-waves',
       title: 'Radio Waves',
-      summary: 'Radio waves support broad-area wireless communication in the supplied range of 3 kHz to 1 GHz.',
+      summary: 'The supplied material describes radio waves as broad-area wireless media, gives a range of 3 kHz to 1 GHz, and separately lists Wi-Fi, Bluetooth, and radio broadcasting as examples.',
       examples: ['Wi-Fi', 'Bluetooth', 'Radio broadcasting'],
       recallPrompt: 'Which unguided medium spans 3 kHz to 1 GHz in the supplied material?',
       recallAnswer: 'Radio waves.',

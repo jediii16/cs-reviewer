@@ -10,15 +10,18 @@ export function FlashcardsPage() {
   const { subjectId } = useParams();
   const subject = getSubject(subjectId);
   const decks = getSubjectFlashcards(subjectId);
-  const [activeDeck, setActiveDeck] = useState<FlashcardDeckModel | null>(null);
+  const [activeDeck, setActiveDeck] = useState<{
+    subjectId: string;
+    deck: FlashcardDeckModel;
+  } | null>(null);
 
   if (!subject || !decks) return <Navigate to="/" replace />;
 
-  if (activeDeck) {
+  if (activeDeck?.subjectId === subject.id) {
     return (
       <section className="flashcards-page flashcards-page-running">
         <Link className="back-link" to={`/subjects/${subject.id}`}><ArrowLeft aria-hidden="true" /> {subject.code}</Link>
-        <FlashcardDeck deck={activeDeck} onExit={() => setActiveDeck(null)} />
+        <FlashcardDeck deck={activeDeck.deck} onExit={() => setActiveDeck(null)} />
       </section>
     );
   }
@@ -37,7 +40,7 @@ export function FlashcardsPage() {
 
       <div className="flashcard-deck-list">
         {decks.map((deck) => (
-          <button type="button" key={deck.id} onClick={() => setActiveDeck(deck)}>
+          <button type="button" key={deck.id} onClick={() => setActiveDeck({ subjectId: subject.id, deck })}>
             <span className="test-mode-icon" aria-hidden="true"><GalleryHorizontalEnd /></span>
             <span>
               <strong>{deck.title}</strong>
