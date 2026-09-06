@@ -2,29 +2,44 @@ import { expect, test } from '@playwright/test';
 
 test('active recall reveals without resizing and lesson navigation returns to its anchor', async ({ page }) => {
   await page.goto('/subjects/cit017/study');
+  const waitForLessonAnchor = () => expect.poll(async () => page.locator('.lesson-anchor').evaluate((element) => (
+    Math.abs(Math.round(element.getBoundingClientRect().top) - 92)
+  ))).toBeLessThanOrEqual(2);
 
   await expect(page.getByRole('heading', { name: 'CIA Triad', exact: true })).toBeVisible();
   const recall = page.locator('.recall-panel');
   const answer = page.locator('.recall-answer');
   await expect(page.getByText('Confidentiality, Integrity, and Availability.')).toBeAttached();
   const before = await recall.boundingBox();
+  expect(before?.height).toBeLessThanOrEqual(180);
   await expect(answer).toHaveCSS('opacity', '0');
+  await expect(page.getByText(/hover or tap to reveal/i)).toHaveCount(0);
 
   await recall.hover();
   await expect(answer).toHaveCSS('opacity', '1');
   const after = await recall.boundingBox();
   expect(after?.height).toBe(before?.height);
 
-  await page.locator('.lesson-footer').scrollIntoViewIfNeeded();
+  const navigation = page.getByRole('navigation', { name: 'Lesson sections' });
+  await navigation.scrollIntoViewIfNeeded();
   await page.getByRole('button', { name: /^next$/i }).click();
   await expect(page.getByRole('heading', { name: 'Confidentiality', exact: true })).toBeVisible();
   await expect(page.getByText('2 of 9')).toBeVisible();
+  await expect(recall).toHaveAttribute('data-revealed', 'false');
 
-  await expect.poll(async () => page.locator('.lesson-anchor').evaluate((element) => (
-    Math.round(element.getBoundingClientRect().top)
-  ))).toBeGreaterThanOrEqual(64);
-  expect(await page.locator('.lesson-anchor').evaluate((element) => element.getBoundingClientRect().top))
-    .toBeLessThan(150);
+  await waitForLessonAnchor();
+  const navigationAfterFirstMove = await navigation.boundingBox();
+
+  await recall.hover();
+  await expect(recall).toHaveAttribute('data-revealed', 'false');
+  await page.mouse.move(1, 1);
+  await recall.hover();
+  await expect(recall).toHaveAttribute('data-revealed', 'true');
+
+  await page.getByRole('button', { name: /^next$/i }).click();
+  await waitForLessonAnchor();
+  const navigationAfterSecondMove = await navigation.boundingBox();
+  expect(Math.abs((navigationAfterSecondMove?.y ?? 0) - (navigationAfterFirstMove?.y ?? 0))).toBeLessThanOrEqual(2);
 });
 
 test('Security Principles study contains only the nine supplied principles', async ({ page }) => {
@@ -194,4 +209,37 @@ test('audio player and focus timer stay independent', async ({ page }) => {
 
   await expect(page.getByRole('button', { name: /open focus timer, running focus/i })).toBeVisible();
   await expect(dock.getByRole('button', { name: /pause music/i })).toBeAttached();
+});
+
+test('home presents both subjects as distinct review choices', async ({ page }) => {
+  await page.goto('/');
+
+  const cit016 = page.getByRole('link', { name: /cit\.016/i });
+  const cit017 = page.getByRole('link', { name: /cit\.017/i });
+  await expect(cit016).toBeVisible();
+  await expect(cit017).toBeVisible();
+
+  const first = await cit016.boundingBox();
+  const second = await cit017.boundingBox();
+  expect((second?.y ?? 0) - ((first?.y ?? 0) + (first?.height ?? 0))).toBeGreaterThanOrEqual(12);
+});
+
+test('CIT.016 supports study, practice, and flashcard interactions', async ({ page }) => {
+  await page.goto('/subjects/cit016/study');
+  await expect(page.getByRole('heading', { name: 'Representing Information' })).toBeVisible();
+  await page.getByRole('button', { name: /error detection and correction/i }).click();
+  await expect(page.getByRole('heading', { name: 'Transmission Errors' })).toBeVisible();
+
+  await page.goto('/subjects/cit016/test');
+  await page.getByRole('button', { name: /tcp\/ip stack.*6 questions/i }).click();
+  await expect(page.getByText('Question 1 of 6')).toBeVisible();
+  await page.getByRole('radio').first().check();
+  await page.getByRole('button', { name: /submit answer/i }).click();
+  await expect(page.getByRole('status')).toBeVisible();
+
+  await page.goto('/subjects/cit016/flashcards');
+  await page.getByRole('button', { name: /multiplexing.*7 cards/i }).click();
+  await expect(page.getByText('Card 1 of 7')).toBeVisible();
+  await page.getByRole('button', { name: /reveal answer/i }).click();
+  await expect(page.locator('.flashcard-answer')).toBeVisible();
 });

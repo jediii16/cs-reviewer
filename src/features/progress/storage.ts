@@ -1,4 +1,5 @@
 export interface TestResultSummary {
+  subjectId?: string;
   completedAt: string;
   correct: number;
   total: number;
@@ -63,7 +64,10 @@ function getDefaultStorage(): Storage | undefined {
 function isResult(value: unknown): value is TestResultSummary {
   if (!value || typeof value !== 'object') return false;
   const item = value as Record<string, unknown>;
-  return typeof item.completedAt === 'string' && typeof item.correct === 'number' && typeof item.total === 'number';
+  return (item.subjectId === undefined || typeof item.subjectId === 'string')
+    && typeof item.completedAt === 'string'
+    && typeof item.correct === 'number'
+    && typeof item.total === 'number';
 }
 
 function hasValidStudyData(item: Record<string, unknown>) {

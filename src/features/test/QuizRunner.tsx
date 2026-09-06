@@ -18,6 +18,11 @@ const topicLabels: Record<QuizTopic, string> = {
   cia: 'Foundations & CIA',
   principles: 'Security principles',
   social: 'Social engineering',
+  'digital-analog': 'Digital vs. analog',
+  'error-control': 'Error control',
+  'tcp-ip': 'TCP/IP stack',
+  'transmission-media': 'Transmission media',
+  multiplexing: 'Multiplexing',
 };
 
 export function QuizRunner({ questions, setTitle, onComplete, onExit }: QuizRunnerProps) {
@@ -94,7 +99,7 @@ export function QuizRunner({ questions, setTitle, onComplete, onExit }: QuizRunn
         <div className="topic-breakdown">
           {Object.entries(score.byTopic).map(([topic, topicScore]) => (
             <div key={topic}>
-              <span>{topicLabels[topic as QuizTopic]}</span>
+              <span>{topicLabels[topic as QuizTopic] ?? topic}</span>
               <strong>{topicScore.correct} / {topicScore.total}</strong>
             </div>
           ))}
@@ -123,7 +128,7 @@ export function QuizRunner({ questions, setTitle, onComplete, onExit }: QuizRunn
     <section ref={runnerRef} className="quiz-runner" aria-labelledby="question-heading">
       <div className="quiz-progress-row">
         <span className="quiz-meta">
-          <span>{topicLabels[question.topicId]}</span>
+          <span>{topicLabels[question.topicId] ?? question.topicId}</span>
           {setTitle ? <strong>{setTitle}</strong> : null}
         </span>
         <span>Question {questionIndex + 1} of {activeQuestions.length}</span>

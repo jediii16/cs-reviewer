@@ -2,11 +2,43 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { useProgress } from '../features/progress/useProgress';
 import { App } from './App';
+
+function ProgressTestControls() {
+  const { progress, recordResult, reset } = useProgress();
+  const cit017Result = {
+    subjectId: 'cit017',
+    completedAt: '2026-09-06T00:00:00.000Z',
+    correct: 3,
+    total: 4,
+  };
+  const cit016Result = {
+    subjectId: 'cit016',
+    completedAt: '2026-09-06T01:00:00.000Z',
+    correct: 2,
+    total: 3,
+  };
+
+  return (
+    <>
+      <button type="button" onClick={() => recordResult(cit017Result)}>Seed CIT.017 score</button>
+      <button type="button" onClick={() => recordResult(cit016Result)}>Seed CIT.016 score</button>
+      <button type="button" onClick={reset}>Clear test progress</button>
+      <output aria-label="CIT.017 saved scores">
+        {progress.recentResults.filter((result) => !result.subjectId || result.subjectId === 'cit017').length}
+      </output>
+      <output aria-label="CIT.016 saved scores">
+        {progress.recentResults.filter((result) => result.subjectId === 'cit016').length}
+      </output>
+    </>
+  );
+}
 
 describe('App navigation', () => {
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it('presents Bappi as the reviewer brand and home mascot', () => {
@@ -90,6 +122,129 @@ describe('App navigation', () => {
       'href',
       '/subjects/cit017/test',
     );
+  });
+
+  it('lists CIT.016 and opens its three review paths independently', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('link', { name: /cit\.017/i })).toBeVisible();
+    await user.click(screen.getByRole('link', { name: /cit\.016/i }));
+
+    expect(screen.getByRole('heading', { name: /cit\.016/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^study$/i })).toHaveAttribute(
+      'href',
+      '/subjects/cit016/study',
+    );
+    expect(screen.getByRole('link', { name: /^flashcards$/i })).toHaveAttribute(
+      'href',
+      '/subjects/cit016/flashcards',
+    );
+    expect(screen.getByRole('link', { name: /^test$/i })).toHaveAttribute(
+      'href',
+      '/subjects/cit016/test',
+    );
+  });
+
+  it('renders the CIT.016 study topics without CIT.017 lessons', () => {
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit016/study']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('heading', { name: 'Study CIT.016' })).toBeVisible();
+    for (const topic of [
+      'Digital vs. Analog',
+      'Error Detection and Correction',
+      'TCP/IP Stack',
+      'Transmission Media',
+      'Multiplexing',
+    ]) {
+      expect(screen.getByRole('button', { name: new RegExp(topic, 'i') })).toBeVisible();
+    }
+    expect(screen.queryByRole('button', { name: /security principles/i })).not.toBeInTheDocument();
+  });
+
+  it('offers a complete CIT.016 practice set for every study topic', () => {
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit016/test']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    for (const [title, count] of [
+      ['Digital vs. Analog', 14],
+      ['Error Detection and Correction', 12],
+      ['TCP/IP Stack', 6],
+      ['Transmission Media', 9],
+      ['Multiplexing', 7],
+    ] as const) {
+      expect(screen.getByRole('heading', { name: title })).toBeVisible();
+      expect(screen.getByRole('button', { name: new RegExp(`${title}.*${count} questions`, 'i') })).toBeVisible();
+    }
+  });
+
+  it('offers a CIT.016 flashcard for every study section', () => {
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit016/flashcards']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    for (const [title, count] of [
+      ['Digital vs. Analog', 14],
+      ['Error Detection and Correction', 12],
+      ['TCP/IP Stack', 6],
+      ['Transmission Media', 9],
+      ['Multiplexing', 7],
+    ] as const) {
+      expect(screen.getByRole('button', { name: new RegExp(`${title}.*${count} cards`, 'i') })).toBeVisible();
+    }
+  });
+
+  it('does not show a CIT.017 score on the CIT.016 dashboard', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit016']}>
+        <ProgressTestControls />
+        <App />
+      </MemoryRouter>,
+    );
+
+    try {
+      await user.click(screen.getByRole('button', { name: 'Seed CIT.017 score' }));
+      expect(screen.getByText('No test scores yet')).toBeVisible();
+    } finally {
+      await user.click(screen.getByRole('button', { name: 'Clear test progress' }));
+    }
+  });
+
+  it('resets only the open subject while preserving another subject score', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit016']}>
+        <ProgressTestControls />
+        <App />
+      </MemoryRouter>,
+    );
+
+    try {
+      await user.click(screen.getByRole('button', { name: 'Seed CIT.017 score' }));
+      await user.click(screen.getByRole('button', { name: 'Seed CIT.016 score' }));
+      await user.click(screen.getByRole('button', { name: 'Reset progress' }));
+
+      expect(screen.getByLabelText('CIT.017 saved scores')).toHaveTextContent('1');
+      expect(screen.getByLabelText('CIT.016 saved scores')).toHaveTextContent('0');
+    } finally {
+      await user.click(screen.getByRole('button', { name: 'Clear test progress' }));
+    }
   });
 
   it('switches the complete app shell between dark and light themes', async () => {

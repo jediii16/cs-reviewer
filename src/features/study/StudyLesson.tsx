@@ -15,10 +15,14 @@ interface StudyLessonProps {
 export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLessonProps) {
   const lessonAnchorRef = useRef<HTMLDivElement>(null);
   const [sectionIndex, setSectionIndex] = useState(0);
+  const [isRecallRevealed, setIsRecallRevealed] = useState(false);
+  const [isRecallHoverArmed, setIsRecallHoverArmed] = useState(true);
   const section = topic.sections[sectionIndex];
   const isLast = sectionIndex === topic.sections.length - 1;
 
   function moveTo(nextIndex: number) {
+    setIsRecallRevealed(false);
+    setIsRecallHoverArmed(false);
     setSectionIndex(nextIndex);
     lessonAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -32,6 +36,21 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
         </div>
         <ProgressBar value={sectionIndex + 1} max={topic.sections.length} label="Lesson progress" />
       </div>
+
+      <nav className="lesson-footer" aria-label="Lesson sections">
+        <Button variant="ghost" disabled={sectionIndex === 0} onClick={() => moveTo(sectionIndex - 1)}>
+          <ChevronLeft aria-hidden="true" /> Previous
+        </Button>
+        {isLast ? (
+          <Button onClick={() => onComplete(topic.id)}>
+            {reviewed ? 'Reviewed' : 'Mark topic reviewed'}
+          </Button>
+        ) : (
+          <Button variant="secondary" onClick={() => moveTo(sectionIndex + 1)}>
+            Next <ChevronRight aria-hidden="true" />
+          </Button>
+        )}
+      </nav>
 
       <header className="lesson-header">
         <h2>{section.title}</h2>
@@ -75,7 +94,24 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
 
       {section.id === 'mccumber-cube' ? <McCumberCube /> : null}
 
-      <section className="recall-panel" aria-labelledby="recall-title" tabIndex={0}>
+      <section
+        className="recall-panel"
+        aria-labelledby="recall-title"
+        data-revealed={isRecallRevealed}
+        tabIndex={0}
+        onPointerEnter={(event) => {
+          if (event.pointerType === 'mouse' && isRecallHoverArmed) setIsRecallRevealed(true);
+        }}
+        onPointerLeave={() => {
+          setIsRecallRevealed(false);
+          setIsRecallHoverArmed(true);
+        }}
+        onPointerDown={(event) => {
+          if (event.pointerType !== 'mouse') setIsRecallRevealed((revealed) => !revealed);
+        }}
+        onFocus={() => setIsRecallRevealed(true)}
+        onBlur={() => setIsRecallRevealed(false)}
+      >
         <div className="recall-face recall-prompt">
           <BappiMascot className="recall-mascot" pose="thinking" alt="Bappi is thinking" />
           <div>
@@ -87,23 +123,7 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
           <span>Answer</span>
           <p>{section.recallAnswer}</p>
         </div>
-        <small className="recall-hint">Hover or tap to reveal</small>
       </section>
-
-      <footer className="lesson-footer">
-        <Button variant="ghost" disabled={sectionIndex === 0} onClick={() => moveTo(sectionIndex - 1)}>
-          <ChevronLeft aria-hidden="true" /> Previous
-        </Button>
-        {isLast ? (
-          <Button onClick={() => onComplete(topic.id)}>
-            {reviewed ? 'Reviewed' : 'Mark topic reviewed'}
-          </Button>
-        ) : (
-          <Button variant="secondary" onClick={() => moveTo(sectionIndex + 1)}>
-            Next <ChevronRight aria-hidden="true" />
-          </Button>
-        )}
-      </footer>
     </article>
   );
 }

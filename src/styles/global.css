@@ -238,6 +238,11 @@ h1 {
   font-size: clamp(1rem, 2vw, 1.08rem);
 }
 
+.subject-list {
+  display: grid;
+  gap: 14px;
+}
+
 .subject-row {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -663,9 +668,9 @@ h1 {
   position: relative;
   display: grid;
   align-items: center;
-  min-height: 204px;
-  margin-top: 30px;
-  padding: 28px 28px 46px;
+  min-height: 152px;
+  margin-top: 26px;
+  padding: 20px 22px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
   border-radius: var(--radius-md);
@@ -675,9 +680,7 @@ h1 {
   transition: border-color 160ms ease, background-color 160ms ease;
 }
 
-.recall-panel:hover,
-.recall-panel:focus,
-.recall-panel:focus-within {
+.recall-panel[data-revealed='true'] {
   border-color: color-mix(in srgb, var(--accent) 52%, var(--border));
   background: color-mix(in srgb, var(--accent-soft) 84%, var(--surface-elevated));
 }
@@ -697,7 +700,7 @@ h1 {
 .recall-panel h3 {
   max-width: 480px;
   margin: 6px 0 0;
-  font-size: 1.12rem;
+  font-size: 1.02rem;
   font-weight: 650;
   line-height: 1.42;
 }
@@ -722,42 +725,49 @@ h1 {
 
 .recall-answer p {
   margin: 0;
-  font-size: clamp(1.08rem, 2.5vw, 1.38rem);
+  font-size: clamp(1rem, 2vw, 1.18rem);
   font-weight: 640;
   line-height: 1.48;
 }
 
-.recall-panel:hover .recall-prompt,
-.recall-panel:focus .recall-prompt,
-.recall-panel:focus-within .recall-prompt {
+.recall-panel[data-revealed='true'] .recall-prompt {
   opacity: 0;
   pointer-events: none;
   transform: translateY(-10px);
 }
 
-.recall-panel:hover .recall-answer,
-.recall-panel:focus .recall-answer,
-.recall-panel:focus-within .recall-answer {
+.recall-panel[data-revealed='true'] .recall-answer {
   opacity: 1;
   transform: translateY(0);
 }
 
-.recall-hint {
-  position: absolute;
-  right: 22px;
-  bottom: 17px;
-  color: var(--text-faint);
-  font-size: 0.7rem;
-  font-weight: 600;
+.lesson-footer {
+  position: sticky;
+  z-index: 8;
+  top: 78px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0 26px;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 6%);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  backdrop-filter: saturate(160%) blur(18px);
 }
 
-.lesson-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 22px;
-  border-top: 1px solid var(--border);
+.lesson-footer .button {
+  width: min(100%, 164px);
+}
+
+.lesson-footer .button:first-child {
+  justify-self: start;
+}
+
+.lesson-footer .button:last-child {
+  justify-self: end;
 }
 
 .mccumber {
@@ -2512,7 +2522,7 @@ h1 {
 }
 
 .recall-mascot {
-  width: 78px;
+  width: 58px;
   flex: 0 0 auto;
   filter: none;
 }
@@ -2732,7 +2742,7 @@ h1 {
   .recall-panel {
     align-items: stretch;
     flex-direction: column;
-    min-height: 258px;
+    min-height: 174px;
   }
 
   .recall-prompt {
@@ -2741,7 +2751,7 @@ h1 {
   }
 
   .recall-mascot {
-    width: 64px;
+    width: 52px;
   }
 
   .recall-answer {
@@ -2750,13 +2760,8 @@ h1 {
     text-align: left;
   }
 
-  .recall-hint {
-    right: 18px;
-    bottom: 15px;
-  }
-
   .lesson-footer .button {
-    flex: 1;
+    width: 100%;
     padding-inline: 9px;
   }
 

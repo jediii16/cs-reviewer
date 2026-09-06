@@ -19,6 +19,7 @@ describe('BlurtingNotes', () => {
     const dialog = screen.getByRole('dialog', { name: /blurting notes/i });
     expect(dialog).toBeVisible();
     expect(screen.getByText(/write everything you remember before checking/i)).toBeVisible();
+    expect(screen.getByRole('option', { name: /cit\.016.*digital vs\. analog/i })).toBeVisible();
 
     const editor = screen.getByRole('textbox', { name: /blurting note/i });
     await user.type(editor, 'Confidentiality integrity availability');

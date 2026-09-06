@@ -11,7 +11,7 @@ export interface QuizScore {
   correct: number;
   total: number;
   percent: number;
-  byTopic: Partial<Record<QuizTopic, TopicScore>>;
+  byTopic: Record<QuizTopic, TopicScore>;
 }
 
 function shuffled<T>(items: readonly T[], random: () => number): T[] {
@@ -42,7 +42,7 @@ export function getCorrectAnswerLabel(question: ChoiceQuestion): string {
 }
 
 export function scoreQuiz(questions: readonly ChoiceQuestion[], answers: QuizAnswers): QuizScore {
-  const byTopic: Partial<Record<QuizTopic, TopicScore>> = {};
+  const byTopic: Record<QuizTopic, TopicScore> = {};
   let correct = 0;
 
   for (const question of questions) {

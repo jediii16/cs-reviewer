@@ -72,6 +72,17 @@ export function useProgress() {
     listeners.forEach((listener) => listener());
   }, []);
 
+  const resetSubject = useCallback((subjectId: string, topicIds: readonly string[]) => {
+    const topicIdSet = new Set(topicIds);
+    emit({
+      ...currentProgress,
+      reviewedTopicIds: currentProgress.reviewedTopicIds.filter((id) => !topicIdSet.has(id)),
+      recentResults: currentProgress.recentResults.filter((result) => (
+        result.subjectId ? result.subjectId !== subjectId : subjectId !== 'cit017'
+      )),
+    });
+  }, []);
+
   return {
     progress,
     markTopicReviewed,
@@ -84,5 +95,6 @@ export function useProgress() {
     setNoiseTrackId,
     setNoiseVolume,
     reset,
+    resetSubject,
   };
 }
