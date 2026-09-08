@@ -53,6 +53,20 @@ export const defaultProgress: ReviewerProgress = {
   noiseVolume: 0.22,
 };
 
+export function limitRecentResults(
+  results: readonly TestResultSummary[],
+  perSubjectLimit = 5,
+): TestResultSummary[] {
+  const counts = new Map<string, number>();
+  return results.filter((result) => {
+    const subjectId = result.subjectId ?? 'cit017';
+    const count = counts.get(subjectId) ?? 0;
+    if (count >= perSubjectLimit) return false;
+    counts.set(subjectId, count + 1);
+    return true;
+  });
+}
+
 function getDefaultStorage(): Storage | undefined {
   try {
     return window.localStorage;
@@ -169,7 +183,7 @@ export function saveProgress(progress: ReviewerProgress, storage = getDefaultSto
   try {
     storage.setItem(progressStorageKey, JSON.stringify({
       ...progress,
-      recentResults: progress.recentResults.slice(0, 5),
+      recentResults: limitRecentResults(progress.recentResults),
     }));
   } catch {
     // Studying must continue even when storage is unavailable or full.

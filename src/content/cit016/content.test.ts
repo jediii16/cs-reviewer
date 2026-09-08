@@ -32,4 +32,16 @@ describe('CIT.016 course content', () => {
     expect(studyText).toContain('1, 2, 4, and 8');
     expect(studyText).toContain('R1 = 0, R2 = 1, R4 = 1, and R8 = 0');
   });
+
+  it('keeps modulation and the supplied radio-media classification unambiguous', () => {
+    const signals = cit016Subject.topics.find((topic) => topic.id === 'digital-analog');
+    const media = cit016Subject.topics.find((topic) => topic.id === 'transmission-media');
+    const modulation = signals?.sections.find((section) => section.id === 'modulation');
+    const radioWaves = media?.sections.find((section) => section.id === 'radio-waves');
+
+    expect(modulation?.summary).toContain('places the data onto a carrier wave');
+    expect(modulation?.summary).not.toContain('optical carrier signal so data can be transformed into radio waves');
+    expect(radioWaves?.summary).toContain('supplied material');
+    expect(radioWaves?.summary).toContain('separately lists Wi-Fi, Bluetooth');
+  });
 });

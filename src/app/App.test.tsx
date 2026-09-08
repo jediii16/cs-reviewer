@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { useProgress } from '../features/progress/useProgress';
 import { App } from './App';
@@ -31,6 +31,18 @@ function ProgressTestControls() {
       <output aria-label="CIT.016 saved scores">
         {progress.recentResults.filter((result) => result.subjectId === 'cit016').length}
       </output>
+    </>
+  );
+}
+
+function SubjectRouteSwitcher() {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <button type="button" onClick={() => navigate('/subjects/cit017/test')}>Switch test subject</button>
+      <button type="button" onClick={() => navigate('/subjects/cit016/flashcards')}>Open CIT.016 flashcards</button>
+      <button type="button" onClick={() => navigate('/subjects/cit017/flashcards')}>Switch flashcard subject</button>
     </>
   );
 }
@@ -206,6 +218,47 @@ describe('App navigation', () => {
     ] as const) {
       expect(screen.getByRole('button', { name: new RegExp(`${title}.*${count} cards`, 'i') })).toBeVisible();
     }
+  });
+
+  it('opens the Book References glossary as a paged CIT.017 lesson', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit017/study']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /book references/i }));
+
+    expect(screen.getByRole('heading', { name: /lesson 1: security foundations/i })).toBeVisible();
+    expect(screen.getByText('Information Security')).toBeVisible();
+    expect(screen.getByText(/the protection of information and its critical elements/i)).toBeVisible();
+
+    await user.click(screen.getByRole('button', { name: /^next$/i }));
+    expect(screen.getByRole('heading', { name: /core security terminology/i })).toBeVisible();
+  });
+
+  it('does not carry an active quiz or deck into another subject route', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit016/test']}>
+        <SubjectRouteSwitcher />
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /digital vs\. analog.*14 questions/i }));
+    expect(screen.getByText(/question 1 of 14/i)).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Switch test subject' }));
+    expect(screen.getByRole('heading', { name: 'Security Principles' })).toBeVisible();
+    expect(screen.queryByText(/question 1 of 14/i)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Open CIT.016 flashcards' }));
+    await user.click(screen.getByRole('button', { name: /digital vs\. analog.*14 cards/i }));
+    expect(screen.getByText(/card 1 of 14/i)).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Switch flashcard subject' }));
+    expect(screen.getByRole('heading', { name: 'Choose a flashcard deck' })).toBeVisible();
+    expect(screen.queryByText(/card 1 of 14/i)).not.toBeInTheDocument();
   });
 
   it('does not show a CIT.017 score on the CIT.016 dashboard', async () => {

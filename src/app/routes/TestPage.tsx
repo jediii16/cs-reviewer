@@ -21,7 +21,9 @@ const topicIcons: Record<string, typeof Brain> = {
 };
 
 interface ActiveTest {
+  subjectId: string;
   title: string;
+  instruction?: string;
   questions: ChoiceQuestion[];
 }
 
@@ -49,20 +51,29 @@ export function TestPage() {
 
   const testTopicIds = Array.from(new Set(testContent.sets.map((set) => set.topicId)));
 
-  function start(set: TestSet) {
-    setActiveTest({ title: set.title, questions: createQuiz(set.questions) });
-  }
+  const start = (set: TestSet) => {
+    setActiveTest({
+      subjectId: subject.id,
+      title: set.title,
+      instruction: set.instruction,
+      questions: createQuiz(set.questions),
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  if (activeTest) {
+  if (activeTest?.subjectId === subject.id) {
     return (
       <section className="test-page test-page-running">
-        <Link className="back-link" to={`/subjects/${subject.id}`}><ArrowLeft aria-hidden="true" /> {subject.code}</Link>
+        <button className="back-link back-link-button" type="button" onClick={() => setActiveTest(null)}>
+          <ArrowLeft aria-hidden="true" /> Back to practice sets
+        </button>
         <QuizRunner
           questions={activeTest.questions}
           setTitle={activeTest.title}
+          instruction={activeTest.instruction}
           onComplete={(result) => recordResult({
             ...result,
-            subjectId: subject.id,
+            subjectId: activeTest.subjectId,
             completedAt: new Date().toISOString(),
           })}
           onExit={() => setActiveTest(null)}

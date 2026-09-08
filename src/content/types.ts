@@ -7,8 +7,15 @@ export interface LessonSection {
   controls?: string[];
   benefits?: string[];
   applicablePrinciples?: string[];
+  terms?: GlossaryEntry[];
   recallPrompt: string;
   recallAnswer: string;
+}
+
+export interface GlossaryEntry {
+  term: string;
+  definition: string;
+  notes?: string[];
 }
 
 export interface LessonTopic {
@@ -59,6 +66,7 @@ export interface TestSet {
   topicId: QuizTopic;
   title: string;
   description: string;
+  instruction?: string;
   questions: ChoiceQuestion[];
 }
 

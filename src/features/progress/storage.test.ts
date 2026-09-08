@@ -86,4 +86,22 @@ describe('reviewer progress storage', () => {
 
     expect(loadProgress()).toEqual(progress);
   });
+
+  it('persists up to five recent results for each subject', () => {
+    const recentResults = [
+      ...Array.from({ length: 6 }, (_, index) => ({
+        subjectId: 'cit017',
+        completedAt: `2026-09-06T00:0${index}:00.000Z`,
+        correct: index,
+        total: 10,
+      })),
+      { subjectId: 'cit016', completedAt: '2026-09-06T01:00:00.000Z', correct: 8, total: 10 },
+    ];
+
+    saveProgress({ ...defaultProgress, recentResults });
+
+    const saved = loadProgress().recentResults;
+    expect(saved.filter((item) => item.subjectId === 'cit017')).toHaveLength(5);
+    expect(saved.filter((item) => item.subjectId === 'cit016')).toHaveLength(1);
+  });
 });

@@ -1,4 +1,5 @@
 import type { ChoiceQuestion, QuizTopic, TestSet } from '../types';
+import { bookReferencesTopic } from './bookReferences';
 import { securityPrinciples } from './principles';
 import { psychologicalTactics, socialTechniques } from './social';
 import { threatCategories } from './threats';
@@ -273,7 +274,7 @@ const principleDefinitionQuestions = securityPrinciples.map((principle, index) =
   `principle-definition-${principle.id}`,
   'principles',
   principle.name,
-  `Which security principle matches this definition? ${principle.definition}`,
+  principle.definition,
   nearbyOptions(principleNames, index),
   `${principle.name}: ${principle.definition}`,
 ));
@@ -293,12 +294,30 @@ const threatQuestions: ChoiceQuestion[] = [
   makeQuestion('threat-theft', 'threats', 'Theft', 'Someone takes a company laptop containing project information without permission. Which category fits best?', ['Theft', 'Espionage or trespass', 'Compromises to intellectual property', 'Sabotage or vandalism'], 'Illegal confiscation of equipment or information is theft.'),
 ];
 
+const threatChallengeQuestions: ChoiceQuestion[] = [
+  makeQuestion('threat-challenge-ip', 'threats', 'Compromises to intellectual property', 'A design intern copies the company’s proprietary source code and posts it publicly under their own name.', ['Compromises to intellectual property', 'Espionage or trespass', 'Theft', 'Technical software failures or errors'], 'Unauthorized copying and distribution of proprietary work compromises intellectual property.'),
+  makeQuestion('threat-challenge-qos', 'threats', 'Deviations in quality of service', 'Repeated bandwidth drops from the university’s internet provider make online classes disconnect throughout the day.', ['Deviations in quality of service', 'Software attacks', 'Technical hardware failures or errors', 'Technological obsolescence'], 'Internet service provider and WAN service problems are deviations in quality of service.'),
+  makeQuestion('threat-challenge-espionage', 'threats', 'Espionage or trespass', 'A visitor uses a borrowed access badge to enter a restricted office and photograph confidential records.', ['Espionage or trespass', 'Theft', 'Human error or failure', 'Information extortion'], 'Unauthorized access and data collection are espionage or trespass.'),
+  makeQuestion('threat-challenge-nature', 'threats', 'Forces of nature', 'A lightning strike damages the network switches connecting the campus servers.', ['Forces of nature', 'Technical hardware failures or errors', 'Sabotage or vandalism', 'Deviations in quality of service'], 'Lightning is a force of nature.'),
+  makeQuestion('threat-challenge-human-firewall', 'threats', 'Human error or failure', 'A system administrator accidentally applies the wrong firewall rule and blocks every employee from the internal portal.', ['Human error or failure', 'Software attacks', 'Technical software failures or errors', 'Sabotage or vandalism'], 'An accidental employee mistake is a human error or failure.'),
+  makeQuestion('threat-challenge-extortion', 'threats', 'Information extortion', 'Someone threatens to publish stolen research records unless the university sends payment.', ['Information extortion', 'Espionage or trespass', 'Theft', 'Compromises to intellectual property'], 'Blackmail involving threatened information disclosure is information extortion.'),
+  makeQuestion('threat-challenge-sabotage', 'threats', 'Sabotage or vandalism', 'A departing contractor deliberately wipes project files and damages the backup appliance.', ['Sabotage or vandalism', 'Human error or failure', 'Theft', 'Software attacks'], 'Intentional destruction of systems or information is sabotage or vandalism.'),
+  makeQuestion('threat-challenge-ransomware', 'threats', 'Software attacks', 'Ransomware enters through a malicious attachment and encrypts the organization’s shared drives.', ['Software attacks', 'Technical software failures or errors', 'Information extortion', 'Human error or failure'], 'Malicious software is a software attack.'),
+  makeQuestion('threat-challenge-hardware', 'threats', 'Technical hardware failures or errors', 'A failed cooling fan causes a database server to overheat and shut down.', ['Technical hardware failures or errors', 'Forces of nature', 'Technical software failures or errors', 'Deviations in quality of service'], 'A failed physical component is a technical hardware failure or error.'),
+  makeQuestion('threat-challenge-software-failure', 'threats', 'Technical software failures or errors', 'A programming bug traps the enrollment application in a loop and causes it to crash.', ['Technical software failures or errors', 'Software attacks', 'Human error or failure', 'Technological obsolescence'], 'Bugs and code problems are technical software failures or errors.'),
+  makeQuestion('threat-challenge-obsolescence', 'threats', 'Technological obsolescence', 'A legacy router can no longer receive security patches because its manufacturer ended support years ago.', ['Technological obsolescence', 'Technical hardware failures or errors', 'Technical software failures or errors', 'Deviations in quality of service'], 'Unsupported and outdated technology is technological obsolescence.'),
+  makeQuestion('threat-challenge-theft-laptop', 'threats', 'Theft', 'A laptop containing employee records is taken from a locked office without permission.', ['Theft', 'Espionage or trespass', 'Sabotage or vandalism', 'Compromises to intellectual property'], 'Illegal confiscation of equipment or information is theft.'),
+  makeQuestion('threat-challenge-human-email', 'threats', 'Human error or failure', 'An employee accidentally emails a confidential spreadsheet to the wrong recipient.', ['Human error or failure', 'Espionage or trespass', 'Information extortion', 'Theft'], 'Accidentally sending information to the wrong person is a human error or failure.'),
+  makeQuestion('threat-challenge-dos', 'threats', 'Software attacks', 'A botnet floods the student portal with traffic until legitimate users can no longer connect.', ['Software attacks', 'Deviations in quality of service', 'Technical software failures or errors', 'Technological obsolescence'], 'A denial-of-service attack is a software attack.'),
+  makeQuestion('threat-challenge-theft-drive', 'threats', 'Theft', 'Someone removes an external drive containing archived records from the records office.', ['Theft', 'Espionage or trespass', 'Compromises to intellectual property', 'Sabotage or vandalism'], 'Taking equipment or information without permission is theft.'),
+];
+
 const socialNames = socialTechniques.map((technique) => technique.name);
 const socialDefinitionQuestions = socialTechniques.map((technique, index) => makeQuestion(
   `social-definition-${technique.id}`,
   'social',
   technique.name,
-  `Which social-engineering technique matches this description? ${technique.description}`,
+  technique.description,
   nearbyOptions(socialNames, index),
   `${technique.name}: ${technique.description}`,
 ));
@@ -307,7 +326,7 @@ const socialExampleQuestions = socialTechniques.map((technique, index) => makeQu
   `social-example-${technique.id}`,
   'social',
   technique.name,
-  `Which social-engineering technique is shown in this example? ${technique.example}`,
+  technique.example,
   nearbyOptions(socialNames, index),
   `This is ${technique.name}. ${technique.description}`,
 ));
@@ -317,9 +336,20 @@ const socialTacticQuestions = psychologicalTactics.map((tactic, index) => makeQu
   `social-tactic-${optionId(tactic.name)}`,
   'social',
   tactic.name,
-  `Which psychological tactic is shown in this example? ${tactic.example}`,
+  tactic.example,
   nearbyOptions(tacticNames, index),
   `${tactic.name} is the tactic used in this example.`,
+));
+
+const bookReferenceEntries = bookReferencesTopic.sections.flatMap((section) => section.terms ?? []);
+const bookReferenceNames = bookReferenceEntries.map((entry) => entry.term);
+const bookReferenceDefinitionQuestions = bookReferenceEntries.map((entry, index) => makeQuestion(
+  `book-reference-${optionId(entry.term)}`,
+  'book-references',
+  entry.term,
+  entry.definition,
+  nearbyOptions(bookReferenceNames, index),
+  `${entry.term}: ${entry.definition}${entry.notes?.length ? ` ${entry.notes.join(' ')}` : ''}`,
 ));
 
 export const cit017TestSets: TestSet[] = [
@@ -342,6 +372,7 @@ export const cit017TestSets: TestSet[] = [
     topicId: 'principles',
     title: 'Principle Definitions',
     description: 'Identify each of the nine Security Principles from its definition.',
+    instruction: 'Identify the security principle described in each question.',
     questions: principleDefinitionQuestions,
   },
   {
@@ -352,10 +383,19 @@ export const cit017TestSets: TestSet[] = [
     questions: threatQuestions,
   },
   {
+    id: 'threat-scenario-challenge',
+    topicId: 'threats',
+    title: 'Threat Scenario Challenge',
+    description: 'Classify 15 new situations covering all 12 categories of threats.',
+    instruction: 'Choose the threat category that best fits each scenario.',
+    questions: threatChallengeQuestions,
+  },
+  {
     id: 'social-definitions',
     topicId: 'social',
     title: 'Technique Definitions',
     description: 'Identify all 17 social-engineering techniques from their descriptions.',
+    instruction: 'Identify the social-engineering technique described in each question.',
     questions: socialDefinitionQuestions,
   },
   {
@@ -363,6 +403,7 @@ export const cit017TestSets: TestSet[] = [
     topicId: 'social',
     title: 'Technique Examples',
     description: 'Identify all 17 social-engineering techniques from their supplied examples.',
+    instruction: 'Identify the social-engineering technique shown in each example.',
     questions: socialExampleQuestions,
   },
   {
@@ -370,7 +411,16 @@ export const cit017TestSets: TestSet[] = [
     topicId: 'social',
     title: 'Psychological Tactics',
     description: 'Recognize all nine psychological tactics from their examples.',
+    instruction: 'Identify the psychological tactic shown in each example.',
     questions: socialTacticQuestions,
+  },
+  {
+    id: 'book-reference-definitions',
+    topicId: 'book-references',
+    title: 'Book Reference Definitions',
+    description: 'Identify all 33 Lesson 1 terms from their supplied definitions.',
+    instruction: 'Identify the book-reference term that matches each definition.',
+    questions: bookReferenceDefinitionQuestions,
   },
 ];
 
@@ -381,6 +431,7 @@ export const testSetTopicLabels: Record<QuizTopic, string> = {
   principles: 'Security Principles',
   threats: 'Categories of Threats',
   social: 'Social Engineering',
+  'book-references': 'Book References',
 };
 
 export const sourceInventory = {
