@@ -98,6 +98,35 @@ test('a tall CRISP-DM crossword sizes itself to the desktop viewport', async ({ 
   expect(grid.width).toBeLessThanOrEqual(wrap.width);
 });
 
+test('crossword and preprocessing stay responsive across laptop and Mac viewports', async ({ page }) => {
+  const viewports = [
+    { width: 1024, height: 768 },
+    { width: 1280, height: 800 },
+    { width: 1440, height: 900 },
+  ];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto('/subjects/cs412/crossword');
+    await page.getByRole('button', { name: /start 15-item mock exam/i }).click();
+
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    const grid = await page.getByRole('grid', { name: /crossword grid/i }).boundingBox();
+    const wrap = await page.locator('.crossword-grid-wrap').boundingBox();
+    if (!grid || !wrap) throw new Error('Crossword must be measurable at laptop widths');
+    expect(grid.width).toBeLessThanOrEqual(wrap.width + 1);
+    if (viewport.width === 1024) expect(grid.width).toBeGreaterThanOrEqual(wrap.width - 1);
+
+    await page.goto('/subjects/cs412/preprocessing');
+    await page.getByRole('button', { name: /show solution/i }).first().click();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    const card = await page.locator('.problem-card').first().boundingBox();
+    if (!card) throw new Error('Problem card must be measurable at laptop widths');
+    expect(card.x).toBeGreaterThanOrEqual(0);
+    expect(card.x + card.width).toBeLessThanOrEqual(viewport.width + 1);
+  }
+});
+
 test('a solved crossword drops the WOW GALING banner and marks the grid complete', async ({ page }) => {
   await page.goto('/subjects/cs412/crossword');
   await page.getByRole('button', { name: /start crisp-dm crossword/i }).click();

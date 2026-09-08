@@ -3204,13 +3204,16 @@ h1 {
 
 /* CS.412 study and exam surfaces */
 .cs412-page {
+  width: 100%;
   max-width: 1000px;
+  min-width: 0;
   margin: 0 auto;
 }
 
 .crossword-game {
   width: 100%;
   max-width: 1800px;
+  min-width: 0;
   margin: 0 auto;
 }
 
@@ -3442,7 +3445,7 @@ h1 {
 
 .crossword-layout {
   display: grid;
-  grid-template-columns: minmax(180px, .65fr) minmax(0, 2fr) minmax(180px, .65fr);
+  grid-template-columns: minmax(176px, .65fr) minmax(0, 2fr) minmax(176px, .65fr);
   grid-template-areas: 'across grid down';
   align-items: start;
   gap: 18px;
@@ -3611,6 +3614,7 @@ h1 {
   cursor: pointer;
   font-size: .78rem;
   line-height: 1.42;
+  overflow-wrap: anywhere;
 }
 
 .crossword-clue-column button:hover,
@@ -3890,6 +3894,11 @@ h1 {
   gap: 14px;
 }
 
+.preprocessing-practice,
+.problem-card {
+  min-width: 0;
+}
+
 .problem-card {
   padding: clamp(20px, 4vw, 28px);
   border: 1px solid var(--border);
@@ -3905,6 +3914,10 @@ h1 {
   display: flex;
   align-items: center;
   gap: 13px;
+}
+
+.problem-card > header > div {
+  min-width: 0;
 }
 
 .problem-card > header > span {
@@ -3931,6 +3944,7 @@ h1 {
 
 .problem-prompt {
   color: var(--text-soft);
+  overflow-wrap: anywhere;
 }
 
 .problem-card label {
@@ -3942,6 +3956,7 @@ h1 {
 
 .problem-card textarea {
   width: 100%;
+  max-width: 100%;
   min-height: 52px;
   padding: 13px;
   resize: vertical;
@@ -3977,12 +3992,13 @@ h1 {
 
 .worked-solution > div {
   display: grid;
-  grid-template-columns: 110px 1fr 1fr;
+  grid-template-columns: minmax(96px, 110px) minmax(0, 1.15fr) minmax(0, 1fr);
   gap: 10px;
   align-items: baseline;
 }
 
-.worked-solution code {
+.worked-solution code,
+.worked-solution span {
   overflow-wrap: anywhere;
 }
 
@@ -4206,7 +4222,7 @@ h1 {
   text-align: left;
 }
 
-@media (max-width: 920px) {
+@media (max-width: 1120px) {
   .crossword-layout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
@@ -4217,6 +4233,14 @@ h1 {
 
   .crossword-grid-wrap {
     width: min(100%, 720px);
+  }
+
+  .crossword-grid {
+    max-width: none;
+  }
+
+  .crossword-clue-column button {
+    padding-inline: 10px;
   }
 }
 
@@ -4307,5 +4331,46 @@ h1 {
 
   .mock-exam-action {
     align-self: end;
+  }
+
+  .crossword-game-bar {
+    grid-template-columns: 1fr auto;
+    gap: 8px 14px;
+  }
+
+  .crossword-game-bar > strong {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .crossword-tools button,
+  .problem-actions button {
+    flex: 1 1 150px;
+    justify-content: center;
+  }
+
+  .crossword-tools .crossword-submit {
+    margin-left: 0;
+  }
+
+  .practice-summary {
+    align-items: flex-end;
+    gap: 16px;
+  }
+
+  .practice-summary div {
+    min-width: 0;
+  }
+
+  .practice-summary strong {
+    line-height: 1.35;
+  }
+
+  .practice-summary output {
+    flex: 0 0 auto;
+  }
+
+  .problem-card > header {
+    align-items: flex-start;
   }
 }
