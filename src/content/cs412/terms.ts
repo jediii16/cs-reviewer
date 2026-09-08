@@ -46,43 +46,24 @@ export const cs412TheoryTopics: readonly CS412TheoryTopic[] = [
   },
   {
     module: 'warehousing', title: 'DATA WAREHOUSING', subtopics: [
-      { id: 'data-warehouse', title: 'DATA WAREHOUSE', entries: [
-        entry('Data Warehouse', 'It is storage of information over time by a business or other organization. New data is periodically added by people in various key departments. It becomes a library of historical data that can be retrieved and analyzed for decision-making. Key factors include defining critical information to the organization and identifying its sources. It is designed to supply real-time information. A data warehouse is designed as an archive of historical information.'),
-      ] },
-      { id: 'use-in-data-mining', title: 'USE IN DATA MINING', entries: [
-        entry('Use of Data Warehouse in Data Mining', 'Businesses warehouse data primarily for data mining, looking for patterns of information that will help them improve their business processes. A good data warehousing system makes it easier for different departments within a company to access each other\'s data. Marketing team can assess the sales team\'s data in order to make decisions about how to adjust their sales campaigns.'),
-      ] },
-      { id: 'warehouse-vs-database', title: 'DATA WAREHOUSE VS. DATABASE', entries: [
-        entry('Data Warehouse', 'It is programmed to aggregate structured data over time.'),
-        entry('Database', 'It is a transactional system that monitors and updates real-time data in order to have only the most recent data available.'),
-      ] },
-      { id: 'warehouse-vs-lake', title: 'DATA WAREHOUSE VS. DATA LAKE', entries: [
-        entry('Data Warehouse', 'It holds refined data that has been filtered to be used for a specific purpose. It is most often used by business professionals. It is more structured and any changes are more costly.'),
-        entry('Data Lake', 'It holds raw data of which the goal has not yet been determined. It is primarily used by data scientists. It is more easily accessible and easier to update.'),
-      ] },
-      { id: 'warehouse-vs-mart', title: 'DATA WAREHOUSE VS. DATA MART', entries: [
-        entry('Data Warehouse', 'It holds refined data that has been filtered to be used for a specific purpose. It is most often used by business professionals. It is more structured and any changes are more costly.'),
-        entry('Data Mart', 'It is just a smaller (subset) and faster version of a data warehouse. It collects data from a small number of sources and focuses on one subject area. It focuses on one area for analytical purposes, such as a specific department within an organization. It is used to help make business decisions by helping with analysis and reporting.'),
+      { id: 'storage-systems', title: 'DATA STORAGE SYSTEMS', entries: [
+        entry('Data Warehouse', 'Storage of information over time by a business or other organization. It becomes a library of historical data that can be retrieved and analyzed for decision-making.'),
+        entry('Database', 'A transactional system that monitors and updates real-time data in order to have only the most recent data available.'),
+        entry('Data Lake', 'Holds raw data of which the goal has not yet been determined. It is primarily used by data scientists and is more easily accessible and easier to update.'),
+        entry('Data Mart', 'A smaller (subset) and faster version of a data warehouse that collects data from a small number of sources and focuses on one subject area.'),
       ] },
       { id: 'warehouse-operations', title: 'DATA WAREHOUSE OPERATIONS', entries: [
-        entry('Data Warehouse Operations', 'Any data warehouse will consist of random data which will surely be in unstructured manner with a lot of unwanted and dirty data. To make this data structured and noise free, dirty data needs to be removed, converting data into useful information and can be achieved using certain data warehouse operations.'),
         entry('Data Cleaning', 'Inconsistencies are removed. Also, noisy data containing errors are also rectified.'),
-        entry('Data Refresh', 'Data is refreshed by broadcasting the data from multiple sources and updating it on timely basis. This is done because, data inside data bases are updated every minute and to get this same data on data warehouse, the process of refreshing is performed.'),
-        entry('Extraction of Data', 'Data obtained after cleaning and refresh is still unstructured and unorganized. To make it organized and enable user to extract and retrieve relevant data is done through data extraction process. This is helpful, if any user wants to mine the data.'),
-        entry('Transformation of Data', 'Data obtained through heterogeneous data bases have native structure of their respective databases that might be different from that structure of data warehouse. So, transformation of data is done to organize data in the structure similar to that of the data warehouse.'),
-        entry('Data Loading', 'It is responsible for loading the data to its respective target data repository that might include data bases, data marts data warehouses etc.'),
-        entry('ETL', 'Extraction, Transformation, Loading.'),
-      ] },
-      { id: 'warehouse-architecture', title: 'DATA WAREHOUSE ARCHITECTURE', entries: [
-        entry('Single-tier Architecture', 'Operational Data → Middleware → Reporting Tools / OLAP Tools.'),
-        entry('Two-tier Architecture', 'Operational Data and External Data → ETL Tools → Data Warehouse → Data Marts → Reporting Tools / OLAP Tools / Data Mining Tools / What-if analysis tools.'),
-        entry('Three-Tier Architecture', 'It has a top, middle, and bottom tier (source layer, the reconciled layer, and the data warehouse layer). It is suited for systems with long life cycles. An extra layer of review and analysis of the data is completed when changing data to ensure there have been no errors.'),
+        entry('Data Refresh', 'Data is refreshed by broadcasting the data from multiple sources and updating it on timely basis.'),
+        entry('Extraction of Data', 'Data obtained after cleaning and refresh is still unstructured and unorganized. It is organized to enable the user to extract and retrieve relevant data.'),
+        entry('Transformation of Data', 'Data is organized into a structure similar to that of the data warehouse because heterogeneous databases may have different native structures.'),
+        entry('Data Loading', 'Responsible for loading the data to its respective target data repository, which might include databases, data marts, data warehouses, etc.'),
       ] },
       { id: 'warehouse-layers', title: 'LAYERS OF DATA WAREHOUSE ARCHITECTURE', entries: [
-        entry('Source Layer', 'It feeds data into the warehouse. Point-of-sale, marketing automation, CRM, or ERP systems. It has a specific data format and may require a different data capture method based on that data format.'),
-        entry('Staging Layer', 'It is a landing area for data from the source. It ingests data from the SOR without applying business logic or transformations. It is not used in production data analysis. Data in the staging area has yet to be cleansed, standardized, modeled, governed, and verified.'),
-        entry('Warehouse Layer', 'It is where all of the data is stored. Warehouse data is now subject-oriented, integrated, time-variant, and non-volatile. It will have the physical schemas, tables, views, stored procedures, and functions needed to access the warehouse-modeled data.'),
-        entry('Consumption Layer', 'It is the analytics layer, where you model data for consumption using analytics tools like ThoughtSpot, data analysts, data scientists, and business users.'),
+        entry('Source Layer', 'Feeds data into the warehouse. Sources can include point-of-sale, marketing automation, CRM, or ERP systems.'),
+        entry('Staging Layer', 'A landing area for data from the source where data is ingested without applying business logic or transformations.'),
+        entry('Warehouse Layer', 'Where all of the data is stored. The data is subject-oriented, integrated, time-variant, and non-volatile.'),
+        entry('Consumption Layer', 'The analytics layer where data is modeled for consumption using analytics tools, data analysts, data scientists, and business users.'),
       ] },
     ],
   },

@@ -42,6 +42,6 @@ describe('CS.412 routes', () => {
     expect(screen.getByRole('button', { name: /start crisp-dm crossword/i })).toBeVisible();
     await user.click(screen.getByRole('button', { name: /start data warehousing crossword/i }));
     expect(screen.getByRole('grid', { name: /crossword grid/i })).toBeVisible();
-    expect(screen.getAllByRole('button', { name: /clue/i })).toHaveLength(19);
+    expect(screen.getAllByRole('button', { name: /clue/i })).toHaveLength(13);
   });
 });

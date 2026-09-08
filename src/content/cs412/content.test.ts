@@ -17,15 +17,14 @@ describe('CS.412 content', () => {
       'ASSOCIATION RULES', 'CRISP DM', 'BUSINESS/PROJECT UNDERSTANDING', 'DATA UNDERSTANDING',
       'DATA PREPARATION', 'MODELLING', 'EVALUATION', 'DEPLOYMENT', 'DATA WAREHOUSE',
       'DATABASE', 'DATA LAKE', 'DATA MART', 'DATA REFRESH', 'DATA CLEANING',
-      'EXTRACTION OF DATA', 'TRANSFORMATION OF DATA', 'DATA LOADING', 'ETL',
-      'SINGLE-TIER ARCHITECTURE', 'TWO-TIER ARCHITECTURE', 'THREE-TIER ARCHITECTURE',
+      'EXTRACTION OF DATA', 'TRANSFORMATION OF DATA', 'DATA LOADING',
       'SOURCE LAYER', 'STAGING LAYER', 'WAREHOUSE LAYER', 'CONSUMPTION LAYER',
     ]) expect(answers).toContain(answer);
   });
 
   it('uses the user-supplied subtopics and definitions as the study source', () => {
     expect(cs412TheoryTopics).toHaveLength(3);
-    expect(cs412Terms).toHaveLength(38);
+    expect(cs412Terms).toHaveLength(32);
     expect(cs412TheoryTopics[0].subtopics.map((subtopic) => subtopic.title)).toEqual([
       'WHAT IS DATA MINING?',
       'USES OF DATA MINING',
@@ -34,6 +33,15 @@ describe('CS.412 content', () => {
     expect(cs412Terms.find((term) => term.answer === 'DATA MINING')?.clue).toBe(
       'It is the process of sorting through large data sets to identify patterns and relationships that can help solve business problems through data analysis.',
     );
+  });
+
+  it('uses only the revised thirteen Data Warehousing definitions', () => {
+    const warehousing = cs412Terms.filter((term) => term.module === 'warehousing');
+    expect(warehousing).toHaveLength(13);
+    expect(warehousing.find((term) => term.answer === 'DATA WAREHOUSE')?.clue).toBe(
+      'Storage of information over time by a business or other organization. It becomes a library of historical data that can be retrieved and analyzed for decision-making.',
+    );
+    expect(warehousing.map((term) => term.answer)).not.toContain('ETL');
   });
 
   it('registers CS.412 as Data Mining', () => {

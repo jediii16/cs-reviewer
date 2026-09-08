@@ -63,6 +63,28 @@ test('CS.412 calculator moves, remembers its position, and the music dock stays 
   expect((await dock.boundingBox())?.width).toBeLessThanOrEqual(780);
 });
 
+test('crossword uses the page width without clipping and gives every answer a visible cell grid', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/subjects/cs412/crossword');
+  await page.getByRole('button', { name: /start 15-item mock exam/i }).click();
+
+  const measurements = await page.locator('.crossword-grid-wrap').evaluate((wrap) => ({
+    clientWidth: wrap.clientWidth,
+    scrollWidth: wrap.scrollWidth,
+    layoutWidth: wrap.parentElement?.clientWidth ?? 0,
+    pageOverflow: document.documentElement.scrollWidth - window.innerWidth,
+  }));
+  expect(measurements.scrollWidth).toBeLessThanOrEqual(measurements.clientWidth);
+  expect(measurements.clientWidth / measurements.layoutWidth).toBeGreaterThanOrEqual(0.45);
+  expect(measurements.pageOverflow).toBeLessThanOrEqual(0);
+
+  const borders = await page.locator('.crossword-cell').evaluateAll((cells) => cells.map((cell) => {
+    const style = getComputedStyle(cell);
+    return [style.borderTopWidth, style.borderRightWidth, style.borderBottomWidth, style.borderLeftWidth];
+  }));
+  expect(borders.every((sides) => sides.every((side) => side === '1px'))).toBe(true);
+});
+
 test('CS.412 remains contained at a 360px mobile width', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   for (const path of ['/subjects/cs412', '/subjects/cs412/study', '/subjects/cs412/crossword', '/subjects/cs412/preprocessing']) {

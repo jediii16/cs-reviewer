@@ -123,7 +123,11 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
             className="crossword-grid"
             role="grid"
             aria-label="Crossword grid"
-            style={{ gridTemplateColumns: `repeat(${puzzle.width}, minmax(25px, 1fr))`, aspectRatio: `${puzzle.width}/${puzzle.height}` }}
+            style={{
+              gridTemplateColumns: `repeat(${puzzle.width}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${puzzle.height}, minmax(0, 1fr))`,
+              aspectRatio: `${puzzle.width}/${puzzle.height}`,
+            }}
           >
             {Array.from({ length: puzzle.width * puzzle.height }, (_, index) => {
               const row = Math.floor(index / puzzle.width);
