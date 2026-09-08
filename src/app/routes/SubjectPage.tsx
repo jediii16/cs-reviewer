@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, ClipboardCheck, GalleryHorizontalEnd } from 'lucide-react';
+import { ArrowLeft, BookOpen, Calculator, ClipboardCheck, GalleryHorizontalEnd, Puzzle } from 'lucide-react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { BappiMascot } from '../../components/BappiMascot';
 import { getSubject } from '../../content/subjects';
@@ -33,7 +33,7 @@ export function SubjectPage() {
       <div className="subject-heading">
         <div>
           <h1 id="subject-title">{currentSubject.code}</h1>
-          <p>Learn each concept, self-check with flashcards, then practice complete multiple-choice sets.</p>
+          <p>{currentSubject.id === 'cs412' ? 'Master the likely terms in real crosswords, then solve a complete 30-point preprocessing set.' : 'Learn each concept, self-check with flashcards, then practice complete multiple-choice sets.'}</p>
         </div>
         <BappiMascot
           className="subject-heading-mascot"
@@ -42,7 +42,10 @@ export function SubjectPage() {
         />
       </div>
 
-      <section className="review-summary" aria-label="Saved review progress">
+      {currentSubject.id === 'cs412' ? <section className="review-summary cs412-review-summary" aria-label="CS.412 exam format">
+        <div className="review-stat"><span>Theory coverage</span><strong>56 likely terms</strong></div>
+        <div className="review-stat"><span>Exam practice</span><strong>15 clues + 30-point solving</strong></div>
+      </section> : <section className="review-summary" aria-label="Saved review progress">
         <div className="review-stat">
           <span>Course progress</span>
           <strong>{progressPercent}%</strong>
@@ -52,9 +55,13 @@ export function SubjectPage() {
           <strong>{latestResult ? `${latestResult.correct} / ${latestResult.total}` : 'No test scores yet'}</strong>
         </div>
         <button type="button" onClick={confirmReset}>Reset progress</button>
-      </section>
+      </section>}
 
-      <div className="mode-list" aria-label="Choose a review mode">
+      {currentSubject.id === 'cs412' ? <div className="mode-list cs412-mode-list" aria-label="Choose a review mode">
+        <Link aria-label="Study" className="mode-row" to="/subjects/cs412/study"><span className="mode-icon"><BookOpen /></span><span><strong>Study</strong><small>Words, definitions, formulas, and worked examples</small></span><span className="mode-action">Learn first</span></Link>
+        <Link aria-label="Crossword practice" className="mode-row mode-row-primary" to="/subjects/cs412/crossword"><span className="mode-icon"><Puzzle /></span><span><strong>Crossword practice</strong><small>Real 15-item interlocking puzzles</small></span><span className="mode-action">Open puzzle lab</span></Link>
+        <Link aria-label="Data preprocessing" className="mode-row" to="/subjects/cs412/preprocessing"><span className="mode-icon"><Calculator /></span><span><strong>Data preprocessing</strong><small>6 problems · 30 points</small></span><span className="mode-action">Start solving</span></Link>
+      </div> : <div className="mode-list" aria-label="Choose a review mode">
         <Link aria-label="Study" className="mode-row mode-row-primary" to={`/subjects/${currentSubject.id}/study`}>
           <span className="mode-icon" aria-hidden="true"><BookOpen /></span>
           <span><strong>Study</strong><small>Review lessons and use active recall</small></span>
@@ -70,7 +77,7 @@ export function SubjectPage() {
           <span><strong>Test</strong><small>Complete focused multiple-choice sets</small></span>
           <span className="mode-action">Choose a set</span>
         </Link>
-      </div>
+      </div>}
     </section>
   );
 }

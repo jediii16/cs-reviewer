@@ -35,6 +35,11 @@
   --lime-strong: #cee5ff;
   --green: var(--success);
   --red: var(--danger);
+  --cs-indigo: #3026a8;
+  --cs-cyan: #11a8c7;
+  --cs-lime: #b9ec42;
+  --calc-bg: #101425;
+  --calc-key: #202741;
 }
 
 :root[data-theme='dark'] {
@@ -73,6 +78,11 @@
   --lime-strong: #164168;
   --green: var(--success);
   --red: var(--danger);
+  --cs-indigo: #8f8cff;
+  --cs-cyan: #4ad8ef;
+  --cs-lime: #c8f36a;
+  --calc-bg: #080b16;
+  --calc-key: #202741;
 }
 
 :root {

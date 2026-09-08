@@ -5,6 +5,8 @@ import { SubjectPage } from './routes/SubjectPage';
 import { StudyPage } from './routes/StudyPage';
 import { TestPage } from './routes/TestPage';
 import { FlashcardsPage } from './routes/FlashcardsPage';
+import { CrosswordPage } from './routes/CrosswordPage';
+import { PreprocessingPage } from './routes/PreprocessingPage';
 
 export function App() {
   return (
@@ -15,6 +17,8 @@ export function App() {
       <Route path="subjects/:subjectId/study" element={<StudyPage />} />
       <Route path="subjects/:subjectId/flashcards" element={<FlashcardsPage />} />
       <Route path="subjects/:subjectId/test" element={<TestPage />} />
+      <Route path="subjects/cs412/crossword" element={<CrosswordPage />} />
+      <Route path="subjects/cs412/preprocessing" element={<PreprocessingPage />} />
       </Route>
     </Routes>
   );

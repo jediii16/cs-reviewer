@@ -4,6 +4,7 @@ import { cit016TestSets, cit016TestTopicLabels } from './cit016/questions';
 import { cit017Subject } from './cit017';
 import { cit017FlashcardDecks } from './cit017/flashcards';
 import { cit017TestSets, testSetTopicLabels } from './cit017/questions';
+import { cs412Subject } from './cs412';
 
 const subjectTests = {
   cit016: { sets: cit016TestSets, labels: cit016TestTopicLabels },
@@ -15,7 +16,7 @@ const subjectFlashcards = {
   cit017: cit017FlashcardDecks,
 };
 
-export const subjects = [cit016Subject, cit017Subject];
+export const subjects = [cit016Subject, cit017Subject, cs412Subject];
 
 export function getSubject(subjectId: string | undefined) {
   return subjects.find((subject) => subject.id === subjectId);

@@ -1,5 +1,38 @@
 import { expect, test } from '@playwright/test';
 
+test('CS.412 provides a 15-answer crossword and six preprocessing problems', async ({ page }) => {
+  await page.goto('/subjects/cs412');
+  await page.getByRole('link', { name: /^study$/i }).click();
+  await expect(page.getByRole('heading', { name: /study cs\.412/i })).toBeVisible();
+  await expect(page.getByText('Data mining', { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /data preprocessing techniques/i })).toBeVisible();
+
+  await page.goto('/subjects/cs412');
+  await page.getByRole('link', { name: /crossword practice/i }).click();
+  await page.getByRole('button', { name: /start 15-item mock exam/i }).click();
+  await expect(page.getByRole('grid', { name: /crossword grid/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /clue/i })).toHaveCount(15);
+
+  await page.goto('/subjects/cs412/preprocessing');
+  await expect(page.getByText('5 points')).toHaveCount(6);
+  await expect(page.getByText(/30 points total/i)).toBeVisible();
+  await page.getByRole('button', { name: /open calculator/i }).click();
+  await page.getByLabel('Calculator expression').fill('sqrt(81)');
+  await page.getByLabel('Calculator expression').press('Enter');
+  await expect(page.getByTestId('calculator-result')).toHaveText('9');
+});
+
+test('CS.412 remains contained at a 360px mobile width', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  for (const path of ['/subjects/cs412', '/subjects/cs412/study', '/subjects/cs412/crossword', '/subjects/cs412/preprocessing']) {
+    await page.goto(path);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+  }
+  await page.getByRole('button', { name: /open calculator/i }).click();
+  await expect(page.getByRole('dialog', { name: /scientific calculator/i })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+});
+
 test('active recall reveals without resizing and lesson navigation returns to its anchor', async ({ page }) => {
   await page.goto('/subjects/cit017/study');
   const waitForLessonAnchor = () => expect.poll(async () => page.locator('.lesson-anchor').evaluate((element) => (

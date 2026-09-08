@@ -18,6 +18,16 @@ export interface GlossaryEntry {
   notes?: string[];
 }
 
+export type TheoryModule = 'introduction' | 'crisp-dm' | 'warehousing';
+
+export interface TheoryTerm {
+  id: string;
+  module: TheoryModule;
+  answer: string;
+  displayAnswer: string;
+  clue: string;
+}
+
 export interface LessonTopic {
   id: string;
   title: string;

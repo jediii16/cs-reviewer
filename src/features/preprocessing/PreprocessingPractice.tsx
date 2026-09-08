@@ -1,0 +1,14 @@
+import { CheckCircle2, Eye, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { ScientificCalculator } from '../calculator/ScientificCalculator';
+import { createPracticeSet, getWorkedSolution, gradeProblem } from './problems';
+
+export function PreprocessingPractice({ initialSeed = 412 }: { initialSeed?: number }) {
+  const [seed, setSeed] = useState(initialSeed); const set = createPracticeSet(seed);
+  const [answers, setAnswers] = useState<Record<string, string>>({}); const [feedback, setFeedback] = useState<Record<string, string>>({});
+  const [solved, setSolved] = useState<string[]>([]); const [revealed, setRevealed] = useState<string[]>([]);
+  const score = solved.filter((id) => !revealed.includes(id)).length * 5;
+  return <><section className="preprocessing-practice"><div className="practice-summary"><div><span>Practice set #{seed}</span><strong>6 problems · 30 points total</strong></div><output>{score}<small>/30</small></output></div>
+    <div className="problem-list">{set.problems.map((problem, index) => { const show = revealed.includes(problem.id); const done = solved.includes(problem.id); return <article className={`problem-card ${done ? 'solved' : ''}`} key={problem.id} id={problem.id}><header><span>{String(index + 1).padStart(2, '0')}</span><div><h2>{problem.title}</h2><p>5 points</p></div>{done ? <CheckCircle2 aria-label="Solved" /> : null}</header><p className="problem-prompt">{problem.prompt}</p><label>Answer<textarea rows={problem.expected.flat().length > 1 ? 3 : 1} value={answers[problem.id] ?? ''} disabled={done} placeholder={problem.expected.length > 1 ? 'Example: 1, 2, 3 | 4, 5, 6' : 'Enter your numeric answer'} onChange={(event) => setAnswers((items) => ({ ...items, [problem.id]: event.target.value }))} /></label><div className="problem-actions"><button type="button" disabled={done} onClick={() => { const result = gradeProblem(problem, answers[problem.id] ?? ''); setFeedback((items) => ({ ...items, [problem.id]: result.feedback })); if (result.correct) setSolved((items) => [...new Set([...items, problem.id])]); }}>Check answer</button><button type="button" onClick={() => setRevealed((items) => [...new Set([...items, problem.id])])}><Eye /> Show solution</button></div>{feedback[problem.id] ? <p className="problem-feedback" role="status">{feedback[problem.id]}</p> : null}{show ? <div className="worked-solution"><h3>Worked solution</h3>{getWorkedSolution(problem).map((step) => <div key={step.label}><strong>{step.label}</strong><code>{step.expression}</code><span>{step.result}</span></div>)}</div> : null}</article>; })}</div>
+    <button className="new-practice" type="button" onClick={() => { setSeed((value) => value + 1); setAnswers({}); setFeedback({}); setSolved([]); setRevealed([]); }}><RefreshCw /> Try another set</button></section><ScientificCalculator /></>;
+}
