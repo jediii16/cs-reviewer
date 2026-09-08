@@ -8,6 +8,12 @@ Object.defineProperty(window, 'scrollTo', {
   value: () => undefined,
 });
 
+Object.defineProperty(Element.prototype, 'scrollIntoView', {
+  configurable: true,
+  writable: true,
+  value: () => undefined,
+});
+
 if (typeof HTMLDialogElement !== 'undefined') {
   if (!HTMLDialogElement.prototype.showModal) {
     HTMLDialogElement.prototype.showModal = function showModal() {

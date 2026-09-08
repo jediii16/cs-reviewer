@@ -31,6 +31,7 @@ describe('TestPage', () => {
       'Security Principles',
       'Categories of Threats',
       'Social Engineering',
+      'Book References',
     ]) {
       expect(screen.getByRole('heading', { name: heading })).toBeVisible();
     }
@@ -39,9 +40,11 @@ describe('TestPage', () => {
     expect(screen.getByRole('button', { name: /foundations concepts.*24 questions/i })).toBeVisible();
     expect(screen.getByRole('button', { name: /principle definitions.*9 questions/i })).toBeVisible();
     expect(screen.getByRole('button', { name: /threat scenarios.*12 questions/i })).toBeVisible();
+    expect(screen.getByRole('button', { name: /threat scenario challenge.*15 questions/i })).toBeVisible();
     expect(screen.getByRole('button', { name: /technique definitions.*17 questions/i })).toBeVisible();
     expect(screen.getByRole('button', { name: /technique examples.*17 questions/i })).toBeVisible();
     expect(screen.getByRole('button', { name: /psychological tactics.*9 questions/i })).toBeVisible();
+    expect(screen.getByRole('button', { name: /book reference definitions.*33 questions/i })).toBeVisible();
   });
 
   it('starts every question in the chosen set', async () => {
@@ -86,6 +89,19 @@ describe('TestPage', () => {
     );
     expect(screen.getByRole('heading', { level: 2 })).not.toHaveTextContent(
       /which social-engineering technique matches this description/i,
+    );
+  });
+
+  it('starts the complete Book References definition test', async () => {
+    const user = userEvent.setup();
+    renderCit017TestPage();
+
+    await user.click(screen.getByRole('button', { name: /book reference definitions.*33 questions/i }));
+
+    expect(screen.getByText('Question 1 of 33')).toBeVisible();
+    expect(screen.getByText('Book Reference Definitions')).toBeVisible();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Identify the book-reference term that matches each definition.',
     );
   });
 });

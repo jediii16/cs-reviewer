@@ -2,21 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { psychologicalTactics, socialTechniques } from './social';
 import { securityPrinciples } from './principles';
 import { threatCategories } from './threats';
+import { bookReferencesTopic } from './bookReferences';
 import { cit017Questions, cit017TestSets } from './questions';
 
 describe('CIT.017 graded practice sets', () => {
-  it('contains every question in the seven focused sets', () => {
+  it('contains every question in the nine focused sets', () => {
     expect(Object.fromEntries(cit017TestSets.map((set) => [set.id, set.questions.length]))).toEqual({
       'foundations-cia-scenarios': 10,
       'foundations-concepts': 24,
       'principles-definitions': 9,
       'threat-scenarios': 12,
+      'threat-scenario-challenge': 15,
       'social-definitions': 17,
       'social-examples': 17,
       'social-tactics': 9,
+      'book-reference-definitions': 33,
     });
 
-    expect(cit017Questions).toHaveLength(98);
+    expect(cit017Questions).toHaveLength(146);
     expect(cit017Questions.every((question) => question.kind === 'multiple-choice')).toBe(true);
   });
 
@@ -99,5 +102,29 @@ describe('CIT.017 graded practice sets', () => {
     expect(set?.questions.map((question) => question.prompt)).toEqual(
       psychologicalTactics.map((tactic) => tactic.example),
     );
+  });
+
+  it('adds 15 distinct challenge scenarios covering all 12 threat categories', () => {
+    const set = cit017TestSets.find((item) => item.id === 'threat-scenario-challenge');
+    const concepts = set?.questions.map((question) => question.concept) ?? [];
+    const prompts = set?.questions.map((question) => question.prompt) ?? [];
+
+    expect(set?.questions).toHaveLength(15);
+    expect(new Set(concepts)).toEqual(new Set(threatCategories.map((category) => category.name)));
+    expect(new Set(prompts)).toHaveLength(15);
+    expect(set?.instruction).toBe('Choose the threat category that best fits each scenario.');
+  });
+
+  it('covers every supplied Book References term once using its definition', () => {
+    const set = cit017TestSets.find((item) => item.id === 'book-reference-definitions');
+    const entries = bookReferencesTopic.sections.flatMap((section) => section.terms ?? []);
+
+    expect(set?.questions.map((question) => question.concept)).toEqual(
+      entries.map((entry) => entry.term),
+    );
+    expect(set?.questions.map((question) => question.prompt)).toEqual(
+      entries.map((entry) => entry.definition),
+    );
+    expect(set?.instruction).toBe('Identify the book-reference term that matches each definition.');
   });
 });

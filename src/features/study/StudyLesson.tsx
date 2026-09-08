@@ -92,6 +92,23 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
         </section>
       ) : null}
 
+      {section.terms?.length ? (
+        <section className="lesson-block reference-block" aria-labelledby="reference-terms-title">
+          <h3 id="reference-terms-title">Reference terms</h3>
+          <dl className="reference-list">
+            {section.terms.map((entry) => (
+              <div className="reference-entry" key={entry.term}>
+                <dt>{entry.term}</dt>
+                <dd>
+                  <p>{entry.definition}</p>
+                  {entry.notes?.map((note) => <p key={note}>{note}</p>)}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ) : null}
+
       {section.id === 'mccumber-cube' ? <McCumberCube /> : null}
 
       <section

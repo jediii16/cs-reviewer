@@ -220,6 +220,24 @@ describe('App navigation', () => {
     }
   });
 
+  it('opens the Book References glossary as a paged CIT.017 lesson', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit017/study']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /book references/i }));
+
+    expect(screen.getByRole('heading', { name: /lesson 1: security foundations/i })).toBeVisible();
+    expect(screen.getByText('Information Security')).toBeVisible();
+    expect(screen.getByText(/the protection of information and its critical elements/i)).toBeVisible();
+
+    await user.click(screen.getByRole('button', { name: /^next$/i }));
+    expect(screen.getByRole('heading', { name: /core security terminology/i })).toBeVisible();
+  });
+
   it('does not carry an active quiz or deck into another subject route', async () => {
     const user = userEvent.setup();
     render(

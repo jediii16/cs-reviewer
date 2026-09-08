@@ -53,6 +53,19 @@ test('Security Principles study contains only the nine supplied principles', asy
   await expect(page.getByText('University examination records')).toHaveCount(0);
 });
 
+test('Book References presents Lesson 1 as a readable paged glossary', async ({ page }) => {
+  await page.goto('/subjects/cit017/study');
+  await page.getByRole('button', { name: /book references/i }).click();
+
+  await expect(page.getByRole('heading', { name: /lesson 1: security foundations/i })).toBeVisible();
+  await expect(page.getByText('Information Security', { exact: true })).toBeVisible();
+  await expect(page.getByText(/the protection of information and its critical elements/i)).toBeVisible();
+
+  await page.getByRole('button', { name: /^next$/i }).click();
+  await expect(page.getByRole('heading', { name: /core security terminology/i })).toBeVisible();
+  await expect(page.getByText('Asset', { exact: true })).toBeVisible();
+});
+
 test('practice page exposes complete focused multiple-choice sets', async ({ page }) => {
   await page.goto('/subjects/cit017/test');
 
@@ -60,9 +73,22 @@ test('practice page exposes complete focused multiple-choice sets', async ({ pag
   await expect(page.getByRole('button', { name: /foundations concepts.*24 questions/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /principle definitions.*9 questions/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /threat scenarios.*12 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /threat scenario challenge.*15 questions/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /technique definitions.*17 questions/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /technique examples.*17 questions/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /psychological tactics.*9 questions/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /book reference definitions.*33 questions/i })).toBeVisible();
+
+  await page.getByRole('button', { name: /book reference definitions.*33 questions/i }).click();
+  await expect(page.getByText('Question 1 of 33')).toBeVisible();
+  await expect(page.getByText('Book Reference Definitions')).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('Identify the book-reference term that matches each definition.');
+  await page.getByRole('button', { name: /back to practice sets/i }).click();
+
+  await page.getByRole('button', { name: /threat scenario challenge.*15 questions/i }).click();
+  await expect(page.getByText('Question 1 of 15')).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('Choose the threat category that best fits each scenario.');
+  await page.getByRole('button', { name: /back to practice sets/i }).click();
 
   await page.getByRole('button', { name: /technique definitions.*17 questions/i }).click();
   await expect(page.getByText('Question 1 of 17')).toBeVisible();
