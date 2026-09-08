@@ -85,6 +85,19 @@ test('crossword uses the page width without clipping and gives every answer a vi
   expect(borders.every((sides) => sides.every((side) => side === '1px'))).toBe(true);
 });
 
+test('a tall CRISP-DM crossword sizes itself to the desktop viewport', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Mobile keeps the grid at readable full width and scrolls vertically.');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/subjects/cs412/crossword');
+  await page.getByRole('button', { name: /start crisp-dm crossword/i }).click();
+
+  const grid = await page.getByRole('grid', { name: /crossword grid/i }).boundingBox();
+  const wrap = await page.locator('.crossword-grid-wrap').boundingBox();
+  if (!grid || !wrap) throw new Error('CRISP-DM crossword must be measurable');
+  expect(grid.height).toBeLessThanOrEqual(680);
+  expect(grid.width).toBeLessThan(wrap.width);
+});
+
 test('a solved crossword drops the WOW GALING banner and marks the grid complete', async ({ page }) => {
   await page.goto('/subjects/cs412/crossword');
   await page.getByRole('button', { name: /start crisp-dm crossword/i }).click();
@@ -101,6 +114,8 @@ test('a solved crossword drops the WOW GALING banner and marks the grid complete
 
   await expect(page.getByRole('heading', { name: /wow galing/i })).toBeVisible();
   await expect(page.getByTestId('crossword-confetti')).toBeAttached();
+  await expect(page.locator('.crossword-cell.complete')).toHaveCount(await page.locator('.crossword-cell').count());
+  await expect(page.getByRole('heading', { name: /wow galing/i })).not.toBeAttached({ timeout: 5_000 });
   await expect(page.locator('.crossword-cell.complete')).toHaveCount(await page.locator('.crossword-cell').count());
 });
 

@@ -3460,6 +3460,8 @@ h1 {
   display: grid;
   gap: 1px;
   width: 100%;
+  max-width: var(--crossword-desktop-max, 100%);
+  margin-inline: auto;
   padding: 7px;
   border: 1px solid var(--border-strong);
   border-radius: 10px;
@@ -3715,6 +3717,12 @@ h1 {
   background: var(--accent);
 }
 
+.crossword-reveal-actions .crossword-clear-confirm {
+  color: #fff;
+  border-color: #c44350;
+  background: #c44350;
+}
+
 .crossword-reveal-actions svg {
   width: 16px;
 }
@@ -3732,7 +3740,7 @@ h1 {
   top: 62px;
   left: 50%;
   width: min(390px, calc(100vw - 36px));
-  animation: crossword-banner-drop .9s cubic-bezier(.2, .9, .25, 1.12) both;
+  animation: crossword-banner-cycle 4.2s cubic-bezier(.2, .9, .25, 1.12) both;
 }
 
 .crossword-success-banner {
@@ -3799,10 +3807,11 @@ h1 {
   animation-fill-mode: both;
 }
 
-@keyframes crossword-banner-drop {
+@keyframes crossword-banner-cycle {
   0% { transform: translate(-50%, -220px); }
-  72% { transform: translate(-50%, 10px); }
-  100% { transform: translate(-50%, 0); }
+  16% { transform: translate(-50%, 10px); }
+  22%, 82% { transform: translate(-50%, 0); }
+  100% { transform: translate(-50%, -220px); }
 }
 
 @keyframes crossword-banner-swing {
@@ -4220,6 +4229,7 @@ h1 {
 
   .crossword-grid {
     min-width: 0;
+    max-width: none;
   }
 
   .crossword-complete div {

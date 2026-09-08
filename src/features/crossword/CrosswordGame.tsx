@@ -1,5 +1,5 @@
 import { Check, Eye, RotateCcw } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
   activeEntry,
   checkCells,
@@ -33,17 +33,26 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
   });
   const [message, setMessage] = useState('Choose a clue, then type the answer.');
   const [finished, setFinished] = useState(false);
+  const [celebrating, setCelebrating] = useState(false);
   const [revealEntryId, setRevealEntryId] = useState<string | null>(null);
+  const [clearOpen, setClearOpen] = useState(false);
   const [focusRequest, setFocusRequest] = useState(0);
   const inputRefs = useRef(new Map<string, HTMLInputElement>());
   const cells = useMemo(() => new Map(puzzle.cells.map((cell) => [key(cell.row, cell.col), cell])), [puzzle]);
   const selected = activeEntry(puzzle, state);
   const activeKeys = selected ? entryCellKeys(puzzle, selected.id) : [];
   const revealEntry = puzzle.entries.find((entry) => entry.id === revealEntryId);
+  const desktopGridMaxWidth = Math.round(Math.min(puzzle.width * 56, (660 * puzzle.width) / puzzle.height));
 
   useEffect(() => {
     if (state.selectedCellKey) inputRefs.current.get(state.selectedCellKey)?.focus();
   }, [state.selectedCellKey, state.direction, focusRequest]);
+
+  useEffect(() => {
+    if (!celebrating) return undefined;
+    const timeout = window.setTimeout(() => setCelebrating(false), 4_200);
+    return () => window.clearTimeout(timeout);
+  }, [celebrating]);
 
   const save = (next: typeof state) => {
     setState(next);
@@ -94,6 +103,7 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
     }
     setState(checked);
     setFinished(true);
+    setCelebrating(true);
     setMessage('Puzzle complete! Every answer is correct.');
     try {
       localStorage.removeItem(storageKey);
@@ -123,7 +133,7 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
 
   return (
     <section className="crossword-game" aria-label={puzzle.title}>
-      {finished ? (
+      {celebrating ? (
         <div className="crossword-celebration" aria-live="assertive">
           <div className="crossword-confetti" data-testid="crossword-confetti" aria-hidden="true">
             {confettiPieces.map((piece, index) => (
@@ -178,6 +188,39 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
           </div>
         </div>
       ) : null}
+      {clearOpen ? (
+        <div
+          className="crossword-reveal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="crossword-clear-title"
+          onClick={(event) => { if (event.target === event.currentTarget) setClearOpen(false); }}
+          onKeyDown={(event) => { if (event.key === 'Escape') setClearOpen(false); }}
+        >
+          <div className="crossword-reveal-modal">
+            <span className="crossword-reveal-eyebrow">START FRESH</span>
+            <h2 id="crossword-clear-title">Clear this puzzle?</h2>
+            <p>Every letter you entered in this crossword will be removed. This cannot be undone.</p>
+            <div className="crossword-reveal-actions">
+              <button type="button" onClick={() => setClearOpen(false)}>Cancel</button>
+              <button
+                className="crossword-clear-confirm"
+                type="button"
+                autoFocus
+                onClick={() => {
+                  save(createGameState(puzzle));
+                  setFinished(false);
+                  setCelebrating(false);
+                  setMessage('Puzzle cleared. Choose a clue to start again.');
+                  setClearOpen(false);
+                }}
+              >
+                <RotateCcw /> Clear puzzle
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="crossword-game-bar">
         <button className="back-link back-link-button" type="button" onClick={onExit}>← Puzzles</button>
         <strong>{puzzle.title}</strong>
@@ -196,7 +239,8 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
               gridTemplateColumns: `repeat(${puzzle.width}, minmax(0, 1fr))`,
               gridTemplateRows: `repeat(${puzzle.height}, minmax(0, 1fr))`,
               aspectRatio: `${puzzle.width}/${puzzle.height}`,
-            }}
+              '--crossword-desktop-max': `${desktopGridMaxWidth}px`,
+            } as CSSProperties}
           >
             {Array.from({ length: puzzle.width * puzzle.height }, (_, index) => {
               const row = Math.floor(index / puzzle.width);
@@ -244,7 +288,7 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
           <div className="crossword-tools">
             <button type="button" onClick={() => { if (selected) save(checkCells(state, puzzle, activeKeys)); setMessage('Checked the selected word.'); }}><Check /> Check word</button>
             <button type="button" onClick={() => { if (selected) setRevealEntryId(selected.id); }}><Eye /> Reveal word</button>
-            <button type="button" onClick={() => { if (window.confirm('Clear this puzzle?')) save(createGameState(puzzle)); }}><RotateCcw /> Clear</button>
+            <button type="button" onClick={() => setClearOpen(true)}><RotateCcw /> Clear</button>
             <button className="crossword-submit" type="button" onClick={submit}>Submit puzzle</button>
           </div>
         </div>

@@ -1,6 +1,6 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { cs412Terms } from '../../content/cs412';
 import { createMockCrossword } from './builder';
 import { CrosswordGame } from './CrosswordGame';
@@ -50,8 +50,28 @@ describe('CrosswordGame', () => {
     await user.click(screen.getByRole('button', { name: /submit puzzle/i }));
 
     expect(screen.getByRole('heading', { name: /wow galing/i })).toBeVisible();
+    expect(screen.getByRole('img', { name: /bappi is celebrating/i })).toBeVisible();
     expect(screen.getByTestId('crossword-confetti')).toBeInTheDocument();
     expect(container.querySelectorAll('.crossword-cell.complete')).toHaveLength(puzzle.cells.length);
+  });
+
+  it('retracts the success banner while leaving the solved grid green', async () => {
+    vi.useFakeTimers();
+    try {
+      const puzzle = createMockCrossword(cs412Terms, 412);
+      const solved = createGameState(puzzle);
+      solved.values = Object.fromEntries(puzzle.cells.map((cell) => [`${cell.row}:${cell.col}`, cell.solution]));
+      localStorage.setItem(`cs412-crossword:${puzzle.id}`, JSON.stringify(solved));
+      const { container } = render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
+
+      fireEvent.click(screen.getByRole('button', { name: /submit puzzle/i }));
+      act(() => vi.advanceTimersByTime(4500));
+
+      expect(screen.queryByRole('heading', { name: /wow galing/i })).not.toBeInTheDocument();
+      expect(container.querySelectorAll('.crossword-cell.complete')).toHaveLength(puzzle.cells.length);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('confirms a word reveal in an in-app modal', async () => {
@@ -69,5 +89,24 @@ describe('CrosswordGame', () => {
     await user.click(screen.getByRole('button', { name: /reveal word/i }));
     await user.click(within(screen.getByRole('dialog', { name: /reveal this word/i })).getByRole('button', { name: /^reveal word$/i }));
     expect(screen.getByLabelText(`Crossword cell ${first.row + 1}, ${first.col + 1}`)).toHaveValue(first.answer[0]);
+  });
+
+  it('confirms clearing the puzzle in an in-app modal', async () => {
+    const user = userEvent.setup();
+    const puzzle = createMockCrossword(cs412Terms, 412);
+    const first = puzzle.entries[0];
+    render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
+    const firstCell = screen.getByLabelText(`Crossword cell ${first.row + 1}, ${first.col + 1}`);
+    await user.keyboard(first.answer[0]);
+
+    await user.click(screen.getByRole('button', { name: /^clear$/i }));
+    let dialog = screen.getByRole('dialog', { name: /clear this puzzle/i });
+    await user.click(within(dialog).getByRole('button', { name: /cancel/i }));
+    expect(firstCell).toHaveValue(first.answer[0]);
+
+    await user.click(screen.getByRole('button', { name: /^clear$/i }));
+    dialog = screen.getByRole('dialog', { name: /clear this puzzle/i });
+    await user.click(within(dialog).getByRole('button', { name: /^clear puzzle$/i }));
+    expect(firstCell).toHaveValue('');
   });
 });
