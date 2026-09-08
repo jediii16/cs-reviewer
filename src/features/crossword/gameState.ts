@@ -32,9 +32,7 @@ export function enterLetter(state: CrosswordGameState, puzzle: CrosswordPuzzle, 
   if (!state.selectedCellKey || !/^[a-z]$/i.test(letter)) return state;
   const entry = activeEntry(puzzle, state); const keys = entry ? entryCellKeys(puzzle, entry.id) : [];
   const index = keys.indexOf(state.selectedCellKey);
-  const next = keys.slice(index + 1).find((key) => !state.values[key])
-    ?? keys[keys.length - 1]
-    ?? state.selectedCellKey;
+  const next = keys[Math.min(index + 1, keys.length - 1)] ?? state.selectedCellKey;
   return { ...state, values: { ...state.values, [state.selectedCellKey]: letter.toUpperCase() }, selectedCellKey: next, direction: entry?.direction ?? state.direction, incorrectCellKeys: state.incorrectCellKeys.filter((key) => key !== state.selectedCellKey) };
 }
 

@@ -1,5 +1,6 @@
 import { Check, Eye, RotateCcw } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { BappiMascot } from '../../components/BappiMascot';
 import {
   activeEntry,
   checkCells,
@@ -151,8 +152,11 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
           </div>
           <div className="crossword-banner-drop">
             <div className="crossword-success-banner">
-              <span>PUZZLE COMPLETE</span>
-              <h2>WOW GALING!</h2>
+              <BappiMascot pose="celebrating" alt="Bappi is celebrating" className="crossword-banner-bappi" eager />
+              <div>
+                <span>PUZZLE COMPLETE</span>
+                <h2>WOW GALING!</h2>
+              </div>
             </div>
           </div>
         </div>

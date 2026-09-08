@@ -3745,10 +3745,11 @@ h1 {
 
 .crossword-success-banner {
   position: relative;
-  display: grid;
-  justify-items: center;
-  gap: 3px;
-  padding: 18px 34px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 13px 28px 14px;
   border: 1px solid color-mix(in srgb, var(--success) 70%, white);
   border-radius: 5px 5px 18px 18px;
   color: #f8fffb;
@@ -3758,6 +3759,18 @@ h1 {
   box-shadow: 0 18px 50px rgb(0 0 0 / 35%), inset 0 1px rgb(255 255 255 / 8%);
   transform-origin: 50% -66px;
   animation: crossword-banner-swing 1.5s .82s ease-in-out both;
+}
+
+.crossword-success-banner > div {
+  display: grid;
+  justify-items: start;
+  gap: 3px;
+}
+
+.crossword-banner-bappi {
+  width: 72px;
+  margin-block: -7px;
+  filter: drop-shadow(0 8px 12px rgb(0 0 0 / 24%));
 }
 
 .crossword-success-banner::before,

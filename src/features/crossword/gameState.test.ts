@@ -15,7 +15,7 @@ describe('crossword game state', () => {
     expect(state.revealedCellKeys).toContain(`${first.row}:${first.col}`);
   });
 
-  it('skips a prefilled intersection while advancing through an answer', () => {
+  it('types through a prefilled intersection without shifting later letters', () => {
     const puzzle = createMockCrossword(cs412Terms, 412);
     const entry = puzzle.entries.find((candidate) => {
       const keys = candidate.answer.split('').map((_, index) => `${candidate.row + (candidate.direction === 'down' ? index : 0)}:${candidate.col + (candidate.direction === 'across' ? index : 0)}`);
@@ -28,6 +28,9 @@ describe('crossword game state', () => {
     state = { ...state, selectedCellKey: keys[crossingIndex - 1], direction: entry!.direction, values: { [keys[crossingIndex]]: entry!.answer[crossingIndex] } };
 
     state = enterLetter(state, puzzle, entry!.answer[crossingIndex - 1]);
+
+    expect(state.selectedCellKey).toBe(keys[crossingIndex]);
+    state = enterLetter(state, puzzle, entry!.answer[crossingIndex]);
 
     expect(state.selectedCellKey).toBe(keys[crossingIndex + 1]);
     expect(state.values[keys[crossingIndex]]).toBe(entry!.answer[crossingIndex]);
