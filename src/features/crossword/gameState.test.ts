@@ -14,4 +14,22 @@ describe('crossword game state', () => {
     state = revealCells(state, puzzle, [`${first.row}:${first.col}`]);
     expect(state.revealedCellKeys).toContain(`${first.row}:${first.col}`);
   });
+
+  it('skips a prefilled intersection while advancing through an answer', () => {
+    const puzzle = createMockCrossword(cs412Terms, 412);
+    const entry = puzzle.entries.find((candidate) => {
+      const keys = candidate.answer.split('').map((_, index) => `${candidate.row + (candidate.direction === 'down' ? index : 0)}:${candidate.col + (candidate.direction === 'across' ? index : 0)}`);
+      return keys.slice(1, -1).some((key) => puzzle.cells.find((cell) => `${cell.row}:${cell.col}` === key)?.entryIds.length === 2);
+    });
+    expect(entry).toBeDefined();
+    const keys = entry!.answer.split('').map((_, index) => `${entry!.row + (entry!.direction === 'down' ? index : 0)}:${entry!.col + (entry!.direction === 'across' ? index : 0)}`);
+    const crossingIndex = keys.findIndex((key, index) => index > 0 && index < keys.length - 1 && puzzle.cells.find((cell) => `${cell.row}:${cell.col}` === key)?.entryIds.length === 2);
+    let state = createGameState(puzzle);
+    state = { ...state, selectedCellKey: keys[crossingIndex - 1], direction: entry!.direction, values: { [keys[crossingIndex]]: entry!.answer[crossingIndex] } };
+
+    state = enterLetter(state, puzzle, entry!.answer[crossingIndex - 1]);
+
+    expect(state.selectedCellKey).toBe(keys[crossingIndex + 1]);
+    expect(state.values[keys[crossingIndex]]).toBe(entry!.answer[crossingIndex]);
+  });
 });

@@ -85,6 +85,25 @@ test('crossword uses the page width without clipping and gives every answer a vi
   expect(borders.every((sides) => sides.every((side) => side === '1px'))).toBe(true);
 });
 
+test('a solved crossword drops the WOW GALING banner and marks the grid complete', async ({ page }) => {
+  await page.goto('/subjects/cs412/crossword');
+  await page.getByRole('button', { name: /start crisp-dm crossword/i }).click();
+
+  const clues = page.locator('.crossword-clue-column button');
+  const clueNames = await clues.evaluateAll((buttons) => buttons.map((button) => button.getAttribute('aria-label') ?? ''));
+  expect(clueNames).toHaveLength(7);
+  for (const clueName of clueNames) {
+    await page.getByRole('button', { name: clueName, exact: true }).click();
+    await page.getByRole('button', { name: /reveal word/i }).click();
+    await page.getByRole('dialog', { name: /reveal this word/i }).getByRole('button', { name: /^reveal word$/i }).click();
+  }
+  await page.getByRole('button', { name: /submit puzzle/i }).click();
+
+  await expect(page.getByRole('heading', { name: /wow galing/i })).toBeVisible();
+  await expect(page.getByTestId('crossword-confetti')).toBeAttached();
+  await expect(page.locator('.crossword-cell.complete')).toHaveCount(await page.locator('.crossword-cell').count());
+});
+
 test('CS.412 remains contained at a 360px mobile width', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   for (const path of ['/subjects/cs412', '/subjects/cs412/study', '/subjects/cs412/crossword', '/subjects/cs412/preprocessing']) {

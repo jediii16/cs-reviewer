@@ -12,6 +12,14 @@ import {
 import type { CrosswordDirection, CrosswordPuzzle } from './types';
 
 const key = (row: number, col: number) => `${row}:${col}`;
+const confettiColors = ['#1689ff', '#35c98b', '#f8c14f', '#ff6b7a', '#a981ff'];
+const confettiPieces = Array.from({ length: 42 }, (_, index) => ({
+  left: `${(index * 37) % 100}%`,
+  color: confettiColors[index % confettiColors.length],
+  delay: `${(index % 9) * 0.08}s`,
+  duration: `${2.1 + (index % 5) * 0.24}s`,
+  rotation: `${(index * 47) % 180}deg`,
+}));
 
 export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onExit: () => void }) {
   const storageKey = `cs412-crossword:${puzzle.id}`;
@@ -25,14 +33,17 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
   });
   const [message, setMessage] = useState('Choose a clue, then type the answer.');
   const [finished, setFinished] = useState(false);
+  const [revealEntryId, setRevealEntryId] = useState<string | null>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
   const inputRefs = useRef(new Map<string, HTMLInputElement>());
   const cells = useMemo(() => new Map(puzzle.cells.map((cell) => [key(cell.row, cell.col), cell])), [puzzle]);
   const selected = activeEntry(puzzle, state);
   const activeKeys = selected ? entryCellKeys(puzzle, selected.id) : [];
+  const revealEntry = puzzle.entries.find((entry) => entry.id === revealEntryId);
 
   useEffect(() => {
     if (state.selectedCellKey) inputRefs.current.get(state.selectedCellKey)?.focus();
-  }, [state.selectedCellKey, state.direction]);
+  }, [state.selectedCellKey, state.direction, focusRequest]);
 
   const save = (next: typeof state) => {
     setState(next);
@@ -53,7 +64,7 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
         : entries[0].direction
     );
     save({ ...state, selectedCellKey: cellKey, direction: nextDirection });
-    inputRefs.current.get(cellKey)?.focus();
+    setFocusRequest((request) => request + 1);
   };
 
   const moveByArrow = (cellKey: string, rowDelta: number, colDelta: number) => {
@@ -68,17 +79,20 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
   };
 
   const submit = () => {
+    const allCellKeys = puzzle.cells.map((cell) => key(cell.row, cell.col));
     const missing = puzzle.cells.filter((cell) => !state.values[key(cell.row, cell.col)]).length;
-    if (missing) {
-      setMessage(`${missing} cells still need an answer.`);
+    const checked = checkCells(state, puzzle, allCellKeys);
+    const wrong = checked.incorrectCellKeys.length;
+    if (wrong || missing) {
+      save(checked);
+      const feedback = [
+        wrong ? `${wrong} ${wrong === 1 ? 'letter needs' : 'letters need'} another look.` : '',
+        missing ? `${missing} ${missing === 1 ? 'cell is' : 'cells are'} still empty.` : '',
+      ].filter(Boolean).join(' ');
+      setMessage(feedback);
       return;
     }
-    const wrong = puzzle.cells.filter((cell) => state.values[key(cell.row, cell.col)] !== cell.solution).length;
-    if (wrong) {
-      save(checkCells(state, puzzle, puzzle.cells.map((cell) => key(cell.row, cell.col))));
-      setMessage(`${wrong} letters need another look.`);
-      return;
-    }
+    setState(checked);
     setFinished(true);
     setMessage('Puzzle complete! Every answer is correct.');
     try {
@@ -109,6 +123,61 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
 
   return (
     <section className="crossword-game" aria-label={puzzle.title}>
+      {finished ? (
+        <div className="crossword-celebration" aria-live="assertive">
+          <div className="crossword-confetti" data-testid="crossword-confetti" aria-hidden="true">
+            {confettiPieces.map((piece, index) => (
+              <i
+                key={index}
+                style={{
+                  left: piece.left,
+                  backgroundColor: piece.color,
+                  animationDelay: piece.delay,
+                  animationDuration: piece.duration,
+                  rotate: piece.rotation,
+                }}
+              />
+            ))}
+          </div>
+          <div className="crossword-banner-drop">
+            <div className="crossword-success-banner">
+              <span>PUZZLE COMPLETE</span>
+              <h2>WOW GALING!</h2>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {revealEntry ? (
+        <div
+          className="crossword-reveal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="crossword-reveal-title"
+          onClick={(event) => { if (event.target === event.currentTarget) setRevealEntryId(null); }}
+          onKeyDown={(event) => { if (event.key === 'Escape') setRevealEntryId(null); }}
+        >
+          <div className="crossword-reveal-modal">
+            <span className="crossword-reveal-eyebrow">{revealEntry.number} {revealEntry.direction} · {revealEntry.answer.length} letters</span>
+            <h2 id="crossword-reveal-title">Reveal this word?</h2>
+            <p>The answer will be filled into the grid. Revealed letters stay marked as hints.</p>
+            <div className="crossword-reveal-actions">
+              <button type="button" onClick={() => setRevealEntryId(null)}>Cancel</button>
+              <button
+                className="crossword-reveal-confirm"
+                type="button"
+                autoFocus
+                onClick={() => {
+                  save(revealCells(state, puzzle, entryCellKeys(puzzle, revealEntry.id)));
+                  setMessage(`Revealed clue ${revealEntry.number} ${revealEntry.direction}.`);
+                  setRevealEntryId(null);
+                }}
+              >
+                <Eye /> Reveal word
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="crossword-game-bar">
         <button className="back-link back-link-button" type="button" onClick={onExit}>← Puzzles</button>
         <strong>{puzzle.title}</strong>
@@ -139,7 +208,7 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
               const incorrect = state.incorrectCellKeys.includes(cellKey);
               const revealed = state.revealedCellKeys.includes(cellKey);
               return (
-                <label key={cellKey} className={`crossword-cell ${state.selectedCellKey === cellKey ? 'selected' : ''} ${isWord ? 'in-word' : ''} ${incorrect ? 'incorrect' : ''} ${revealed ? 'revealed' : ''}`}>
+                <label key={cellKey} className={`crossword-cell ${state.selectedCellKey === cellKey ? 'selected' : ''} ${isWord ? 'in-word' : ''} ${incorrect ? 'incorrect' : ''} ${revealed ? 'revealed' : ''} ${finished ? 'complete' : ''}`}>
                   {cell.number ? <span>{cell.number}</span> : null}
                   <input
                     ref={(node) => { if (node) inputRefs.current.set(cellKey, node); else inputRefs.current.delete(cellKey); }}
@@ -174,7 +243,7 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
 
           <div className="crossword-tools">
             <button type="button" onClick={() => { if (selected) save(checkCells(state, puzzle, activeKeys)); setMessage('Checked the selected word.'); }}><Check /> Check word</button>
-            <button type="button" onClick={() => { if (selected && window.confirm('Reveal this word? Revealed letters will be marked as hints.')) save(revealCells(state, puzzle, activeKeys)); }}><Eye /> Reveal word</button>
+            <button type="button" onClick={() => { if (selected) setRevealEntryId(selected.id); }}><Eye /> Reveal word</button>
             <button type="button" onClick={() => { if (window.confirm('Clear this puzzle?')) save(createGameState(puzzle)); }}><RotateCcw /> Clear</button>
             <button className="crossword-submit" type="button" onClick={submit}>Submit puzzle</button>
           </div>

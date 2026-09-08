@@ -26,12 +26,27 @@ describe('preprocessing practice generator', () => {
 
   it('asks for and grades every value in each normalization problem', () => {
     const normalizations = createPracticeSet(412).problems.slice(3);
-    expect(normalizations.every((problem) => problem.expected.flat().length >= 6)).toBe(true);
+    expect(normalizations.every((problem) => problem.expected.flat().length === 12)).toBe(true);
     expect(normalizations[1].prompt).toMatch(/all age values/i);
     for (const problem of normalizations) {
       expect(gradeProblem(problem, problem.expected.flat().join(', ')).correct).toBe(true);
       expect(gradeProblem(problem, problem.expected.flat().slice(0, 2).join(', ')).feedback).toMatch(/needs \d+ values/i);
     }
+  });
+
+  it('reuses the equal-frequency dataset for every normalization problem', () => {
+    const practice = createPracticeSet(412);
+    const dataset = '8, 14, 19, 23, 29, 31, 32, 33, 39, 44, 45, 48';
+    const minMax = practice.problems[3];
+    const zScore = practice.problems[4];
+    const decimalScaling = practice.problems[5];
+    expect(practice.problems[0].prompt).toContain(dataset);
+    expect(minMax.prompt).toContain(dataset);
+    expect(zScore.prompt).toContain(dataset);
+    expect(decimalScaling.prompt).toContain(dataset);
+    expect(decimalScaling.expected.flat()).toEqual([
+      0.08, 0.14, 0.19, 0.23, 0.29, 0.31, 0.32, 0.33, 0.39, 0.44, 0.45, 0.48,
+    ]);
   });
 
   it('requires comma-separated lists for normalization answers', () => {
