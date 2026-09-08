@@ -268,7 +268,10 @@ export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onE
                     onClick={() => choose(cellKey)}
                     onChange={(event) => save(enterLetter(state, puzzle, event.target.value.slice(-1)))}
                     onKeyDown={(event) => {
-                      if (event.key === 'Backspace') {
+                      if (/^[a-z]$/i.test(event.key)) {
+                        event.preventDefault();
+                        save(enterLetter(state, puzzle, event.key));
+                      } else if (event.key === 'Backspace') {
                         event.preventDefault();
                         save(eraseLetter(state, puzzle));
                       } else if (event.key === 'ArrowLeft') {

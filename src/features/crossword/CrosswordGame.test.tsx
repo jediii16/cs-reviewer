@@ -25,6 +25,36 @@ describe('CrosswordGame', () => {
     }
   });
 
+  it('overwrites a filled crossing while keeping fast typing in the selected direction', async () => {
+    const user = userEvent.setup();
+    const puzzle = createMockCrossword(cs412Terms, 412);
+    const entry = puzzle.entries.find((candidate) => {
+      if (candidate.direction !== 'across') return false;
+      return [...candidate.answer].slice(1, -1).some((_, index) => {
+        const cell = puzzle.cells.find((item) => item.row === candidate.row && item.col === candidate.col + index + 1);
+        return cell?.entryIds.length === 2;
+      });
+    });
+    expect(entry).toBeDefined();
+    const crossingIndex = [...entry!.answer].findIndex((_, index) => {
+      if (index === 0 || index === entry!.answer.length - 1) return false;
+      const cell = puzzle.cells.find((item) => item.row === entry!.row && item.col === entry!.col + index);
+      return cell?.entryIds.length === 2;
+    });
+    const crossingKey = `${entry!.row}:${entry!.col + crossingIndex}`;
+    const saved = createGameState(puzzle);
+    saved.values = { [crossingKey]: entry!.answer[crossingIndex] };
+    localStorage.setItem(`cs412-crossword:${puzzle.id}`, JSON.stringify(saved));
+    render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
+
+    await user.click(screen.getByRole('button', { name: `${entry!.number} across clue` }));
+    await user.keyboard(entry!.answer);
+
+    for (const [index, letter] of [...entry!.answer].entries()) {
+      expect(screen.getByLabelText(`Crossword cell ${entry!.row + 1}, ${entry!.col + index + 1}`)).toHaveValue(letter);
+    }
+  });
+
   it('marks wrong filled cells red even when the puzzle is incomplete', async () => {
     const user = userEvent.setup();
     const puzzle = createMockCrossword(cs412Terms, 412);
