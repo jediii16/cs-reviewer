@@ -4,7 +4,7 @@ test('CS.412 provides a 15-answer crossword and six preprocessing problems', asy
   await page.goto('/subjects/cs412');
   await page.getByRole('link', { name: /^study$/i }).click();
   await expect(page.getByRole('heading', { name: /study cs\.412/i })).toBeVisible();
-  await expect(page.getByText('Data mining', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('Data Mining', { exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: /data preprocessing techniques/i })).toBeVisible();
 
   await page.goto('/subjects/cs412');
@@ -12,6 +12,12 @@ test('CS.412 provides a 15-answer crossword and six preprocessing problems', asy
   await page.getByRole('button', { name: /start 15-item mock exam/i }).click();
   await expect(page.getByRole('grid', { name: /crossword grid/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /clue/i })).toHaveCount(15);
+  if ((page.viewportSize()?.width ?? 0) > 920) {
+    const across = await page.getByRole('region', { name: /across clues/i }).boundingBox();
+    const grid = await page.getByRole('grid', { name: /crossword grid/i }).boundingBox();
+    const down = await page.getByRole('region', { name: /down clues/i }).boundingBox();
+    expect(across && grid && down && across.x < grid.x && down.x > grid.x + grid.width).toBe(true);
+  }
 
   await page.goto('/subjects/cs412/preprocessing');
   await expect(page.getByText('5 points')).toHaveCount(6);
@@ -20,6 +26,41 @@ test('CS.412 provides a 15-answer crossword and six preprocessing problems', asy
   await page.getByLabel('Calculator expression').fill('sqrt(81)');
   await page.getByLabel('Calculator expression').press('Enter');
   await expect(page.getByTestId('calculator-result')).toHaveText('9');
+  await page.getByLabel('Calculator expression').fill('4+4+4+4');
+  await page.getByLabel('Calculator expression').press('Enter');
+  await page.getByLabel('Calculator expression').press('/');
+  await page.getByLabel('Calculator expression').press('2');
+  await page.getByLabel('Calculator expression').press('Enter');
+  await expect(page.getByTestId('calculator-result')).toHaveText('8');
+  await page.getByRole('button', { name: /minimize calculator/i }).click();
+
+  await page.getByRole('button', { name: /show solution/i }).first().click();
+  await expect(page.getByRole('button', { name: /hide solution/i }).first()).toBeVisible();
+  await page.getByRole('button', { name: /hide solution/i }).first().click();
+  await expect(page.getByRole('button', { name: /show solution/i }).first()).toBeVisible();
+});
+
+test('CS.412 calculator moves, remembers its position, and the music dock stays compact', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Desktop drag behavior is covered at its useful viewport.');
+  await page.goto('/subjects/cs412/preprocessing');
+  await page.getByRole('button', { name: /open calculator/i }).click();
+  const calculator = page.getByRole('dialog', { name: /scientific calculator/i });
+  const handle = page.getByTestId('calculator-drag-handle');
+  const before = await calculator.boundingBox();
+  const handleBox = await handle.boundingBox();
+  if (!before || !handleBox) throw new Error('Calculator must be measurable');
+  await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(handleBox.x - 110, handleBox.y - 80, { steps: 5 });
+  await page.mouse.up();
+  const moved = await calculator.boundingBox();
+  expect(moved?.x).toBeLessThan(before.x - 50);
+  expect(await page.evaluate(() => localStorage.getItem('calculator-position-v1'))).not.toBeNull();
+
+  await page.goto('/');
+  const dock = page.locator('.audio-dock');
+  await expect(dock).toBeVisible();
+  expect((await dock.boundingBox())?.width).toBeLessThanOrEqual(780);
 });
 
 test('CS.412 remains contained at a 360px mobile width', async ({ page }) => {
@@ -28,6 +69,11 @@ test('CS.412 remains contained at a 360px mobile width', async ({ page }) => {
     await page.goto(path);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   }
+  await expect(page.getByRole('img', { name: /bappi is ready to solve/i })).toBeVisible();
+  const dockBox = await page.locator('.audio-dock-panel').boundingBox();
+  const launcherBox = await page.getByRole('button', { name: /open calculator/i }).boundingBox();
+  if (!dockBox || !launcherBox) throw new Error('Mobile floating controls must be measurable');
+  expect(launcherBox.y + launcherBox.height).toBeLessThanOrEqual(dockBox.y - 8);
   await page.getByRole('button', { name: /open calculator/i }).click();
   await expect(page.getByRole('dialog', { name: /scientific calculator/i })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);

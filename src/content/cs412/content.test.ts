@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cs412Subject, cs412Terms } from '.';
+import { cs412Subject, cs412Terms, cs412TheoryTopics } from '.';
 
 describe('CS.412 content', () => {
   it('covers all three modules with unique definition-first terms', () => {
@@ -14,13 +14,26 @@ describe('CS.412 content', () => {
     const answers = new Set(cs412Terms.map((term) => term.answer));
     for (const answer of [
       'DATA MINING', 'CLASSIFICATION', 'CLUSTERING', 'PREDICTION', 'REGRESSION',
-      'ASSOCIATION RULES', 'CRISP DM', 'BUSINESS UNDERSTANDING', 'DATA UNDERSTANDING',
-      'DATA PREPARATION', 'MODELING', 'EVALUATION', 'DEPLOYMENT', 'DATA WAREHOUSE',
+      'ASSOCIATION RULES', 'CRISP DM', 'BUSINESS/PROJECT UNDERSTANDING', 'DATA UNDERSTANDING',
+      'DATA PREPARATION', 'MODELLING', 'EVALUATION', 'DEPLOYMENT', 'DATA WAREHOUSE',
       'DATABASE', 'DATA LAKE', 'DATA MART', 'DATA REFRESH', 'DATA CLEANING',
-      'DATA EXTRACTION', 'DATA TRANSFORMATION', 'DATA LOADING', 'SOURCE LAYER',
-      'STAGING LAYER', 'WAREHOUSE LAYER', 'CONSUMPTION LAYER', 'SUBJECT ORIENTED',
-      'INTEGRATED', 'TIME VARIANT', 'NON VOLATILE',
+      'EXTRACTION OF DATA', 'TRANSFORMATION OF DATA', 'DATA LOADING', 'ETL',
+      'SINGLE-TIER ARCHITECTURE', 'TWO-TIER ARCHITECTURE', 'THREE-TIER ARCHITECTURE',
+      'SOURCE LAYER', 'STAGING LAYER', 'WAREHOUSE LAYER', 'CONSUMPTION LAYER',
     ]) expect(answers).toContain(answer);
+  });
+
+  it('uses the user-supplied subtopics and definitions as the study source', () => {
+    expect(cs412TheoryTopics).toHaveLength(3);
+    expect(cs412Terms).toHaveLength(38);
+    expect(cs412TheoryTopics[0].subtopics.map((subtopic) => subtopic.title)).toEqual([
+      'WHAT IS DATA MINING?',
+      'USES OF DATA MINING',
+      'COMMON DATA MINING TECHNIQUES / TYPES OF DATA MINING',
+    ]);
+    expect(cs412Terms.find((term) => term.answer === 'DATA MINING')?.clue).toBe(
+      'It is the process of sorting through large data sets to identify patterns and relationships that can help solve business problems through data analysis.',
+    );
   });
 
   it('registers CS.412 as Data Mining', () => {

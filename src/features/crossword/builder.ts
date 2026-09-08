@@ -92,11 +92,37 @@ export function buildCrossword(terms: readonly TheoryTerm[], options: { seed: nu
 }
 
 export function createMockCrossword(terms: readonly TheoryTerm[], seed: number): CrosswordPuzzle {
-  for (let attempt = 0; attempt < 80; attempt += 1) {
-    const puzzle = buildCrossword(terms, { seed: seed + attempt, count: 15, title: '15-Item Mock Exam' });
-    if (puzzle && new Set(puzzle.entries.map((entry) => entry.module)).size === 3) return { ...puzzle, id: `mock-${seed}`, seed };
+  const modules = ['introduction', 'crisp-dm', 'warehousing'] as const;
+  for (let attempt = 0; attempt < 240; attempt += 1) {
+    const selected = modules.flatMap((module, index) => seededShuffle(
+      terms.filter((term) => term.module === module),
+      seed + attempt * 31 + index * 997,
+    ).slice(0, 5));
+    const puzzle = buildCrossword(selected, { seed: seed + attempt * 17, count: 15, title: '15-Item Mock Exam' });
+    if (puzzle) return { ...puzzle, id: `mock-${seed}`, seed };
   }
   throw new Error('Unable to build a connected 15-answer crossword from this term bank.');
+}
+
+const topicTitles: Record<TheoryTerm['module'], string> = {
+  introduction: 'Introduction to Data Mining',
+  'crisp-dm': 'CRISP-DM',
+  warehousing: 'Data Warehousing',
+};
+
+export function createTopicCrossword(terms: readonly TheoryTerm[], seed: number): CrosswordPuzzle {
+  if (!terms.length) throw new Error('A topic crossword needs at least one term.');
+  const module = terms[0].module;
+  if (terms.some((term) => term.module !== module)) throw new Error('A topic crossword can only contain one topic.');
+  for (let attempt = 0; attempt < 600; attempt += 1) {
+    const puzzle = buildCrossword(terms, {
+      seed: seed + attempt * 19,
+      count: terms.length,
+      title: `${topicTitles[module]} · All Terms`,
+    });
+    if (puzzle) return { ...puzzle, id: `topic-${module}-${seed}`, seed };
+  }
+  throw new Error(`Unable to build a connected crossword for ${topicTitles[module]}.`);
 }
 
 export function validatePuzzle(puzzle: CrosswordPuzzle): string[] {

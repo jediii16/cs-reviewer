@@ -1,34 +1,21 @@
-import type { LessonTopic, SubjectManifest, TheoryModule } from '../types';
-import { cs412Terms } from './terms';
+import type { LessonTopic, SubjectManifest } from '../types';
+import { cs412TheoryTopics } from './terms';
 
-export { cs412Terms } from './terms';
+export { cs412Terms, cs412TheoryTopics } from './terms';
 
-const topicNames: Record<TheoryModule, string> = {
-  introduction: 'Introduction to Data Mining',
-  'crisp-dm': 'CRISP-DM',
-  warehousing: 'Data Warehousing',
-};
-
-function makeTheoryTopic(module: TheoryModule): LessonTopic {
-  const terms = cs412Terms.filter((item) => item.module === module);
-  const sections = Array.from({ length: Math.ceil(terms.length / 6) }, (_, index) => {
-    const group = terms.slice(index * 6, index * 6 + 6);
-    return {
-      id: `${module}-terms-${index + 1}`,
-      title: `${topicNames[module]} · Words ${index * 6 + 1}–${index * 6 + group.length}`,
-      summary: 'Read each word with its definition, then cover the word and retrieve it from the definition alone.',
-      terms: group.map((item) => ({ term: item.displayAnswer, definition: item.clue })),
-      recallPrompt: group[0].clue,
-      recallAnswer: group[0].displayAnswer,
-    };
-  });
-  return {
-    id: module,
-    title: topicNames[module],
-    description: `${terms.length} exam-ready words and definitions.`,
-    sections,
-  };
-}
+const theoryTopics: LessonTopic[] = cs412TheoryTopics.map((topic) => ({
+  id: topic.module,
+  title: topic.title,
+  description: 'Study each term from its definition, matching the format used in the exam.',
+  sections: topic.subtopics.map((subtopic) => ({
+    id: subtopic.id,
+    title: subtopic.title,
+    summary: 'Read the definition, then practice recalling the term in the left column.',
+    terms: [...subtopic.entries],
+    recallPrompt: subtopic.entries[0].definition,
+    recallAnswer: subtopic.entries[0].term,
+  })),
+}));
 
 const preprocessingTopic: LessonTopic = {
   id: 'preprocessing',
@@ -47,6 +34,6 @@ const preprocessingTopic: LessonTopic = {
 export const cs412Subject: SubjectManifest = {
   id: 'cs412', code: 'CS.412', title: 'Data Mining',
   description: 'Crossword-ready concepts and hands-on data preprocessing.',
-  topics: [makeTheoryTopic('introduction'), makeTheoryTopic('crisp-dm'), makeTheoryTopic('warehousing'), preprocessingTopic],
+  topics: [...theoryTopics, preprocessingTopic],
   mccumber: { goals: [], states: [], safeguards: [] },
 };

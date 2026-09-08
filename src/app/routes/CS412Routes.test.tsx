@@ -14,6 +14,7 @@ describe('CS.412 routes', () => {
     expect(screen.getByRole('heading', { name: /data preprocessing lab/i })).toBeVisible();
     expect(screen.getAllByText('5 points')).toHaveLength(6);
     expect(screen.getByText(/30 points total/i)).toBeVisible();
+    expect(screen.getByRole('img', { name: /bappi is ready to solve/i })).toBeVisible();
   });
 
   it('provides Word - Definition study lessons and preprocessing methods', async () => {
@@ -21,8 +22,8 @@ describe('CS.412 routes', () => {
     render(<MemoryRouter initialEntries={['/subjects/cs412']}><App /></MemoryRouter>);
     await user.click(screen.getByRole('link', { name: /^study$/i }));
     expect(screen.getByRole('heading', { name: /study cs\.412/i })).toBeVisible();
-    expect(screen.getAllByText('Data mining', { exact: true })[0]).toBeVisible();
-    expect(screen.getAllByText(/process of examining large datasets/i)[0]).toBeVisible();
+    expect(screen.getAllByText('Data Mining', { exact: true })[0]).toBeVisible();
+    expect(screen.getAllByText(/process of sorting through large data sets/i)[0]).toBeVisible();
     expect(screen.getByRole('button', { name: /data preprocessing techniques/i })).toBeVisible();
   });
 
@@ -32,5 +33,15 @@ describe('CS.412 routes', () => {
     await user.click(screen.getByRole('button', { name: /start 15-item mock exam/i }));
     expect(screen.getByRole('grid', { name: /crossword grid/i })).toBeVisible();
     expect(screen.getAllByRole('button', { name: /clue/i })).toHaveLength(15);
+  });
+
+  it('offers one complete crossword for each theory topic', async () => {
+    const user = userEvent.setup();
+    render(<MemoryRouter initialEntries={['/subjects/cs412/crossword']}><App /></MemoryRouter>);
+    expect(screen.getByRole('button', { name: /start introduction to data mining crossword/i })).toBeVisible();
+    expect(screen.getByRole('button', { name: /start crisp-dm crossword/i })).toBeVisible();
+    await user.click(screen.getByRole('button', { name: /start data warehousing crossword/i }));
+    expect(screen.getByRole('grid', { name: /crossword grid/i })).toBeVisible();
+    expect(screen.getAllByRole('button', { name: /clue/i })).toHaveLength(19);
   });
 });

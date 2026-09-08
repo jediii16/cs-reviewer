@@ -1,62 +1,107 @@
-import type { TheoryTerm } from '../types';
+import type { TheoryModule, TheoryTerm } from '../types';
 
-const term = (id: string, module: TheoryTerm['module'], answer: string, displayAnswer: string, clue: string): TheoryTerm => ({ id, module, answer, displayAnswer, clue });
+export interface CS412StudyEntry { term: string; definition: string }
+export interface CS412StudySubtopic { id: string; title: string; entries: readonly CS412StudyEntry[] }
+export interface CS412TheoryTopic { module: TheoryModule; title: string; subtopics: readonly CS412StudySubtopic[] }
 
-export const cs412Terms: readonly TheoryTerm[] = [
-  term('data-mining', 'introduction', 'DATA MINING', 'Data mining', 'The process of examining large datasets to discover useful patterns and relationships.'),
-  term('classification', 'introduction', 'CLASSIFICATION', 'Classification', 'Assigning data points to predefined categories according to their characteristics.'),
-  term('clustering', 'introduction', 'CLUSTERING', 'Clustering', 'Grouping similar data points together without relying on predefined category labels.'),
-  term('prediction', 'introduction', 'PREDICTION', 'Prediction', 'Examining patterns and trends to estimate the probability of a future outcome.'),
-  term('regression', 'introduction', 'REGRESSION', 'Regression', 'A technique used to identify and analyze relationships between numeric variables.'),
-  term('association-rules', 'introduction', 'ASSOCIATION RULES', 'Association rules', 'Rules that uncover correlations or items that frequently occur together in a dataset.'),
-  term('telecommunications', 'introduction', 'TELECOMMUNICATIONS', 'Telecommunications', 'Industry that mines customer behavior to target advertisements and campaigns.'),
-  term('insurance', 'introduction', 'INSURANCE', 'Insurance', 'Industry that uses data mining for fraudulent-claim detection and risk management.'),
-  term('finance', 'introduction', 'FINANCE', 'Finance', 'Industry that mines data to evaluate market risk and improve investment returns.'),
-  term('retail', 'introduction', 'RETAIL', 'Retail', 'Industry that analyzes joint purchases to arrange products on shelves and aisles.'),
-  term('healthcare', 'introduction', 'HEALTHCARE', 'Healthcare', 'Field that mines medical histories and treatments to improve diagnostic accuracy.'),
-  term('manufacturing', 'introduction', 'MANUFACTURING', 'Manufacturing', 'Industry that predicts supply needs and equipment failure for just-in-time fulfillment.'),
-  term('crisp-dm', 'crisp-dm', 'CRISP DM', 'CRISP-DM', 'Acronym for the Cross-Industry Standard Process for Data Mining methodology.'),
-  term('process-model', 'crisp-dm', 'PROCESS MODEL', 'Process model', 'A structured description of typical project phases, their tasks, and relationships.'),
-  term('business-understanding', 'crisp-dm', 'BUSINESS UNDERSTANDING', 'Business understanding', 'First CRISP-DM phase that identifies the project objectives, scope, question, or problem.'),
-  term('data-understanding', 'crisp-dm', 'DATA UNDERSTANDING', 'Data understanding', 'CRISP-DM phase where relevant data is collected and explored after the problem is understood.'),
-  term('data-preparation', 'crisp-dm', 'DATA PREPARATION', 'Data preparation', 'CRISP-DM phase that builds the final relevant dataset for model creation.'),
-  term('modeling', 'crisp-dm', 'MODELING', 'Modeling', 'CRISP-DM phase that selects and applies suitable analytical techniques to the data.'),
-  term('evaluation', 'crisp-dm', 'EVALUATION', 'Evaluation', 'CRISP-DM phase that tests whether a model answers the original business question.'),
-  term('deployment', 'crisp-dm', 'DEPLOYMENT', 'Deployment', 'Final CRISP-DM phase that puts results into use or reports them to stakeholders.'),
-  term('stakeholders', 'crisp-dm', 'STAKEHOLDERS', 'Stakeholders', 'People with an interest in the project who define needs or receive its results.'),
-  term('project-objectives', 'crisp-dm', 'PROJECT OBJECTIVES', 'Project objectives', 'Specific goals identified at the beginning of a comprehensive data-mining project.'),
-  term('project-scope', 'crisp-dm', 'PROJECT SCOPE', 'Project scope', 'The boundaries and extent of work established during business understanding.'),
-  term('relevant-data', 'crisp-dm', 'RELEVANT DATA', 'Relevant data', 'Information collected because it can help answer the defined business question.'),
-  term('predictive-model', 'crisp-dm', 'PREDICTIVE MODEL', 'Predictive model', 'A modeling technique that uses patterns in known data to estimate unknown outcomes.'),
-  term('estimation', 'crisp-dm', 'ESTIMATION', 'Estimation', 'A modeling technique that calculates an approximate value for an unknown quantity.'),
-  term('data-warehouse', 'warehousing', 'DATA WAREHOUSE', 'Data warehouse', 'A central archive of historical organizational data designed for analysis and decisions.'),
-  term('historical-data', 'warehousing', 'HISTORICAL DATA', 'Historical data', 'Information retained over time so earlier conditions and trends can be analyzed.'),
-  term('decision-making', 'warehousing', 'DECISION MAKING', 'Decision-making', 'The organizational purpose supported by retrieving and analyzing warehoused information.'),
-  term('database', 'warehousing', 'DATABASE', 'Database', 'A transactional system that updates current data and keeps the most recent values available.'),
-  term('transactional-system', 'warehousing', 'TRANSACTIONAL SYSTEM', 'Transactional system', 'A system optimized to monitor and update real-time operational records.'),
-  term('real-time-data', 'warehousing', 'REAL TIME DATA', 'Real-time data', 'Current information updated as transactions happen rather than stored mainly as history.'),
-  term('data-lake', 'warehousing', 'DATA LAKE', 'Data lake', 'A repository that holds accessible raw data whose eventual purpose may not yet be known.'),
-  term('raw-data', 'warehousing', 'RAW DATA', 'Raw data', 'Unrefined information stored before filtering, cleaning, or modeling.'),
-  term('refined-data', 'warehousing', 'REFINED DATA', 'Refined data', 'Filtered and prepared information held for a specific analytical purpose.'),
-  term('data-mart', 'warehousing', 'DATA MART', 'Data mart', 'A smaller, faster warehouse subset focused on one department or subject area.'),
-  term('subject-area', 'warehousing', 'SUBJECT AREA', 'Subject area', 'A focused business domain, such as sales, served by a data mart.'),
-  term('data-refresh', 'warehousing', 'DATA REFRESH', 'Data refresh', 'The operation that periodically updates warehouse data from multiple sources.'),
-  term('data-cleaning', 'warehousing', 'DATA CLEANING', 'Data cleaning', 'The operation that removes inconsistencies and rectifies noisy or erroneous information.'),
-  term('data-extraction', 'warehousing', 'DATA EXTRACTION', 'Data extraction', 'The operation that retrieves relevant source information for organization and mining.'),
-  term('data-transformation', 'warehousing', 'DATA TRANSFORMATION', 'Data transformation', 'The operation that converts source structures into the warehouse target structure.'),
-  term('data-loading', 'warehousing', 'DATA LOADING', 'Data loading', 'The operation that places prepared information into its target repository.'),
-  term('single-tier', 'warehousing', 'SINGLE TIER ARCHITECTURE', 'Single-tier architecture', 'Warehouse architecture that attempts to reduce redundancy with a single data layer.'),
-  term('two-tier', 'warehousing', 'TWO TIER ARCHITECTURE', 'Two-tier architecture', 'Warehouse architecture where analytical clients communicate directly with the server layer.'),
-  term('three-tier', 'warehousing', 'THREE TIER ARCHITECTURE', 'Three-tier architecture', 'Architecture with source, reconciled, and warehouse tiers suited to long-lived systems.'),
-  term('source-layer', 'warehousing', 'SOURCE LAYER', 'Source layer', 'Architecture layer where point-of-sale, marketing, CRM, and ERP systems feed data.'),
-  term('staging-layer', 'warehousing', 'STAGING LAYER', 'Staging layer', 'Landing area that ingests source data before business rules and transformations are applied.'),
-  term('warehouse-layer', 'warehousing', 'WAREHOUSE LAYER', 'Warehouse layer', 'Layer where integrated, modeled, subject-oriented, time-variant information is stored.'),
-  term('consumption-layer', 'warehousing', 'CONSUMPTION LAYER', 'Consumption layer', 'Analytics layer where warehouse information is modeled for tools and business users.'),
-  term('system-of-record', 'warehousing', 'SYSTEM OF RECORD', 'System of record', 'Authoritative source system from which the staging area ingests data.'),
-  term('subject-oriented', 'warehousing', 'SUBJECT ORIENTED', 'Subject-oriented', 'Warehouse quality meaning information is organized around major business subjects.'),
-  term('integrated', 'warehousing', 'INTEGRATED', 'Integrated', 'Warehouse quality meaning information from different sources is made consistent.'),
-  term('time-variant', 'warehousing', 'TIME VARIANT', 'Time-variant', 'Warehouse quality meaning records preserve changes and history across time.'),
-  term('non-volatile', 'warehousing', 'NON VOLATILE', 'Non-volatile', 'Warehouse quality meaning stored historical information is stable and not routinely overwritten.'),
-  term('crm', 'warehousing', 'CRM', 'CRM', 'Customer relationship management system that can feed the warehouse source layer.'),
-  term('erp', 'warehousing', 'ERP', 'ERP', 'Enterprise resource planning system that can supply data to the source layer.'),
+const entry = (term: string, definition: string): CS412StudyEntry => ({ term, definition });
+
+export const cs412TheoryTopics: readonly CS412TheoryTopic[] = [
+  {
+    module: 'introduction', title: 'INTRODUCTION TO DATA MINING AND KNOWLEDGE DISCOVERY', subtopics: [
+      { id: 'what-is-data-mining', title: 'WHAT IS DATA MINING?', entries: [
+        entry('Data Mining', 'It is the process of sorting through large data sets to identify patterns and relationships that can help solve business problems through data analysis.'),
+      ] },
+      { id: 'uses-of-data-mining', title: 'USES OF DATA MINING', entries: [
+        entry('Telecommunications and Media', 'Telecommunication companies can use customer data to predict customer behavior and offer targeted ads and campaigns.'),
+        entry('Insurance', 'Insurance companies can create complex models for detecting fraudulent claims, risk management, and customer compliance.'),
+        entry('Finance', 'Financial companies makes use of data mining for better market risk evaluation and maximize stock market returns.'),
+        entry('Retail', 'Supermarkets use joint purchasing patterns to identify product associations and decide how to place them in aisles and shelves.'),
+        entry('Healthcare', 'Data mining helps doctors create more accurate diagnoses using patient medical history, physical examination results, medications, and treatment patterns.'),
+        entry('Manufacturing', 'Implement just-in-time fulfillment by predicting when new supplies should be ordered or when equipment is likely to fail.'),
+      ] },
+      { id: 'common-data-mining-techniques', title: 'COMMON DATA MINING TECHNIQUES / TYPES OF DATA MINING', entries: [
+        entry('Classification', 'It is a process in which data points from large data sets are assigned to categories based on how they’re being used.'),
+        entry('Clustering', 'It refers to the process of grouping a series of different data points based on their characteristics.'),
+        entry('Regression', 'It is used to identify and analyze the relationship between variables because of the presence of the other factor.'),
+        entry('Prediction', 'It examine data sets to find patterns and trends, then calculate the probabilities of a future outcome.'),
+        entry('Association Rules', 'They are used to find correlations, or associations, between points in a data set.'),
+      ] },
+    ],
+  },
+  {
+    module: 'crisp-dm', title: 'CRISP-DM', subtopics: [
+      { id: 'crisp-dm-overview', title: 'CRISP-DM', entries: [
+        entry('CRISP-DM', 'CRoss Industry Standard Process for Data Mining. It is a process model that serves as the base for a data science process. As a methodology, it includes descriptions of the typical phases of a project, the tasks involved with each phase, and an explanation of the relationships between these tasks.'),
+      ] },
+      { id: 'six-step-process', title: '6-STEP PROCESS', entries: [
+        entry('Business/Project Understanding', 'Comprehensive data mining projects start by first identifying project objectives and scope. The business stakeholders will ask a question or state a problem that data mining can answer or solve.'),
+        entry('Data Understanding', 'Relevant data is then collected once the business problem is understood. The data to be used in the project may come from multiple source.'),
+        entry('Data Preparation', 'It involves preparing the final data set, which includes all the relevant data needed to answer the business question. Stakeholders will identify the dimensions and variables to explore and prepare the final data set for model creation.'),
+        entry('Modelling', 'In this phase, the analyst selects the appropriate modeling techniques for the given data. These techniques can include clustering, predictive models, classification, estimation, or a combination.'),
+        entry('Evaluation', 'After creating the models, the analyst need to test them and measure their success at answering the question identified in the first phase. This phase is designed to allow the analyst to look at the progress so far and ensure it’s on the right track for meeting the business goals.'),
+        entry('Deployment', 'It can take place within the organization, be shared with customers, or be used to generate a report for stakeholders to prove its reliability.'),
+      ] },
+    ],
+  },
+  {
+    module: 'warehousing', title: 'DATA WAREHOUSING', subtopics: [
+      { id: 'data-warehouse', title: 'DATA WAREHOUSE', entries: [
+        entry('Data Warehouse', 'It is storage of information over time by a business or other organization. New data is periodically added by people in various key departments. It becomes a library of historical data that can be retrieved and analyzed for decision-making. Key factors include defining critical information to the organization and identifying its sources. It is designed to supply real-time information. A data warehouse is designed as an archive of historical information.'),
+      ] },
+      { id: 'use-in-data-mining', title: 'USE IN DATA MINING', entries: [
+        entry('Use of Data Warehouse in Data Mining', 'Businesses warehouse data primarily for data mining, looking for patterns of information that will help them improve their business processes. A good data warehousing system makes it easier for different departments within a company to access each other\'s data. Marketing team can assess the sales team\'s data in order to make decisions about how to adjust their sales campaigns.'),
+      ] },
+      { id: 'warehouse-vs-database', title: 'DATA WAREHOUSE VS. DATABASE', entries: [
+        entry('Data Warehouse', 'It is programmed to aggregate structured data over time.'),
+        entry('Database', 'It is a transactional system that monitors and updates real-time data in order to have only the most recent data available.'),
+      ] },
+      { id: 'warehouse-vs-lake', title: 'DATA WAREHOUSE VS. DATA LAKE', entries: [
+        entry('Data Warehouse', 'It holds refined data that has been filtered to be used for a specific purpose. It is most often used by business professionals. It is more structured and any changes are more costly.'),
+        entry('Data Lake', 'It holds raw data of which the goal has not yet been determined. It is primarily used by data scientists. It is more easily accessible and easier to update.'),
+      ] },
+      { id: 'warehouse-vs-mart', title: 'DATA WAREHOUSE VS. DATA MART', entries: [
+        entry('Data Warehouse', 'It holds refined data that has been filtered to be used for a specific purpose. It is most often used by business professionals. It is more structured and any changes are more costly.'),
+        entry('Data Mart', 'It is just a smaller (subset) and faster version of a data warehouse. It collects data from a small number of sources and focuses on one subject area. It focuses on one area for analytical purposes, such as a specific department within an organization. It is used to help make business decisions by helping with analysis and reporting.'),
+      ] },
+      { id: 'warehouse-operations', title: 'DATA WAREHOUSE OPERATIONS', entries: [
+        entry('Data Warehouse Operations', 'Any data warehouse will consist of random data which will surely be in unstructured manner with a lot of unwanted and dirty data. To make this data structured and noise free, dirty data needs to be removed, converting data into useful information and can be achieved using certain data warehouse operations.'),
+        entry('Data Cleaning', 'Inconsistencies are removed. Also, noisy data containing errors are also rectified.'),
+        entry('Data Refresh', 'Data is refreshed by broadcasting the data from multiple sources and updating it on timely basis. This is done because, data inside data bases are updated every minute and to get this same data on data warehouse, the process of refreshing is performed.'),
+        entry('Extraction of Data', 'Data obtained after cleaning and refresh is still unstructured and unorganized. To make it organized and enable user to extract and retrieve relevant data is done through data extraction process. This is helpful, if any user wants to mine the data.'),
+        entry('Transformation of Data', 'Data obtained through heterogeneous data bases have native structure of their respective databases that might be different from that structure of data warehouse. So, transformation of data is done to organize data in the structure similar to that of the data warehouse.'),
+        entry('Data Loading', 'It is responsible for loading the data to its respective target data repository that might include data bases, data marts data warehouses etc.'),
+        entry('ETL', 'Extraction, Transformation, Loading.'),
+      ] },
+      { id: 'warehouse-architecture', title: 'DATA WAREHOUSE ARCHITECTURE', entries: [
+        entry('Single-tier Architecture', 'Operational Data → Middleware → Reporting Tools / OLAP Tools.'),
+        entry('Two-tier Architecture', 'Operational Data and External Data → ETL Tools → Data Warehouse → Data Marts → Reporting Tools / OLAP Tools / Data Mining Tools / What-if analysis tools.'),
+        entry('Three-Tier Architecture', 'It has a top, middle, and bottom tier (source layer, the reconciled layer, and the data warehouse layer). It is suited for systems with long life cycles. An extra layer of review and analysis of the data is completed when changing data to ensure there have been no errors.'),
+      ] },
+      { id: 'warehouse-layers', title: 'LAYERS OF DATA WAREHOUSE ARCHITECTURE', entries: [
+        entry('Source Layer', 'It feeds data into the warehouse. Point-of-sale, marketing automation, CRM, or ERP systems. It has a specific data format and may require a different data capture method based on that data format.'),
+        entry('Staging Layer', 'It is a landing area for data from the source. It ingests data from the SOR without applying business logic or transformations. It is not used in production data analysis. Data in the staging area has yet to be cleansed, standardized, modeled, governed, and verified.'),
+        entry('Warehouse Layer', 'It is where all of the data is stored. Warehouse data is now subject-oriented, integrated, time-variant, and non-volatile. It will have the physical schemas, tables, views, stored procedures, and functions needed to access the warehouse-modeled data.'),
+        entry('Consumption Layer', 'It is the analytics layer, where you model data for consumption using analytics tools like ThoughtSpot, data analysts, data scientists, and business users.'),
+      ] },
+    ],
+  },
 ] as const;
+
+const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const crosswordTerms: TheoryTerm[] = [];
+const seen = new Set<string>();
+
+for (const topic of cs412TheoryTopics) {
+  for (const subtopic of topic.subtopics) {
+    for (const item of subtopic.entries) {
+      const answer = item.term.toUpperCase().replace('CRISP-DM', 'CRISP DM');
+      const identity = `${topic.module}:${answer}`;
+      if (seen.has(identity)) continue;
+      seen.add(identity);
+      crosswordTerms.push({ id: `${topic.module}-${slug(item.term)}`, module: topic.module, answer, displayAnswer: item.term, clue: item.definition });
+    }
+  }
+}
+
+export const cs412Terms: readonly TheoryTerm[] = crosswordTerms;

@@ -2125,7 +2125,7 @@ h1 {
   z-index: 30;
   right: 50%;
   bottom: max(14px, env(safe-area-inset-bottom));
-  width: min(940px, calc(100vw - 28px));
+  width: min(760px, calc(100vw - 28px));
   pointer-events: none;
   transform: translateX(50%);
 }
@@ -2164,13 +2164,13 @@ h1 {
 
 .audio-dock-panel {
   display: grid;
-  grid-template-columns: minmax(150px, 190px) auto minmax(230px, 1fr) auto;
+  grid-template-columns: minmax(130px, 155px) auto minmax(170px, 1fr) auto;
   align-items: center;
-  gap: 16px;
-  min-height: 78px;
-  padding: 13px 15px;
+  gap: 10px;
+  min-height: 68px;
+  padding: 9px 12px;
   border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
-  border-radius: 19px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--surface-elevated) 91%, transparent);
   box-shadow: 0 18px 50px rgb(0 0 0 / 18%), 0 2px 10px rgb(0 0 0 / 8%);
   opacity: 1;
@@ -3197,27 +3197,877 @@ h1 {
   }
 }
 
-/* CS.412 exam lab */
-.cs412-page,
-.crossword-game { max-width: 1080px; margin: 0 auto; }
-.cs412-mode-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.cs412-review-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.cs412-hero { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 28px; margin-bottom: 34px; }
-.cs412-hero p { max-width: 700px; margin: 14px 0 0; color: var(--text-soft); }
-.cs412-hero > svg { width: 82px; height: 82px; padding: 20px; border-radius: 24px; color: var(--cs-indigo); background: color-mix(in srgb, var(--cs-indigo) 10%, var(--surface)); }
-.mock-exam-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; width: 100%; padding: 28px; border: 0; border-radius: 24px; color: white; text-align: left; background: linear-gradient(135deg, #282078, #4638ce 65%, #167d9b); box-shadow: 0 22px 54px rgb(48 38 168 / 26%); cursor: pointer; }
-.mock-exam-card > span { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 17px; background: rgb(255 255 255 / 14%); }
-.mock-exam-card svg { width: 26px; height: 26px; }.mock-exam-card strong { font-size: 1.35rem; }.mock-exam-card p { margin: 4px 0 0; color: rgb(255 255 255 / 75%); }.mock-exam-card b { color: var(--cs-lime); }
-.crossword-library { margin-top: 42px; }.crossword-library > p { color: var(--text-soft); }.theory-modules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
-.theory-modules article { display: flex; gap: 14px; align-items: center; padding: 19px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }.theory-modules article svg { color: var(--cs-cyan); }.theory-modules article div { display: grid; }.theory-modules span { color: var(--text-soft); font-size: .8rem; }
-.build-coverage { min-height: 46px; margin-top: 16px; padding: 10px 16px; border: 1px solid var(--cs-indigo); border-radius: 11px; color: var(--cs-indigo); background: transparent; font-weight: 750; cursor: pointer; }.coverage-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }.coverage-list button { display: grid; gap: 3px; padding: 15px; border: 1px solid var(--border); border-radius: 13px; color: var(--text); background: var(--surface); text-align: left; cursor: pointer; }.coverage-list span,.coverage-list small { color: var(--text-soft); font-size: .74rem; }
-.crossword-game-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 16px; }.crossword-game-bar .back-link { margin: 0; }.crossword-game-bar > span { justify-self: end; color: var(--text-soft); font-size: .8rem; }.crossword-status { padding: 11px 15px; border-radius: 11px; color: var(--text-soft); background: var(--accent-soft); }
-.crossword-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); gap: 28px; align-items: start; }.crossword-grid-wrap { min-width: 0; overflow-x: auto; }.crossword-grid { display: grid; gap: 1px; width: 100%; padding: 8px; border-radius: 16px; background: #16182b; box-shadow: var(--shadow-soft); }
-.crossword-block { background: #16182b; }.crossword-cell { position: relative; display: grid; min-width: 0; min-height: 0; aspect-ratio: 1; background: #fff; }.crossword-cell.in-word { background: #e9faff; }.crossword-cell.selected { z-index: 1; background: #c8f36a; box-shadow: inset 0 0 0 3px #3026a8; }.crossword-cell.incorrect { background: #ffe4e4; }.crossword-cell.revealed::after { content: ''; position: absolute; right: 3px; bottom: 3px; width: 5px; height: 5px; border-radius: 50%; background: #b16c00; }.crossword-cell > span { position: absolute; z-index: 2; top: 1px; left: 3px; color: #333; font-size: clamp(.42rem, 1vw, .64rem); font-weight: 700; }.crossword-cell input { width: 100%; height: 100%; padding: 18% 2% 0; border: 0; outline: 0; color: #111; background: transparent; text-align: center; font-size: clamp(.72rem, 2vw, 1.25rem); font-weight: 800; text-transform: uppercase; }
-.crossword-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }.crossword-tools button,.problem-actions button,.new-practice { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 9px 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); cursor: pointer; }.crossword-tools .crossword-submit { margin-left: auto; color: white; border-color: var(--cs-indigo); background: var(--cs-indigo); }
-.crossword-clues { display: grid; gap: 24px; max-height: 72vh; overflow: auto; padding-right: 4px; }.crossword-clues h2 { margin: 0 0 9px; font-size: 1.05rem; }.crossword-clues section { display: grid; gap: 7px; }.crossword-clues button { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 10px; color: var(--text-soft); background: transparent; text-align: left; cursor: pointer; }.crossword-clues button:hover,.crossword-clues button.active { color: var(--text); border-color: var(--border); background: var(--surface); }.crossword-clues button > strong { color: var(--cs-indigo); }.crossword-clues button small { color: var(--text-faint); white-space: nowrap; }.crossword-complete { margin-top: 28px; padding: 24px; border: 1px solid color-mix(in srgb, var(--success) 45%, var(--border)); border-radius: 18px; background: var(--success-soft); }.crossword-complete div { columns: 2; }.crossword-complete p { break-inside: avoid; }
-.practice-summary { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; padding: 20px 22px; border-radius: 18px; color: white; background: linear-gradient(120deg, #222059, #3026a8); }.practice-summary div { display: grid; }.practice-summary span { color: rgb(255 255 255 / 65%); font-size: .78rem; }.practice-summary output { font-size: 2rem; font-weight: 800; }.practice-summary output small { font-size: 1rem; opacity: .65; }
-.problem-list { display: grid; gap: 18px; }.problem-card { padding: clamp(20px, 4vw, 30px); border: 1px solid var(--border); border-radius: 20px; background: var(--surface); }.problem-card.solved { border-color: color-mix(in srgb, var(--success) 45%, var(--border)); }.problem-card > header { display: flex; align-items: center; gap: 13px; }.problem-card > header > span { color: var(--cs-indigo); font-size: .75rem; font-weight: 800; }.problem-card h2 { margin: 0; font-size: 1.2rem; }.problem-card header p { margin: 2px 0 0; color: var(--text-faint); font-size: .76rem; }.problem-card header > svg { margin-left: auto; color: var(--success); }.problem-prompt { color: var(--text-soft); }.problem-card label { display: grid; gap: 7px; font-size: .82rem; font-weight: 700; }.problem-card textarea { width: 100%; resize: vertical; min-height: 52px; padding: 13px; border: 1px solid var(--border); border-radius: 11px; color: var(--text); background: var(--surface-elevated); font-family: ui-monospace, monospace; }.problem-actions { display: flex; gap: 9px; margin-top: 12px; }.problem-actions button:first-child { color: white; border-color: var(--cs-indigo); background: var(--cs-indigo); }.problem-feedback { color: var(--text-soft); font-weight: 650; }.worked-solution { display: grid; gap: 8px; margin-top: 16px; padding: 18px; border-radius: 14px; background: var(--surface-subtle); }.worked-solution h3 { margin: 0 0 5px; }.worked-solution > div { display: grid; grid-template-columns: 110px 1fr 1fr; gap: 10px; align-items: baseline; }.worked-solution code { overflow-wrap: anywhere; }.new-practice { margin-top: 20px; }
-.calculator-launcher { position: fixed; z-index: 35; right: 22px; bottom: 22px; display: flex; align-items: center; gap: 9px; min-height: 50px; padding: 0 18px; border: 0; border-radius: 999px; color: #111525; background: var(--cs-lime); box-shadow: var(--shadow); font-weight: 800; cursor: pointer; }.scientific-calculator { position: fixed; z-index: 45; right: 22px; bottom: 22px; width: min(390px, calc(100vw - 32px)); padding: 15px; border: 1px solid rgb(255 255 255 / 10%); border-radius: 22px; color: #f7f8ff; background: linear-gradient(160deg, #171c32, var(--calc-bg)); box-shadow: 0 28px 90px rgb(0 0 0 / 45%); }.scientific-calculator > header { display: flex; align-items: center; justify-content: space-between; padding: 2px 3px 12px; }.scientific-calculator > header div { display: grid; }.scientific-calculator > header span { color: #8f9abb; font-size: .7rem; }.scientific-calculator button { border: 0; color: inherit; background: transparent; cursor: pointer; }.calculator-display { padding: 13px; border-radius: 14px; text-align: right; background: #090c17; }.calculator-display input { width: 100%; border: 0; outline: 0; color: #bac2dc; background: transparent; text-align: right; }.calculator-display output { display: block; min-height: 40px; font-size: 1.8rem; font-weight: 750; overflow-wrap: anywhere; }.calculator-display p { margin: 3px 0 0; color: #ff9b9b; font-size: .75rem; }.calculator-memory { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; padding: 10px 0; }.calculator-memory button { min-height: 34px; color: #84dff1; font-size: .72rem; }.calculator-keys { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }.calculator-keys button { min-height: 42px; border-radius: 10px; background: var(--calc-key); font-weight: 700; }.calculator-keys button.operator { color: #8fe8f6; background: #263254; }.calculator-keys .equals { grid-column: span 3; color: #151927; background: var(--cs-lime); }.calculator-history { margin-top: 10px; color: #aab4d0; font-size: .76rem; }.calculator-history summary { display: flex; gap: 6px; cursor: pointer; }.calculator-history button { display: block; width: 100%; padding: 6px 0; color: #dbe1f4; text-align: left; }
-@media (max-width: 760px) { .cs412-mode-list,.theory-modules,.crossword-layout { grid-template-columns: 1fr; }.crossword-layout { gap: 24px; }.crossword-grid-wrap { overflow-x: auto; }.crossword-grid { min-width: min(620px, 165vw); }.crossword-clues { max-height: none; }.crossword-complete div { columns: 1; }.worked-solution > div { grid-template-columns: 1fr; gap: 2px; }.scientific-calculator { right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); width: calc(100vw - 16px); max-height: calc(100dvh - 16px); overflow: auto; border-radius: 22px; }.calculator-launcher { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); }.cs412-hero > svg { width: 58px; height: 58px; padding: 14px; }.mock-exam-card { grid-template-columns: auto 1fr; }.mock-exam-card > b { grid-column: 2; }}
-@media (max-width: 760px) { .coverage-list { grid-template-columns: 1fr; } }
+/* CS.412 study and exam surfaces */
+.cs412-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.crossword-game {
+  max-width: 1420px;
+  margin: 0 auto;
+}
+
+.cs412-mode-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cs412-review-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cs412-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 34px;
+}
+
+.cs412-hero p {
+  max-width: 700px;
+  margin: 14px 0 0;
+  color: var(--text-soft);
+}
+
+.cs412-hero > svg {
+  width: 62px;
+  height: 62px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  background: var(--surface);
+}
+
+.cs412-hero-bappi {
+  width: clamp(92px, 12vw, 132px);
+  filter: drop-shadow(0 14px 24px rgb(0 0 0 / 13%));
+}
+
+.mock-exam-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding: 24px 26px;
+  border: 1px solid color-mix(in srgb, var(--accent) 62%, var(--border));
+  border-radius: var(--radius-md);
+  color: var(--text);
+  text-align: left;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent), 0 14px 38px color-mix(in srgb, var(--accent) 18%, transparent);
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.mock-exam-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 11%, transparent), 0 18px 44px color-mix(in srgb, var(--accent) 23%, transparent);
+  transform: translateY(-1px);
+}
+
+.mock-exam-card strong {
+  font-size: 1.15rem;
+}
+
+.mock-exam-card p {
+  margin: 5px 0 0;
+  color: var(--text-soft);
+}
+
+.mock-exam-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-size: .82rem;
+  font-weight: 750;
+}
+
+.mock-exam-action svg {
+  width: 17px;
+  height: 17px;
+}
+
+.crossword-library {
+  margin-top: 42px;
+}
+
+.crossword-library > p {
+  color: var(--text-soft);
+}
+
+.topic-crossword-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.topic-crossword-list button {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 66px;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.topic-crossword-list button:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-subtle);
+}
+
+.topic-crossword-list button > svg:first-child {
+  color: var(--accent);
+}
+
+.topic-crossword-list button > svg:last-child {
+  width: 17px;
+  color: var(--text-soft);
+}
+
+.topic-crossword-list span {
+  display: grid;
+  gap: 3px;
+}
+
+.topic-crossword-list small {
+  color: var(--text-soft);
+}
+
+.theory-modules {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.theory-modules article {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 17px 0;
+  border-top: 1px solid var(--border);
+}
+
+.theory-modules article svg {
+  color: var(--accent);
+}
+
+.theory-modules article div {
+  display: grid;
+}
+
+.theory-modules span {
+  color: var(--text-soft);
+  font-size: .8rem;
+}
+
+.build-coverage,
+.coverage-list button {
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+}
+
+.build-coverage {
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 9px 15px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.coverage-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.coverage-list button {
+  display: grid;
+  gap: 3px;
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  text-align: left;
+}
+
+.coverage-list span,
+.coverage-list small {
+  color: var(--text-soft);
+  font-size: .74rem;
+}
+
+.crossword-game-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.crossword-game-bar .back-link {
+  margin: 0;
+}
+
+.crossword-game-bar > span {
+  justify-self: end;
+  color: var(--text-soft);
+  font-size: .8rem;
+}
+
+.crossword-status {
+  margin: 0 0 20px;
+  color: var(--text-soft);
+  font-size: .86rem;
+}
+
+.crossword-layout {
+  display: grid;
+  grid-template-columns: minmax(170px, .72fr) minmax(430px, 2fr) minmax(170px, .72fr);
+  grid-template-areas: 'across grid down';
+  align-items: start;
+  gap: 18px;
+}
+
+.crossword-grid-wrap {
+  grid-area: grid;
+  width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.crossword-grid {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  padding: 7px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: #18181b;
+}
+
+.crossword-block {
+  background: #18181b;
+}
+
+.crossword-cell {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  background: #fafafa;
+}
+
+.crossword-cell.in-word {
+  background: #e8f3ff;
+}
+
+.crossword-cell.selected {
+  z-index: 1;
+  background: #cfe7ff;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.crossword-cell.incorrect {
+  background: var(--danger-soft);
+}
+
+.crossword-cell.revealed::after {
+  content: '';
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.crossword-cell > span {
+  position: absolute;
+  z-index: 2;
+  top: 1px;
+  left: 3px;
+  color: #55585d;
+  font-size: clamp(.42rem, 1vw, .64rem);
+  font-weight: 700;
+}
+
+.crossword-cell input {
+  width: 100%;
+  height: 100%;
+  padding: 18% 2% 0;
+  border: 0;
+  outline: 0;
+  color: #171719;
+  background: transparent;
+  text-align: center;
+  font-size: clamp(.72rem, 2vw, 1.25rem);
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.crossword-tools,
+.problem-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.crossword-tools button,
+.problem-actions button,
+.new-practice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  background: transparent;
+  font-size: .79rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.crossword-tools .crossword-submit {
+  margin-left: auto;
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.crossword-clue-column {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  min-width: 0;
+}
+
+.crossword-clue-across { grid-area: across; }
+.crossword-clue-down { grid-area: down; }
+
+.crossword-clue-column h2 {
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
+}
+
+.crossword-clue-column button {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 3px 7px;
+  width: 100%;
+  padding: 9px 7px;
+  border: 0;
+  border-left: 2px solid transparent;
+  color: var(--text-soft);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: .78rem;
+  line-height: 1.42;
+}
+
+.crossword-clue-column button:hover,
+.crossword-clue-column button.active {
+  color: var(--text);
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.crossword-clue-column button > strong {
+  color: var(--accent);
+}
+
+.crossword-clue-column button small {
+  grid-column: 2;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.crossword-complete {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--success) 45%, var(--border));
+  border-radius: var(--radius-md);
+  background: var(--success-soft);
+}
+
+.crossword-complete div {
+  columns: 2;
+}
+
+.crossword-complete p {
+  break-inside: avoid;
+}
+
+.practice-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  padding: 18px 0;
+  border-block: 1px solid var(--border);
+}
+
+.practice-summary div {
+  display: grid;
+}
+
+.practice-summary span {
+  color: var(--text-soft);
+  font-size: .78rem;
+}
+
+.practice-summary output {
+  color: var(--text);
+  font-size: 1.8rem;
+  font-weight: 750;
+}
+
+.practice-summary output small {
+  color: var(--text-faint);
+  font-size: .9rem;
+}
+
+.problem-list {
+  display: grid;
+  gap: 14px;
+}
+
+.problem-card {
+  padding: clamp(20px, 4vw, 28px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.problem-card.solved {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--border));
+}
+
+.problem-card > header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.problem-card > header > span {
+  color: var(--accent);
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+.problem-card h2 {
+  margin: 0;
+  font-size: 1.14rem;
+}
+
+.problem-card header p {
+  margin: 2px 0 0;
+  color: var(--text-faint);
+  font-size: .76rem;
+}
+
+.problem-card header > svg {
+  margin-left: auto;
+  color: var(--success);
+}
+
+.problem-prompt {
+  color: var(--text-soft);
+}
+
+.problem-card label {
+  display: grid;
+  gap: 7px;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.problem-card textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 13px;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--bg);
+  font-family: ui-monospace, monospace;
+}
+
+.problem-actions button:first-child {
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.problem-feedback {
+  color: var(--text-soft);
+  font-weight: 650;
+}
+
+.worked-solution {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 18px 0 2px;
+  border-top: 1px solid var(--border);
+}
+
+.worked-solution h3 {
+  margin: 0 0 5px;
+}
+
+.worked-solution > div {
+  display: grid;
+  grid-template-columns: 110px 1fr 1fr;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.worked-solution code {
+  overflow-wrap: anywhere;
+}
+
+.new-practice {
+  margin-top: 20px;
+}
+
+.calculator-launcher {
+  position: fixed;
+  z-index: 35;
+  right: 22px;
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-soft);
+  font-size: .79rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.scientific-calculator {
+  position: fixed;
+  z-index: 45;
+  right: 22px;
+  bottom: 22px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 12px;
+  overflow: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow);
+}
+
+.scientific-calculator > header {
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 10px;
+}
+
+.scientific-calculator > header div {
+  display: grid;
+}
+
+.scientific-calculator > header span {
+  color: var(--text-faint);
+  font-size: .68rem;
+}
+
+.scientific-calculator button {
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.calculator-drag-handle,
+.scientific-calculator > header > button:last-child {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  color: var(--text-faint);
+}
+
+.calculator-drag-handle {
+  cursor: grab;
+  touch-action: none;
+}
+
+.calculator-drag-handle:active {
+  cursor: grabbing;
+}
+
+.calculator-drag-handle:hover,
+.scientific-calculator > header > button:last-child:hover {
+  color: var(--text);
+  background: var(--surface-subtle);
+}
+
+.calculator-display {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  text-align: right;
+  background: var(--bg);
+}
+
+.calculator-display input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--text-soft);
+  background: transparent;
+  text-align: right;
+}
+
+.calculator-display output {
+  display: block;
+  min-height: 40px;
+  overflow-wrap: anywhere;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.calculator-display p {
+  margin: 3px 0 0;
+  color: var(--danger);
+  font-size: .75rem;
+}
+
+.calculator-memory {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.calculator-memory button {
+  min-height: 30px;
+  color: var(--text-soft);
+  font-size: .68rem;
+  font-weight: 650;
+}
+
+.calculator-science-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 36px;
+  margin-bottom: 7px;
+  padding: 0 9px;
+  border-block: 1px solid var(--border) !important;
+  color: var(--text-soft) !important;
+  font-size: .72rem;
+}
+
+.calculator-science-toggle svg {
+  width: 15px;
+  height: 15px;
+}
+
+.calculator-science-keys,
+.calculator-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.calculator-science-keys {
+  margin-bottom: 7px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+.calculator-science-keys button,
+.calculator-keys button {
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  font-size: .85rem;
+  font-weight: 650;
+}
+
+.calculator-keys button:hover,
+.calculator-science-keys button:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-subtle);
+}
+
+.calculator-keys button.operator,
+.calculator-science-keys button.operator {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+
+.calculator-keys button.utility {
+  color: var(--text-soft);
+  background: var(--surface-subtle);
+}
+
+.calculator-keys .equals {
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.calculator-history {
+  margin-top: 9px;
+  color: var(--text-soft);
+  font-size: .74rem;
+}
+
+.calculator-history summary {
+  display: flex;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.calculator-history button {
+  display: block;
+  width: 100%;
+  padding: 6px 0;
+  color: var(--text);
+  text-align: left;
+}
+
+@media (max-width: 920px) {
+  .crossword-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'grid grid'
+      'across down';
+    gap: 28px 22px;
+  }
+
+  .crossword-grid-wrap {
+    width: min(100%, 720px);
+  }
+}
+
+@media (max-width: 760px) {
+  .cs412-mode-list,
+  .theory-modules {
+    grid-template-columns: 1fr;
+  }
+
+  .crossword-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'grid'
+      'across'
+      'down';
+    gap: 24px;
+  }
+
+  .crossword-grid-wrap {
+    overflow-x: auto;
+  }
+
+  .crossword-grid {
+    min-width: min(620px, 165vw);
+  }
+
+  .crossword-complete div {
+    columns: 1;
+  }
+
+  .worked-solution > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .scientific-calculator {
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+
+  .calculator-launcher {
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  body:has(.audio-dock[data-expanded='true']) .calculator-launcher {
+    bottom: calc(184px + env(safe-area-inset-bottom));
+  }
+
+  .cs412-hero > svg {
+    width: 52px;
+    height: 52px;
+    padding: 13px;
+  }
+
+  .cs412-hero-bappi {
+    width: 88px;
+  }
+
+  .coverage-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 440px) {
+  .cs412-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .cs412-hero > svg {
+    display: none;
+  }
+
+  .cs412-hero-bappi {
+    display: block;
+    width: 76px;
+    margin-top: -18px;
+    justify-self: end;
+  }
+
+  .mock-exam-card {
+    padding: 20px;
+  }
+
+  .mock-exam-action {
+    align-self: end;
+  }
+}
