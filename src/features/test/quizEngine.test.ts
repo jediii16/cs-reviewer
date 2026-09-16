@@ -54,6 +54,31 @@ describe('quiz engine', () => {
     expect(q1.options.map((option) => option.id)).toEqual(before);
   });
 
+  it('selects a changing balanced subset when a limited mixed exam is requested', () => {
+    const questions = [
+      q1,
+      q2,
+      { ...q3, id: 'q3-cia' },
+      { ...q1, id: 'q4', topicId: 'process-management' },
+      { ...q2, id: 'q5', topicId: 'process-management' },
+      { ...q3, id: 'q6', topicId: 'process-management' },
+      { ...q1, id: 'q7', topicId: 'memory-management' },
+      { ...q2, id: 'q8', topicId: 'memory-management' },
+      { ...q3, id: 'q9', topicId: 'memory-management' },
+    ];
+
+    const quiz = createQuiz(questions, () => 0.25, { limit: 6, balanceByTopic: true });
+
+    expect(quiz).toHaveLength(6);
+    expect(new Set(quiz.map((question) => question.id)).size).toBe(6);
+    expect(Object.fromEntries(
+      ['cia', 'process-management', 'memory-management'].map((topicId) => [
+        topicId,
+        quiz.filter((question) => question.topicId === topicId).length,
+      ]),
+    )).toEqual({ cia: 2, 'process-management': 2, 'memory-management': 2 });
+  });
+
   it('scores answers and groups results by topic', () => {
     expect(scoreQuiz([q1, q2], { q1: 'confidentiality', q2: 'wrong' })).toEqual({
       correct: 1,

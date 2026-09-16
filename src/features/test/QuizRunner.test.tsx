@@ -46,6 +46,19 @@ describe('QuizRunner', () => {
     expect(screen.getByRole('img', { name: /bappi is focused/i })).toBeVisible();
   });
 
+  it('shows readable CIT.015 topic names instead of internal ids', () => {
+    render(
+      <QuizRunner
+        questions={[{ ...sampleQuestion, topicId: 'os-introduction' }]}
+        setTitle="Comprehensive Exam"
+        onComplete={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Operating systems introduction')).toBeVisible();
+    expect(screen.queryByText('os-introduction')).not.toBeInTheDocument();
+  });
+
   it('renders only multiple-choice controls', () => {
     render(<QuizRunner questions={[sampleQuestion]} onComplete={vi.fn()} />);
 

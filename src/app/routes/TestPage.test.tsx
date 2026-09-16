@@ -104,4 +104,24 @@ describe('TestPage', () => {
       'Identify the book-reference term that matches each definition.',
     );
   });
+
+  it('shows complete CIT.015 topic tests but starts only 20 mixed questions', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/subjects/cit015/test']}>
+        <Routes>
+          <Route path="subjects/:subjectId/test" element={<TestPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('button', { name: /introduction to operating systems.*40 questions/i })).toBeVisible();
+    expect(screen.getByRole('button', { name: /process management.*47 questions/i })).toBeVisible();
+    expect(screen.getByRole('button', { name: /memory management.*36 questions/i })).toBeVisible();
+    const comprehensive = screen.getByRole('button', { name: /comprehensive exam.*20 questions/i });
+    expect(comprehensive).toBeVisible();
+
+    await user.click(comprehensive);
+    expect(screen.getByText('Question 1 of 20')).toBeVisible();
+  });
 });

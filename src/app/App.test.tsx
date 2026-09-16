@@ -163,6 +163,27 @@ describe('App navigation', () => {
     );
   });
 
+  it('opens CIT.015 as a dedicated multiple-choice exam subject', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByRole('link', { name: /cit\.015/i }));
+
+    expect(screen.getByRole('heading', { name: /cit\.015/i })).toBeVisible();
+    expect(screen.getByRole('link', { name: /^test$/i })).toHaveAttribute(
+      'href',
+      '/subjects/cit015/test',
+    );
+    expect(screen.getByText(/complete topic banks and a changing 20-item comprehensive exam/i)).toBeVisible();
+    expect(screen.queryByRole('link', { name: /^study$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^flashcards$/i })).not.toBeInTheDocument();
+  });
+
   it('renders the CIT.016 study topics without CIT.017 lessons', () => {
     render(
       <MemoryRouter initialEntries={['/subjects/cit016/study']}>

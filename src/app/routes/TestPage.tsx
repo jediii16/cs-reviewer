@@ -28,13 +28,14 @@ interface ActiveTest {
 }
 
 function SetRow({ set, onStart }: { set: TestSet; onStart: (set: TestSet) => void }) {
+  const questionCount = set.questionLimit ?? set.questions.length;
   return (
     <button type="button" onClick={() => onStart(set)}>
       <span className="test-set-copy">
         <strong>{set.title}</strong>
         <small>{set.description}</small>
       </span>
-      <span className="test-set-count">{set.questions.length} questions</span>
+      <span className="test-set-count">{questionCount} questions</span>
       <ArrowRight className="test-mode-action" aria-hidden="true" />
     </button>
   );
@@ -56,7 +57,10 @@ export function TestPage() {
       subjectId: subject.id,
       title: set.title,
       instruction: set.instruction,
-      questions: createQuiz(set.questions),
+      questions: createQuiz(set.questions, Math.random, {
+        limit: set.questionLimit,
+        balanceByTopic: set.balanceTopics,
+      }),
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -102,7 +106,7 @@ export function TestPage() {
               <header>
                 <span className="test-mode-icon" aria-hidden="true"><Icon /></span>
                 <h2 id={`test-group-${topicId}`}>{testContent.labels[topicId]}</h2>
-                <span>{sets.reduce((total, set) => total + set.questions.length, 0)} total</span>
+                <span>{sets.reduce((total, set) => total + (set.questionLimit ?? set.questions.length), 0)} total</span>
               </header>
               <div className="test-mode-list">
                 {sets.map((set) => <SetRow key={set.id} set={set} onStart={start} />)}

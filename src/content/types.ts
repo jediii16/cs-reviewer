@@ -48,6 +48,7 @@ export interface SubjectManifest {
   description: string;
   topics: LessonTopic[];
   mccumber: McCumberDimensions;
+  reviewModes?: Array<'study' | 'flashcards' | 'test'>;
 }
 
 export type QuizTopic = string;
@@ -78,6 +79,8 @@ export interface TestSet {
   description: string;
   instruction?: string;
   questions: ChoiceQuestion[];
+  questionLimit?: number;
+  balanceTopics?: boolean;
 }
 
 export interface Flashcard {

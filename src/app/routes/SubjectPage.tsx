@@ -12,6 +12,7 @@ export function SubjectPage() {
   if (!subject) return <Navigate to="/" replace />;
 
   const currentSubject = subject;
+  const reviewModes = currentSubject.reviewModes ?? ['study', 'flashcards', 'test'];
 
   const knownTopicIds = new Set(currentSubject.topics.map((topic) => topic.id));
   const reviewedCount = new Set(progress.reviewedTopicIds.filter((id) => knownTopicIds.has(id))).size;
@@ -33,7 +34,11 @@ export function SubjectPage() {
       <div className="subject-heading">
         <div>
           <h1 id="subject-title">{currentSubject.code}</h1>
-          <p>{currentSubject.id === 'cs412' ? 'Master the likely terms in real crosswords, then solve a complete 30-point preprocessing set.' : 'Learn each concept, self-check with flashcards, then practice complete multiple-choice sets.'}</p>
+          <p>{currentSubject.id === 'cs412'
+            ? 'Master the likely terms in real crosswords, then solve a complete 30-point preprocessing set.'
+            : reviewModes.length === 1 && reviewModes[0] === 'test'
+              ? 'Practice complete topic banks and a changing 20-item comprehensive exam.'
+              : 'Learn each concept, self-check with flashcards, then practice complete multiple-choice sets.'}</p>
         </div>
         <BappiMascot
           className="subject-heading-mascot"
@@ -62,21 +67,21 @@ export function SubjectPage() {
         <Link aria-label="Crossword practice" className="mode-row mode-row-primary" to="/subjects/cs412/crossword"><span className="mode-icon"><Puzzle /></span><span><strong>Crossword practice</strong><small>Real 15-item interlocking puzzles</small></span><span className="mode-action">Open puzzle lab</span></Link>
         <Link aria-label="Data preprocessing" className="mode-row" to="/subjects/cs412/preprocessing"><span className="mode-icon"><Calculator /></span><span><strong>Data preprocessing</strong><small>6 problems · 30 points</small></span><span className="mode-action">Start solving</span></Link>
       </div> : <div className="mode-list" aria-label="Choose a review mode">
-        <Link aria-label="Study" className="mode-row mode-row-primary" to={`/subjects/${currentSubject.id}/study`}>
+        {reviewModes.includes('study') ? <Link aria-label="Study" className="mode-row mode-row-primary" to={`/subjects/${currentSubject.id}/study`}>
           <span className="mode-icon" aria-hidden="true"><BookOpen /></span>
           <span><strong>Study</strong><small>Review lessons and use active recall</small></span>
           <span className="mode-action">Open notes</span>
-        </Link>
-        <Link aria-label="Flashcards" className="mode-row" to={`/subjects/${currentSubject.id}/flashcards`}>
+        </Link> : null}
+        {reviewModes.includes('flashcards') ? <Link aria-label="Flashcards" className="mode-row" to={`/subjects/${currentSubject.id}/flashcards`}>
           <span className="mode-icon" aria-hidden="true"><GalleryHorizontalEnd /></span>
           <span><strong>Flashcards</strong><small>Practice identification at your own pace</small></span>
           <span className="mode-action">Choose a deck</span>
-        </Link>
-        <Link aria-label="Test" className="mode-row" to={`/subjects/${currentSubject.id}/test`}>
+        </Link> : null}
+        {reviewModes.includes('test') ? <Link aria-label="Test" className={`mode-row${reviewModes.length === 1 ? ' mode-row-primary' : ''}`} to={`/subjects/${currentSubject.id}/test`}>
           <span className="mode-icon" aria-hidden="true"><ClipboardCheck /></span>
           <span><strong>Test</strong><small>Complete focused multiple-choice sets</small></span>
           <span className="mode-action">Choose a set</span>
-        </Link>
+        </Link> : null}
       </div>}
     </section>
   );

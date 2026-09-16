@@ -24,6 +24,9 @@ const topicLabels: Record<QuizTopic, string> = {
   'tcp-ip': 'TCP/IP stack',
   'transmission-media': 'Transmission media',
   multiplexing: 'Multiplexing',
+  'os-introduction': 'Operating systems introduction',
+  'process-management': 'Process management',
+  'memory-management': 'Memory management',
 };
 
 export function QuizRunner({ questions, setTitle, instruction, onComplete, onExit }: QuizRunnerProps) {

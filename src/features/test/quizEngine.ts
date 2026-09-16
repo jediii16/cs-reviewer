@@ -14,6 +14,11 @@ export interface QuizScore {
   byTopic: Record<QuizTopic, TopicScore>;
 }
 
+interface CreateQuizOptions {
+  limit?: number;
+  balanceByTopic?: boolean;
+}
+
 function shuffled<T>(items: readonly T[], random: () => number): T[] {
   const copy = [...items];
   for (let index = copy.length - 1; index > 0; index -= 1) {
@@ -26,8 +31,40 @@ function shuffled<T>(items: readonly T[], random: () => number): T[] {
 export function createQuiz(
   questions: readonly ChoiceQuestion[],
   random: () => number = Math.random,
+  options: CreateQuizOptions = {},
 ): ChoiceQuestion[] {
-  return shuffled(questions, random).map((question) => ({
+  const limit = Math.max(0, Math.min(
+    Math.floor(options.limit ?? questions.length),
+    questions.length,
+  ));
+  let selected: ChoiceQuestion[];
+
+  if (options.balanceByTopic && limit < questions.length) {
+    const grouped = new Map<QuizTopic, ChoiceQuestion[]>();
+    for (const question of questions) {
+      const group = grouped.get(question.topicId) ?? [];
+      group.push(question);
+      grouped.set(question.topicId, group);
+    }
+
+    const groups = shuffled(
+      Array.from(grouped.values(), (group) => shuffled(group, random)),
+      random,
+    );
+    const base = Math.floor(limit / groups.length);
+    const remainder = limit % groups.length;
+    selected = groups.flatMap((group, index) => group.slice(0, base + (index < remainder ? 1 : 0)));
+
+    if (selected.length < limit) {
+      const selectedIds = new Set(selected.map((question) => question.id));
+      const unused = shuffled(questions.filter((question) => !selectedIds.has(question.id)), random);
+      selected.push(...unused.slice(0, limit - selected.length));
+    }
+  } else {
+    selected = shuffled(questions, random).slice(0, limit);
+  }
+
+  return shuffled(selected, random).map((question) => ({
     ...question,
     options: shuffled(question.options, random),
   }));
