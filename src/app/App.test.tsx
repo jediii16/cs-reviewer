@@ -163,6 +163,21 @@ describe('App navigation', () => {
     );
   });
 
+  it('returns to the top when navigation changes routes', async () => {
+    const user = userEvent.setup();
+    const scrollTo = vi.spyOn(window, 'scrollTo');
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+    scrollTo.mockClear();
+
+    await user.click(screen.getByRole('link', { name: /cognate4.*machine vision/i }));
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'auto' });
+  });
+
   it('opens CIT.015 as a dedicated multiple-choice exam subject', async () => {
     const user = userEvent.setup();
 

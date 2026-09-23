@@ -1,16 +1,28 @@
 import { Moon, Sun } from 'lucide-react';
-import { Link, Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { BappiMascot } from '../components/BappiMascot';
 import { useAppearance } from '../features/appearance/useAppearance';
 import { AudioPlayer } from '../features/audio/AudioPlayer';
 import { BlurtingNotes } from '../features/notes/BlurtingNotes';
 import { FocusTimer } from '../features/timer/FocusTimer';
 
+function RouteScrollReset() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+
+  return null;
+}
+
 export function AppShell() {
   const { resolvedTheme, toggleTheme } = useAppearance();
 
   return (
     <div className="app-shell">
+      <RouteScrollReset />
       <header className="site-header">
         <div className="site-header-inner">
           <Link className="brand" to="/" aria-label="Bappi home">

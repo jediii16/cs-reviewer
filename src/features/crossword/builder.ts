@@ -61,7 +61,7 @@ function candidatePlacements(term: TheoryTerm, entries: readonly Placed[]) {
 }
 
 function orderedTerms(terms: readonly TheoryTerm[], seed: number) {
-  const modules = ['introduction', 'crisp-dm', 'warehousing'] as const;
+  const modules = [...new Set(terms.map((term) => term.module))];
   const groups = modules.map((module, index) => seededShuffle(terms.filter((term) => term.module === module), seed + index * 97));
   const balanced: TheoryTerm[] = [];
   for (let index = 0; index < Math.max(...groups.map((group) => group.length)); index += 1) for (const group of groups) if (group[index]) balanced.push(group[index]);
@@ -79,7 +79,9 @@ function finalize(entries: readonly Placed[], seed: number, title: string): Cros
 }
 
 export function buildCrossword(terms: readonly TheoryTerm[], options: { seed: number; count: number; title: string }): CrosswordPuzzle | null {
-  const order = orderedTerms(terms, options.seed); if (!order.length) return null;
+  const uniqueTerms = terms.filter((term, index) => terms.findIndex((candidate) => candidate.id === term.id) === index);
+  if (options.count < 1 || options.count > uniqueTerms.length) return null;
+  const order = orderedTerms(uniqueTerms, options.seed); if (!order.length) return null;
   const first = order[0]; const entries: Placed[] = [{ term: first, word: normalizeCrosswordAnswer(first.answer), row: 0, col: 0, direction: 'across' }];
   let cursor = 1; let misses = 0;
   while (entries.length < options.count && misses < order.length * 3) {
@@ -104,25 +106,40 @@ export function createMockCrossword(terms: readonly TheoryTerm[], seed: number):
   throw new Error('Unable to build a connected 15-answer crossword from this term bank.');
 }
 
-const topicTitles: Record<TheoryTerm['module'], string> = {
+const topicTitles = {
   introduction: 'Introduction to Data Mining',
   'crisp-dm': 'CRISP-DM',
   warehousing: 'Data Warehousing',
-};
+} as const;
 
 export function createTopicCrossword(terms: readonly TheoryTerm[], seed: number): CrosswordPuzzle {
   if (!terms.length) throw new Error('A topic crossword needs at least one term.');
   const module = terms[0].module;
   if (terms.some((term) => term.module !== module)) throw new Error('A topic crossword can only contain one topic.');
+  if (!(module in topicTitles)) throw new Error(`No topic title is registered for ${module}.`);
+  const topicTitle = topicTitles[module as keyof typeof topicTitles];
   for (let attempt = 0; attempt < 600; attempt += 1) {
     const puzzle = buildCrossword(terms, {
       seed: seed + attempt * 19,
       count: terms.length,
-      title: `${topicTitles[module]} · All Terms`,
+      title: `${topicTitle} · All Terms`,
     });
     if (puzzle) return { ...puzzle, id: `topic-${module}-${seed}`, seed };
   }
-  throw new Error(`Unable to build a connected crossword for ${topicTitles[module]}.`);
+  throw new Error(`Unable to build a connected crossword for ${topicTitle}.`);
+}
+
+export function createCompleteCrossword(terms: readonly TheoryTerm[], seed: number, title: string): CrosswordPuzzle {
+  if (!terms.length) throw new Error('A complete crossword needs at least one term.');
+  for (let attempt = 0; attempt < 1_800; attempt += 1) {
+    const puzzle = buildCrossword(terms, {
+      seed: seed + attempt * 19,
+      count: terms.length,
+      title,
+    });
+    if (puzzle) return { ...puzzle, id: `complete-${terms[0].module}-${seed}`, seed };
+  }
+  throw new Error(`Unable to build a connected complete crossword for ${title}.`);
 }
 
 export function validatePuzzle(puzzle: CrosswordPuzzle): string[] {

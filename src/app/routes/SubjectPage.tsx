@@ -36,6 +36,8 @@ export function SubjectPage() {
           <h1 id="subject-title">{currentSubject.code}</h1>
           <p>{currentSubject.id === 'cs412'
             ? 'Master the likely terms in real crosswords, then solve a complete 30-point preprocessing set.'
+            : currentSubject.id === 'cognate4'
+              ? 'Study all five Machine Vision lessons, then practice every exam-ready item in multiple choice and complete crosswords.'
             : reviewModes.length === 1 && reviewModes[0] === 'test'
               ? 'Practice complete topic banks and a changing 20-item comprehensive exam.'
               : 'Learn each concept, self-check with flashcards, then practice complete multiple-choice sets.'}</p>
@@ -77,10 +79,15 @@ export function SubjectPage() {
           <span><strong>Flashcards</strong><small>Practice identification at your own pace</small></span>
           <span className="mode-action">Choose a deck</span>
         </Link> : null}
-        {reviewModes.includes('test') ? <Link aria-label="Test" className={`mode-row${reviewModes.length === 1 ? ' mode-row-primary' : ''}`} to={`/subjects/${currentSubject.id}/test`}>
+        {reviewModes.includes('test') ? <Link aria-label={currentSubject.id === 'cognate4' ? 'Multiple choice' : 'Test'} className={`mode-row${reviewModes.length === 1 ? ' mode-row-primary' : ''}`} to={`/subjects/${currentSubject.id}/test`}>
           <span className="mode-icon" aria-hidden="true"><ClipboardCheck /></span>
-          <span><strong>Test</strong><small>Complete focused multiple-choice sets</small></span>
+          <span><strong>{currentSubject.id === 'cognate4' ? 'Multiple choice' : 'Test'}</strong><small>Complete focused multiple-choice sets</small></span>
           <span className="mode-action">Choose a set</span>
+        </Link> : null}
+        {reviewModes.includes('crossword') ? <Link aria-label="Crossword" className="mode-row" to={`/subjects/${currentSubject.id}/crossword`}>
+          <span className="mode-icon" aria-hidden="true"><Puzzle /></span>
+          <span><strong>Crossword</strong><small>Recall every key term lesson by lesson</small></span>
+          <span className="mode-action">Choose a puzzle</span>
         </Link> : null}
       </div>}
     </section>

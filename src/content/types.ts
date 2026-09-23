@@ -18,7 +18,15 @@ export interface GlossaryEntry {
   notes?: string[];
 }
 
-export type TheoryModule = 'introduction' | 'crisp-dm' | 'warehousing';
+export type TheoryModule =
+  | 'introduction'
+  | 'crisp-dm'
+  | 'warehousing'
+  | 'cognate4-introduction'
+  | 'cognate4-introduction-extension'
+  | 'cognate4-working-with-images'
+  | 'cognate4-bitwise-operations'
+  | 'cognate4-grayscale-methods';
 
 export interface TheoryTerm {
   id: string;
@@ -48,7 +56,7 @@ export interface SubjectManifest {
   description: string;
   topics: LessonTopic[];
   mccumber: McCumberDimensions;
-  reviewModes?: Array<'study' | 'flashcards' | 'test'>;
+  reviewModes?: Array<'study' | 'flashcards' | 'test' | 'crossword'>;
 }
 
 export type QuizTopic = string;

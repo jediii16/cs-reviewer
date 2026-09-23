@@ -7,6 +7,7 @@ import { TestPage } from './routes/TestPage';
 import { FlashcardsPage } from './routes/FlashcardsPage';
 import { CrosswordPage } from './routes/CrosswordPage';
 import { PreprocessingPage } from './routes/PreprocessingPage';
+import { Cognate4CrosswordPage } from './routes/Cognate4CrosswordPage';
 
 export function App() {
   return (
@@ -19,6 +20,7 @@ export function App() {
       <Route path="subjects/:subjectId/test" element={<TestPage />} />
       <Route path="subjects/cs412/crossword" element={<CrosswordPage />} />
       <Route path="subjects/cs412/preprocessing" element={<PreprocessingPage />} />
+      <Route path="subjects/cognate4/crossword" element={<Cognate4CrosswordPage />} />
       </Route>
     </Routes>
   );

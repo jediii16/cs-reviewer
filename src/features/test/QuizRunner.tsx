@@ -27,6 +27,11 @@ const topicLabels: Record<QuizTopic, string> = {
   'os-introduction': 'Operating systems introduction',
   'process-management': 'Process management',
   'memory-management': 'Memory management',
+  'cognate4-introduction': 'Lesson 1',
+  'cognate4-introduction-extension': 'Lesson 2',
+  'cognate4-working-with-images': 'Lesson 3',
+  'cognate4-bitwise-operations': 'Lesson 4',
+  'cognate4-grayscale-methods': 'Lesson 5',
 };
 
 export function QuizRunner({ questions, setTitle, instruction, onComplete, onExit }: QuizRunnerProps) {

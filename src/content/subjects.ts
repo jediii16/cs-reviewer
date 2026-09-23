@@ -7,11 +7,14 @@ import { cit017TestSets, testSetTopicLabels } from './cit017/questions';
 import { cs412Subject } from './cs412';
 import { cit015Subject } from './cit015';
 import { cit015TestSets, cit015TestTopicLabels } from './cit015/questions';
+import { cognate4Subject } from './cognate4';
+import { cognate4TestSets, cognate4TestTopicLabels } from './cognate4/questions';
 
 const subjectTests = {
   cit015: { sets: cit015TestSets, labels: cit015TestTopicLabels },
   cit016: { sets: cit016TestSets, labels: cit016TestTopicLabels },
   cit017: { sets: cit017TestSets, labels: testSetTopicLabels },
+  cognate4: { sets: cognate4TestSets, labels: cognate4TestTopicLabels },
 };
 
 const subjectFlashcards = {
@@ -19,7 +22,7 @@ const subjectFlashcards = {
   cit017: cit017FlashcardDecks,
 };
 
-export const subjects = [cit015Subject, cit016Subject, cit017Subject, cs412Subject];
+export const subjects = [cit015Subject, cit016Subject, cit017Subject, cs412Subject, cognate4Subject];
 
 export function getSubject(subjectId: string | undefined) {
   return subjects.find((subject) => subject.id === subjectId);
