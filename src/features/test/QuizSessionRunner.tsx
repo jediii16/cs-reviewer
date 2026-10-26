@@ -78,7 +78,7 @@ export function QuizSessionRunner({ session, onExit, onSessionChange }: { sessio
   </section>;
 
   return <section className="quiz-runner modern-quiz" aria-labelledby="question-heading">
-    {session.contentUpdated ? <p className="muted small" role="status">This session now uses the slide wording. Checked answers are kept; please reselect any unchecked answer.</p> : null}
+    {session.contentUpdated ? <p className="muted small" role="status">Questions in this session have been updated. Checked answers are kept; please reselect any unchecked answer.</p> : null}
     <div className="session-topline"><span className="eyebrow">{session.mode === 'exam' ? 'Mock exam · feedback at the end' : 'Learning · feedback as you go'}</span>
       {remaining !== null ? <span className={`session-clock ${remaining < 60 ? 'is-urgent' : ''}`} role="timer" aria-label="Time remaining"><Clock3 size={16} />{Math.floor(remaining / 60).toString().padStart(2, '0')}:{(remaining % 60).toString().padStart(2, '0')}</span> : <span className="save-indicator">Saved on this device</span>}
     </div>

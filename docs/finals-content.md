@@ -9,13 +9,13 @@ The attachments are lesson sources. Their teaching questions and instructions ar
 
 ## Wording policy
 
-Use the professor’s slide wording by default. Do not replace a definition with a similar definition, synonyms, corrected grammar, or an alternative explanation. Paraphrase only when it is genuinely necessary for clarity, and keep any such clarification separate from the original definition. Formatting whitespace may be normalized when extracting text from the slides.
+Keep technical definitions and source explanations faithful to the professor’s slides. Write the prompts as direct, standalone questions. Add the missing subject, scenario, file type, or allocation technique when a slide fragment depends on surrounding context. Do not add repeated meta-instructions such as “Complete the slide text” or “Which term matches the slide text.” Adapt wording only as needed to ask a clear question; do not substitute a different technical definition.
 
-`src/content/cit015/slideCopy.ts` is the shared catalog of literal passages. Questions, study definitions, recall answers, and crossword clues use it. `source-slides.json` is a test fixture extracted from the supplied PDF and PowerPoint; the wording checks compare each passage against its referenced slide.
+`src/content/cit015/slideCopy.ts` is the shared catalog of literal passages. Source explanations, study definitions, recall answers, and crossword clues use it. `questionPrompts.ts` contains the authored questions and contextual true-or-false statements. `source-slides.json` is a test fixture extracted from the supplied PDF and PowerPoint; wording checks compare each canonical passage against its referenced slide.
 
-Multiple choice either matches an unchanged slide definition to its term or replaces one exact answer phrase with a blank, answered with four choices. The explanation restores the original passage. True statements copy the source passage. False statements deliberately replace one marked phrase, and their corrected statement restores the source exactly. A term heading may prefix a statement to preserve its slide context. Incorrect choices and false statements are assessment material, not additional source claims.
+Multiple choice uses direct questions or meaningful blanks, with four choices. Every stem supplies enough context to identify the concept being tested. For example, the fragmentation item asks “____ is a major issue with contiguous allocation.” Its feedback retains the original slide passage. True-or-false statements also supply any missing context. False items deliberately change one marked phrase; the corrected statement fixes that phrase while the explanation separately quotes the source. Incorrect choices and false statements are assessment material, not additional source claims.
 
-The VFS definition is: “Acts as a bridge, allowing different file systems to work under a single interface.” The same passage is used in the multiple-choice question, the true-or-false correction, study notes, recall, and crossword.
+The VFS definition is: “Acts as a bridge, allowing different file systems to work under a single interface.” Its question asks which file-system layer acts as that bridge. The literal passage stays in the explanation, study notes, recall answer, and crossword.
 
 ## Coverage
 

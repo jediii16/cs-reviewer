@@ -294,10 +294,21 @@ test('saved VFS questions refresh to the exact slide wording while keeping notes
   await page.goto('/subjects/cit015/test?session=old-vfs-session');
   await expect(page.locator('#question-heading')).toHaveText(vfs.prompt);
   await expect(page.getByRole('radio', { checked: true })).toHaveCount(0);
-  await expect(page.getByText(/this session now uses the slide wording/i)).toBeVisible();
+  await expect(page.getByText(/questions in this session have been updated/i)).toBeVisible();
   await page.getByRole('radio', { name: 'Virtual File System (VFS)', exact: true }).check();
   await page.getByRole('button', { name: 'Check answer', exact: true }).click();
   await expect(page.locator('.answer-feedback')).toContainText('Acts as a bridge, allowing different file systems to work under a single interface.');
   await page.getByText('Personal note', { exact: true }).click();
   await expect(page.getByRole('textbox', { name: 'Note for this question' })).toHaveValue('My VFS reminder');
+});
+
+test('allocation questions name their technique without instructional lead-ins', async ({ page }) => {
+  await page.goto('/subjects/cit015/test?topic=finals-file-disk-management&concept=External%20fragmentation');
+  await page.getByRole('combobox', { name: 'Question type', exact: true }).selectOption('multiple-choice');
+  await page.getByRole('button', { name: 'Start session', exact: true }).click();
+  await expect(page.locator('#question-heading')).toHaveText('____ is a major issue with contiguous allocation.');
+  await expect(page.locator('#question-heading')).not.toContainText('Complete the slide text');
+  await page.getByRole('radio', { name: 'External fragmentation', exact: true }).check();
+  await page.getByRole('button', { name: 'Check answer', exact: true }).click();
+  await expect(page.locator('.answer-feedback')).toContainText('External fragmentation is a major issue with this type of allocation technique.');
 });

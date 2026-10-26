@@ -16,7 +16,7 @@ Bappi is a browser-only study desk with a warm paper and green interface, deskto
 
 The bank contains **90 unique questions**: 24 multiple choice and 16 true or false for Concurrent Processing, and 30 multiple choice and 20 true or false for File and Disk Management. The ready-made mixed review draws 20 questions balanced across both lessons and both formats. Notes and answer feedback retain source slide references.
 
-Definitions use the supplied slide wording by default. Multiple-choice items match or complete literal slide passages; true-or-false corrections restore the exact original statement. Study definitions, recall answers, and crossword clues share the same checked passages. Paraphrase only when genuinely necessary, keeping clarifications separate from the original definition. Saved built-in quizzes refresh their wording on reload while retaining checked answers, scores, notes, and question order.
+Definitions and source explanations use the supplied slide wording. Questions are direct and self-contained: they name the relevant method, file type, or scenario instead of copying an ambiguous slide fragment, and omit repeated instructional lead-ins. Study definitions, recall answers, and crossword clues share the same checked passages. Adapt a prompt only as needed for clarity, preserving the underlying technical definition. Saved built-in quizzes refresh their wording on reload while retaining checked answers, scores, notes, and question order.
 
 ## Periods and local data
 

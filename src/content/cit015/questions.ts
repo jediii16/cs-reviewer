@@ -1,20 +1,23 @@
 import type { ChoiceQuestion, TestSet } from '../types';
 import { makeFalseStatement } from './corrections';
 import { quotedPassage, slideCopy, slideReference, type SlideCopyKey } from './slideCopy';
+import { contextualStatements, multipleChoicePrompts } from './questionPrompts';
 
-type MCSeed = readonly [concept: string, passage: SlideCopyKey, correct: string, distractors: readonly string[], blank?: string];
+type MCSeed = readonly [concept: string, passage: SlideCopyKey, correct: string, distractors: readonly string[], sourceAnswer?: string];
 type TFSeed = readonly [concept: string, passage: SlideCopyKey, answer: boolean, includeTerm?: boolean];
 const concurrentId = 'finals-concurrent-processing';
 const filesId = 'finals-file-disk-management';
 
 function multipleChoice(topicId: string, seeds: readonly MCSeed[]): ChoiceQuestion[] {
-  return seeds.map(([concept, key, correct, distractors, blank], index) => {
+  return seeds.map(([concept, key, correct, distractors, sourceAnswer], index) => {
     const passage = slideCopy[key];
-    if (blank && (!passage.text.includes(blank) || blank !== correct)) throw new Error(`Invalid slide blank for ${key}`);
+    if (sourceAnswer && (!passage.text.includes(sourceAnswer) || sourceAnswer !== correct)) throw new Error(`Invalid source answer for ${key}`);
     const id = `${topicId}-mc-${index + 1}`;
+    const prompt = multipleChoicePrompts[id];
+    if (!prompt) throw new Error(`Missing standalone question ${id}`);
     return {
       id, topicId, concept, kind: 'multiple-choice',
-      prompt: blank ? `Complete the slide text:\n\n${passage.text.replace(blank, '____')}` : `Which term matches the slide text?\n\n${passage.text}`,
+      prompt,
       explanation: passage.text, sourceText: passage.text, source: slideReference(passage),
       options: [correct, ...distractors].map((label, i) => ({ id: `${id}-${i}`, label })), correctOptionId: `${id}-0`,
     };
@@ -23,11 +26,12 @@ function multipleChoice(topicId: string, seeds: readonly MCSeed[]): ChoiceQuesti
 function trueFalse(topicId: string, seeds: readonly TFSeed[]): ChoiceQuestion[] {
   return seeds.map(([concept, key, answer, includeTerm], index) => {
     const passage = slideCopy[key];
-    const statement = quotedPassage(key, includeTerm);
     const id = `${topicId}-tf-${index + 1}`;
+    const original = quotedPassage(key, includeTerm);
+    const statement = contextualStatements[id] ?? original;
     return {
       id, topicId, concept, kind: 'true-false', prompt: statement,
-      explanation: statement, sourceText: passage.text, source: slideReference(passage),
+      explanation: original, sourceText: passage.text, source: slideReference(passage),
       options: [{ id: `${id}-true`, label: 'True' }, { id: `${id}-false`, label: 'False' }],
       correctOptionId: `${id}-${answer ? 'true' : 'false'}`,
       ...(!answer ? makeFalseStatement(id, statement) : {}),
@@ -139,8 +143,8 @@ const filesTF = trueFalse(filesId, [
 function focusedSet(topicId: string, id: string, title: string, questions: ChoiceQuestion[]): TestSet {
   const isTF = questions[0].kind === 'true-false';
   return { id, topicId, title, questions,
-    description: isTF ? 'Slide wording, with deliberate phrase changes for false statements. Feedback restores the original text.' : 'Exact slide definitions and fill-in-the-blank slide statements, with four choices.',
-    instruction: isTF ? 'Judge each slide statement. False items deliberately change a phrase from the original.' : 'Match or complete the exact text from your slides.',
+    description: isTF ? 'True-or-false statements with the context needed to judge each claim.' : 'Questions from the lessons, with four choices and source definitions in the feedback.',
+    instruction: isTF ? 'Decide whether each statement is true or false.' : 'Choose the best answer.',
   };
 }
 export const cit015TestSets: TestSet[] = [
