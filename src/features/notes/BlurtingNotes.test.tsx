@@ -19,14 +19,14 @@ describe('BlurtingNotes', () => {
     const dialog = screen.getByRole('dialog', { name: /blurting notes/i });
     expect(dialog).toBeVisible();
     expect(screen.getByText(/write everything you remember before checking/i)).toBeVisible();
-    expect(screen.getByRole('option', { name: /cit\.016.*digital vs\. analog/i })).toBeVisible();
+    expect(screen.getByRole('option', { name: /cit\.015.*concurrent processing/i })).toBeVisible();
 
     const editor = screen.getByRole('textbox', { name: /blurting note/i });
     await user.type(editor, 'Confidentiality integrity availability');
     expect(screen.getByText('3 words')).toBeVisible();
-    expect(screen.getByText(/saving/i)).toBeVisible();
+    expect(screen.getByText(/saved locally/i)).toBeVisible();
 
-    await user.selectOptions(screen.getByRole('combobox', { name: /note topic/i }), 'foundations');
+    await user.selectOptions(screen.getByRole('combobox', { name: /note topic/i }), 'cit015:finals-concurrent-processing');
     expect(editor).toHaveValue('');
     await user.type(editor, 'CIA memory');
 

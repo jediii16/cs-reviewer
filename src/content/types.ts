@@ -2,6 +2,7 @@ export interface LessonSection {
   id: string;
   title: string;
   summary: string;
+  source?: string;
   bullets?: string[];
   examples?: string[];
   controls?: string[];
@@ -18,15 +19,7 @@ export interface GlossaryEntry {
   notes?: string[];
 }
 
-export type TheoryModule =
-  | 'introduction'
-  | 'crisp-dm'
-  | 'warehousing'
-  | 'cognate4-introduction'
-  | 'cognate4-introduction-extension'
-  | 'cognate4-working-with-images'
-  | 'cognate4-bitwise-operations'
-  | 'cognate4-grayscale-methods';
+export type TheoryModule = string;
 
 export interface TheoryTerm {
   id: string;
@@ -72,10 +65,14 @@ interface BaseQuestion {
   concept: string;
   prompt: string;
   explanation: string;
+  source?: string;
+  sourceText?: string;
+  incorrectPhrase?: string;
+  correctedStatement?: string;
 }
 
 export interface ChoiceQuestion extends BaseQuestion {
-  kind: 'multiple-choice';
+  kind: 'multiple-choice' | 'true-false';
   options: QuestionOption[];
   correctOptionId: string;
 }
@@ -89,6 +86,7 @@ export interface TestSet {
   questions: ChoiceQuestion[];
   questionLimit?: number;
   balanceTopics?: boolean;
+  balanceKinds?: boolean;
 }
 
 export interface Flashcard {

@@ -1,5 +1,6 @@
 export interface TestResultSummary {
   subjectId?: string;
+  syllabusId?: string;
   completedAt: string;
   correct: number;
   total: number;
@@ -79,6 +80,7 @@ function isResult(value: unknown): value is TestResultSummary {
   if (!value || typeof value !== 'object') return false;
   const item = value as Record<string, unknown>;
   return (item.subjectId === undefined || typeof item.subjectId === 'string')
+    && (item.syllabusId === undefined || typeof item.syllabusId === 'string')
     && typeof item.completedAt === 'string'
     && typeof item.correct === 'number'
     && typeof item.total === 'number';

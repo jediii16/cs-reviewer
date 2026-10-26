@@ -1,6 +1,6 @@
 import type { FocusEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ListMusic, Pause, Play, Repeat, Repeat1, RotateCcw, Settings2, SkipBack, SkipForward, Volume2 } from 'lucide-react';
+import { ListMusic, Music2, Pause, Play, Repeat, Repeat1, RotateCcw, Settings2, SkipBack, SkipForward, Volume2, X } from 'lucide-react';
 import type { FocusAudioController } from './useFocusAudio';
 import { WaveformSeek } from './WaveformSeek';
 
@@ -19,7 +19,7 @@ interface AudioDockProps {
 }
 
 export function AudioDock({ audio, onOpenDialog }: AudioDockProps) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const collapseTimer = useRef<number | undefined>(undefined);
 
   const cancelCollapse = useCallback(() => {
@@ -66,16 +66,17 @@ export function AudioDock({ audio, onOpenDialog }: AudioDockProps) {
       role="region"
       aria-label="Music player"
       data-expanded={expanded}
-      onPointerEnter={keepOpen}
+      onPointerEnter={cancelCollapse}
       onPointerLeave={scheduleCollapse}
-      onFocusCapture={keepOpen}
+      onFocusCapture={cancelCollapse}
       onBlurCapture={leaveFocus}
     >
-      <button className="audio-dock-handle" type="button" aria-label="Show music player" onClick={keepOpen}>
-        <span />
+      <button className="audio-dock-handle" type="button" aria-label="Show music player" aria-expanded={expanded} onClick={keepOpen}>
+        <Music2 size={16} /><span>{music.playing ? music.selectedTrack?.label : 'A little background music'}</span>
       </button>
 
-      <div className="audio-dock-panel">
+      <div className="audio-dock-panel" hidden={!expanded}>
+        <button className="audio-dock-collapse" type="button" aria-label="Collapse music player" onClick={() => { cancelCollapse(); setExpanded(false); }}><X size={17} /></button>
         <div className="audio-dock-track">
           <span className="audio-dock-art"><ListMusic aria-hidden="true" /></span>
           <span>

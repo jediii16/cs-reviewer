@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { cs412Terms } from '../../content/cs412';
+import { crosswordTerms } from '../../test/crosswordFixtures';
 import { createMockCrossword } from './builder';
 import { createGameState, enterLetter, revealCells } from './gameState';
 
 describe('crossword game state', () => {
   it('types, advances, and tracks hints separately', () => {
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     let state = createGameState(puzzle);
     const first = puzzle.entries[0];
     state = { ...state, selectedCellKey: `${first.row}:${first.col}`, direction: first.direction };
@@ -16,7 +16,7 @@ describe('crossword game state', () => {
   });
 
   it('types through a prefilled intersection without shifting later letters', () => {
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     const entry = puzzle.entries.find((candidate) => {
       const keys = candidate.answer.split('').map((_, index) => `${candidate.row + (candidate.direction === 'down' ? index : 0)}:${candidate.col + (candidate.direction === 'across' ? index : 0)}`);
       return keys.slice(1, -1).some((key) => puzzle.cells.find((cell) => `${cell.row}:${cell.col}` === key)?.entryIds.length === 2);

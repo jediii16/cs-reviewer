@@ -1,95 +1,26 @@
-import { ArrowLeft, BookOpen, Calculator, ClipboardCheck, GalleryHorizontalEnd, Puzzle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, ClipboardCheck, Puzzle } from 'lucide-react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { BappiMascot } from '../../components/BappiMascot';
-import { getSubject } from '../../content/subjects';
-import { useProgress } from '../../features/progress/useProgress';
+import { useLearning } from '../../features/learning/useLearning';
+import { learningStats, sectionKey } from '../../features/learning/model';
 
 export function SubjectPage() {
   const { subjectId } = useParams();
-  const subject = getSubject(subjectId);
-  const { progress, resetSubject } = useProgress();
-
+  const { subjects, questions, data, period, actions } = useLearning();
+  const subject = subjects.find((s) => s.id === subjectId);
   if (!subject) return <Navigate to="/" replace />;
-
   const currentSubject = subject;
-  const reviewModes = currentSubject.reviewModes ?? ['study', 'flashcards', 'test'];
-
-  const knownTopicIds = new Set(currentSubject.topics.map((topic) => topic.id));
-  const reviewedCount = new Set(progress.reviewedTopicIds.filter((id) => knownTopicIds.has(id))).size;
-  const progressPercent = currentSubject.topics.length === 0
-    ? 0
-    : Math.min(100, Math.round((reviewedCount / currentSubject.topics.length) * 100));
-  const latestResult = progress.recentResults.find((result) => (
-    result.subjectId ? result.subjectId === currentSubject.id : currentSubject.id === 'cit017'
-  ));
-
-  function confirmReset() {
-    if (window.confirm(`Reset reviewed topics and recent scores for ${currentSubject.code}?`)) {
-      resetSubject(currentSubject.id, currentSubject.topics.map((topic) => topic.id));
-    }
+  const stats = learningStats(data, [subject], questions[subject.id] ?? []);
+  const latest = data.results.find((r) => r.subjectId === subject.id);
+  function reset() {
+    if (window.confirm(`Reset reviewed sections, scores, and mistakes for ${currentSubject.code} in ${period.label}? Your bookmarks and other periods will stay saved.`)) actions.resetSubject(currentSubject.id);
   }
-  return (
-    <section className="subject-page" aria-labelledby="subject-title">
-      <Link className="back-link" to="/"><ArrowLeft aria-hidden="true" /> Subjects</Link>
-      <div className="subject-heading">
-        <div>
-          <h1 id="subject-title">{currentSubject.code}</h1>
-          <p>{currentSubject.id === 'cs412'
-            ? 'Master the likely terms in real crosswords, then solve a complete 30-point preprocessing set.'
-            : currentSubject.id === 'cognate4'
-              ? 'Study all five Machine Vision lessons, then practice every exam-ready item in multiple choice and complete crosswords.'
-            : reviewModes.length === 1 && reviewModes[0] === 'test'
-              ? 'Practice complete topic banks and a changing 20-item comprehensive exam.'
-              : 'Learn each concept, self-check with flashcards, then practice complete multiple-choice sets.'}</p>
-        </div>
-        <BappiMascot
-          className="subject-heading-mascot"
-          pose={progressPercent > 0 ? 'celebrating' : 'cool'}
-          alt={progressPercent > 0 ? 'Bappi cheers on your progress' : 'Bappi is ready to review'}
-        />
-      </div>
-
-      {currentSubject.id === 'cs412' ? <section className="review-summary cs412-review-summary" aria-label="CS.412 exam format">
-        <div className="review-stat"><span>Theory coverage</span><strong>56 likely terms</strong></div>
-        <div className="review-stat"><span>Exam practice</span><strong>15 clues + 30-point solving</strong></div>
-      </section> : <section className="review-summary" aria-label="Saved review progress">
-        <div className="review-stat">
-          <span>Course progress</span>
-          <strong>{progressPercent}%</strong>
-        </div>
-        <div className="review-stat">
-          <span>Latest score</span>
-          <strong>{latestResult ? `${latestResult.correct} / ${latestResult.total}` : 'No test scores yet'}</strong>
-        </div>
-        <button type="button" onClick={confirmReset}>Reset progress</button>
-      </section>}
-
-      {currentSubject.id === 'cs412' ? <div className="mode-list cs412-mode-list" aria-label="Choose a review mode">
-        <Link aria-label="Study" className="mode-row" to="/subjects/cs412/study"><span className="mode-icon"><BookOpen /></span><span><strong>Study</strong><small>Words, definitions, formulas, and worked examples</small></span><span className="mode-action">Learn first</span></Link>
-        <Link aria-label="Crossword practice" className="mode-row mode-row-primary" to="/subjects/cs412/crossword"><span className="mode-icon"><Puzzle /></span><span><strong>Crossword practice</strong><small>Real 15-item interlocking puzzles</small></span><span className="mode-action">Open puzzle lab</span></Link>
-        <Link aria-label="Data preprocessing" className="mode-row" to="/subjects/cs412/preprocessing"><span className="mode-icon"><Calculator /></span><span><strong>Data preprocessing</strong><small>6 problems · 30 points</small></span><span className="mode-action">Start solving</span></Link>
-      </div> : <div className="mode-list" aria-label="Choose a review mode">
-        {reviewModes.includes('study') ? <Link aria-label="Study" className="mode-row mode-row-primary" to={`/subjects/${currentSubject.id}/study`}>
-          <span className="mode-icon" aria-hidden="true"><BookOpen /></span>
-          <span><strong>Study</strong><small>Review lessons and use active recall</small></span>
-          <span className="mode-action">Open notes</span>
-        </Link> : null}
-        {reviewModes.includes('flashcards') ? <Link aria-label="Flashcards" className="mode-row" to={`/subjects/${currentSubject.id}/flashcards`}>
-          <span className="mode-icon" aria-hidden="true"><GalleryHorizontalEnd /></span>
-          <span><strong>Flashcards</strong><small>Practice identification at your own pace</small></span>
-          <span className="mode-action">Choose a deck</span>
-        </Link> : null}
-        {reviewModes.includes('test') ? <Link aria-label={currentSubject.id === 'cognate4' ? 'Multiple choice' : 'Test'} className={`mode-row${reviewModes.length === 1 ? ' mode-row-primary' : ''}`} to={`/subjects/${currentSubject.id}/test`}>
-          <span className="mode-icon" aria-hidden="true"><ClipboardCheck /></span>
-          <span><strong>{currentSubject.id === 'cognate4' ? 'Multiple choice' : 'Test'}</strong><small>Complete focused multiple-choice sets</small></span>
-          <span className="mode-action">Choose a set</span>
-        </Link> : null}
-        {reviewModes.includes('crossword') ? <Link aria-label="Crossword" className="mode-row" to={`/subjects/${currentSubject.id}/crossword`}>
-          <span className="mode-icon" aria-hidden="true"><Puzzle /></span>
-          <span><strong>Crossword</strong><small>Recall every key term lesson by lesson</small></span>
-          <span className="mode-action">Choose a puzzle</span>
-        </Link> : null}
-      </div>}
-    </section>
-  );
+  return <section className="subject-page" aria-labelledby="subject-title">
+    <Link className="back-link" to="/"><ArrowLeft size={16} />My study desk</Link>
+    <header className="page-intro"><div><span className="eyebrow">{period.label} · {subject.code}</span><h1 id="subject-title">{subject.title}</h1><p>{subject.description}</p></div><BappiMascot className="intro-bappi" pose="cool" alt="Bappi is ready to review" /></header>
+    <section className="desk-stats" aria-label="Saved review progress"><div><span>Sections reviewed</span><strong>{stats.reviewed}<small> / {stats.sections}</small></strong></div><div><span>Concepts practiced</span><strong>{stats.practiced}<small> / {stats.concepts}</small></strong></div><div><span>Latest score</span><strong className="latest-score">{latest ? `${latest.correct} / ${latest.total}` : 'No test scores yet'}</strong></div></section>
+    <div className="subject-actions"><Link className="button button-primary" to={`/subjects/${subject.id}/study`} aria-label="Study"><BookOpen size={18} />Study the lessons</Link><Link className="button button-secondary" to={`/subjects/${subject.id}/test`} aria-label="Test"><ClipboardCheck size={18} />Practice questions</Link>{subject.id === 'cit015' && period.id === '2026-finals' ? <Link className="button button-ghost" to={`/subjects/${subject.id}/crossword`}><Puzzle size={18} />Crosswords</Link> : null}</div>
+    <section className="finals-syllabus"><div className="section-heading"><h2>Your {period.label.toLowerCase()} coverage</h2><span>{subject.topics.length} lessons</span></div>{subject.topics.map((topic, index) => <Link className="syllabus-row" key={topic.id} to={`/subjects/${subject.id}/study?topic=${topic.id}`}><span className="lesson-number">{String(index + 1).padStart(2, '0')}</span><span><strong>{topic.title}</strong><p>{topic.description}</p><small>{topic.sections.filter((section) => data.reviewedSections.includes(sectionKey(subject.id, topic.id, section.id))).length} / {topic.sections.length} sections reviewed</small></span><ArrowRight size={18} /></Link>)}</section>
+    <div className="subject-reset"><p>Reading progress and practice accuracy measure different things. Take a session to see what you remember.</p><button className="text-button" type="button" onClick={reset}>Reset progress</button></div>
+  </section>;
 }

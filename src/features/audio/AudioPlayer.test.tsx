@@ -93,6 +93,7 @@ describe('AudioPlayer', () => {
     expect(within(dialog).getByRole('slider', { name: /noise volume/i })).toBeVisible();
 
     const dock = screen.getByRole('region', { name: /music player/i });
+    await user.click(within(dock).getByRole('button', { name: /show music player/i }));
     const seek = within(dock).getByRole('slider', { name: /seek through current track/i });
     expect(seek).toHaveValue('45');
     fireEvent.change(seek, { target: { value: '90' } });
@@ -117,6 +118,8 @@ describe('AudioPlayer', () => {
     render(<AudioPlayerSurface audio={audio} />);
 
     const dock = screen.getByRole('region', { name: /music player/i });
+    expect(dock).toHaveAttribute('data-expanded', 'false');
+    fireEvent.click(screen.getByRole('button', { name: /show music player/i }));
     expect(dock).toHaveAttribute('data-expanded', 'true');
 
     fireEvent.pointerLeave(dock);

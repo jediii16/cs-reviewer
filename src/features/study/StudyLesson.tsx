@@ -4,17 +4,21 @@ import type { LessonTopic } from '../../content/types';
 import { BappiMascot } from '../../components/BappiMascot';
 import { Button } from '../../components/Button';
 import { ProgressBar } from '../../components/ProgressBar';
-import { McCumberCube } from './McCumberCube';
 
 interface StudyLessonProps {
   topic: LessonTopic;
   onComplete: (topicId: string) => void;
   reviewed?: boolean;
+  activeSectionId?: string;
+  onSectionChange?: (sectionId: string) => void;
+  sectionReviewed?: boolean;
+  onReviewSection?: () => void;
 }
 
-export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLessonProps) {
+export function StudyLesson({ topic, onComplete, reviewed = false, activeSectionId, onSectionChange, sectionReviewed, onReviewSection }: StudyLessonProps) {
   const lessonAnchorRef = useRef<HTMLDivElement>(null);
-  const [sectionIndex, setSectionIndex] = useState(0);
+  const [localSectionIndex, setSectionIndex] = useState(0);
+  const sectionIndex = activeSectionId ? Math.max(0, topic.sections.findIndex((item) => item.id === activeSectionId)) : localSectionIndex;
   const [isRecallRevealed, setIsRecallRevealed] = useState(false);
   const [isRecallHoverArmed, setIsRecallHoverArmed] = useState(true);
   const section = topic.sections[sectionIndex];
@@ -24,6 +28,7 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
     setIsRecallRevealed(false);
     setIsRecallHoverArmed(false);
     setSectionIndex(nextIndex);
+    onSectionChange?.(topic.sections[nextIndex].id);
     lessonAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -34,7 +39,7 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
           <span>{topic.title}</span>
           <span>{sectionIndex + 1} of {topic.sections.length}</span>
         </div>
-        <ProgressBar value={sectionIndex + 1} max={topic.sections.length} label="Lesson progress" />
+        <ProgressBar value={sectionIndex + 1} max={topic.sections.length} label={activeSectionId ? 'Section position' : 'Lesson progress'} />
       </div>
 
       <nav className="lesson-footer" aria-label="Lesson sections">
@@ -109,7 +114,7 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
         </section>
       ) : null}
 
-      {section.id === 'mccumber-cube' ? <McCumberCube /> : null}
+      {section.source ? <p className="source-reference">Source: {section.source}</p> : null}
 
       <section
         className="recall-panel"
@@ -141,6 +146,7 @@ export function StudyLesson({ topic, onComplete, reviewed = false }: StudyLesson
           <p>{section.recallAnswer}</p>
         </div>
       </section>
+      {onReviewSection ? <div className="section-review-action"><Button variant="secondary" disabled={sectionReviewed} onClick={onReviewSection}>{sectionReviewed ? 'Section reviewed' : 'Mark section reviewed'}</Button><small>Reading progress is saved separately from quiz accuracy.</small></div> : null}
     </article>
   );
 }

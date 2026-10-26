@@ -1,28 +1,63 @@
-# Bappi — CS Reviewer
+# Bappi — A little study companion
 
-Bappi is a focused, browser-only reviewer with separate subjects for CIT.016 Data Communication, CIT.017 Foundations of Information Security, and CS.412 Data Mining. A kimbap mascot reacts throughout source-faithful study notes, active recall, comprehensive practice, and self-check flashcards. CIT.017 also includes an interactive McCumber Cube.
+Bappi is a browser-only study desk with a warm paper and green interface, desktop sidebar navigation, a mobile navigation bar, and optional focus tools. The current Finals syllabus contains CIT.015 Operating Systems: Concurrent Processing and File and Disk Management.
 
-CS.412 adds Word - Definition study lessons, real 15-answer interlocking crosswords, a complete 56-term theory bank drawn from the supplied lessons, six 5-point data-preprocessing problems with worked solutions, and a floating scientific calculator. Open `/subjects/cs412/study` to learn the terms and formulas, `/subjects/cs412/crossword` for definition-to-word practice, or `/subjects/cs412/preprocessing` for the 30-point problem-solving set.
+## Study and practice
 
-The interface supports persistent light and dark themes. The focus timer includes 15-, 25-, and 45-minute sessions, a five-minute break, and optional Soft rain or Brown noise generated locally with the browser's Web Audio API. Ambient sound is Off by default and never starts automatically.
+- Resume the exact lesson section or unfinished quiz from Home. Quiz order, choices, selected answers, checked feedback, and question position survive reloads.
+- Build learning sessions or mock exams by lesson, question type, item count, and optional time limit. Learning gives immediate feedback. Exams allow answer changes and show feedback only after submission.
+- Timed sessions keep an absolute deadline while you are away. An expired session submits its saved answers when it is resumed; unanswered items count as incorrect.
+- Start a five-question, five-minute review from Home or Practice.
+- Revisit mistakes across sessions. New misses return after one day; correct reviews move to three, seven, then fourteen days. You may practice early or remove an item from the queue.
+- Bookmark questions and save personal notes. Search your saved questions or lesson terms; lesson results link directly to their source section.
+- See reviewed sections, practiced concepts, and completed-session accuracy separately. Home suggests the weakest practiced concept and opens a focused session for it.
+- Review highlighted incorrect phrases and corrected versions of all sixteen false statements in the supplied finals bank.
+- Play source-based connected crosswords for each OS lesson, including saved-arrangement resume.
 
-## Run locally
+The bank contains **90 unique questions**: 24 multiple choice and 16 true or false for Concurrent Processing, and 30 multiple choice and 20 true or false for File and Disk Management. The ready-made mixed review draws 20 questions balanced across both lessons and both formats. Notes and answer feedback retain source slide references.
 
-```bash
+Definitions use the supplied slide wording by default. Multiple-choice items match or complete literal slide passages; true-or-false corrections restore the exact original statement. Study definitions, recall answers, and crossword clues share the same checked passages. Paraphrase only when genuinely necessary, keeping clarifications separate from the original definition. Saved built-in quizzes refresh their wording on reload while retaining checked answers, scores, notes, and question order.
+
+## Periods and local data
+
+Finals, Midterms, and Prelims have separate learning data. Only Finals has supplied lessons. The other periods begin empty. Settings can archive/restore periods and export/import Bappi JSON syllabi with their saved progress, sessions, bookmarks, question notes, and blurting notes. Import validates the structure, previews coverage, and creates a separate period. It never replaces existing periods.
+
+Bappi JSON is the import format. Export the current period for a complete example. PDFs and slide decks require conversion into reviewed content before import. Original PDF/PPTX files are not bundled into exports.
+
+- `bappi-learning-v1`: active period, period definitions, section positions/review, quiz sessions, question history, mistakes, bookmarks, notes, and results.
+- `cit017-reviewer-progress`: retained for global appearance, focus, and audio preferences. Eligible finals progress migrates into the new learning store once; old scores do not become finals scores.
+- Crossword grids and latest seeds have separate browser-local keys. Their saves and global preferences are not included in syllabus backups.
+
+Music starts collapsed, has an explicit collapse button, and stays independent of the focus timer. Settings includes calm mascot mode. The app also observes the system reduced-motion preference.
+
+## Development
+
+```sh
 npm install
 npm run dev
 ```
 
-Open the local address shown in the terminal.
+Routes: `/`, `/subjects/cit015`, `/subjects/cit015/study`, `/subjects/cit015/test`, `/subjects/cit015/crossword`, `/review`, `/search`, `/settings`.
 
-## Verify
+## Verification
 
-```bash
+```sh
 npm test -- --run
 npm run typecheck
 npm run lint
 npm run build
-npm run test:e2e
+npm run test:e2e -- --workers=2
 ```
 
-Study progress, recent scores, appearance, timer settings, and ambient preferences are stored only in the current browser. Subject dashboards show and reset their own learning progress, while appearance, timer, and audio preferences remain shared.
+For Windows sandbox temp-path failures in Vitest:
+
+```powershell
+New-Item -ItemType Directory -Force tmp/vitest | Out-Null
+$env:TEMP = (Resolve-Path tmp/vitest).Path
+$env:TMP = $env:TEMP
+npm test -- --run --maxWorkers=2 --pool=threads
+```
+
+The browser suite uses Playwright Chromium by default. Set `$env:PLAYWRIGHT_CHANNEL = 'msedge'` to use installed Microsoft Edge. The suite runs both desktop and mobile projects and covers resume, answer/scoring behavior, deadlines, review intervals, note persistence, periods, archive/restore, backup transfer, search, crosswords, tools, and narrow layouts.
+
+See `docs/finals-content.md` for sources, `docs/crossword-reuse.md` for the retained engine, and `docs/bappi-remake-ideas.md` for the completed feature checklist.

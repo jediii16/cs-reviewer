@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { BappiMascot, type BappiPose } from './BappiMascot';
+import { useLearning } from '../features/learning/useLearning';
 
 const ROLL_STEP_INTERVAL_MS = 900;
 const STARTLE_DURATION_MS = 1_200;
@@ -23,16 +24,28 @@ const rollingSteps: RollingStep[] = [
 ];
 
 export function RoamingBappi() {
+  const { state } = useLearning();
+  const [reducedMotion, setReducedMotion] = useState(() => typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const calm = state.calmMascot || reducedMotion;
   const [rollStep, setRollStep] = useState(0);
   const [isStartled, setIsStartled] = useState(false);
   const recoveryTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    if (calm) return;
     const rollTimer = window.setInterval(() => {
       setRollStep((currentStep) => (currentStep + 1) % rollingSteps.length);
     }, ROLL_STEP_INTERVAL_MS);
 
     return () => window.clearInterval(rollTimer);
+  }, [calm]);
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const change = () => setReducedMotion(media.matches);
+    media.addEventListener('change', change);
+    return () => media.removeEventListener('change', change);
   }, []);
 
   useEffect(() => () => window.clearTimeout(recoveryTimer.current), []);
@@ -43,13 +56,13 @@ export function RoamingBappi() {
     recoveryTimer.current = window.setTimeout(() => setIsStartled(false), STARTLE_DURATION_MS);
   };
 
-  const step = rollingSteps[rollStep];
+  const step = calm ? rollingSteps[0] : rollingSteps[rollStep];
   const currentExpression = isStartled
     ? { pose: 'scared' as const, alt: 'Bappi looks startled' }
     : step;
   const rollStyle = {
-    '--bappi-x': `${step.x}px`,
-    '--bappi-roll': `${step.rotation}deg`,
+    '--bappi-x': `${calm ? 0 : step.x}px`,
+    '--bappi-roll': `${calm ? 0 : step.rotation}deg`,
   } as CSSProperties;
 
   return (
@@ -60,6 +73,7 @@ export function RoamingBappi() {
         aria-label="Play with Bappi"
         data-roll-step={rollStep}
         data-startled={isStartled}
+        data-calm={calm}
         onClick={startleBappi}
         style={rollStyle}
       >

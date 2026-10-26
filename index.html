@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f6f6f4" />
-    <meta name="description" content="Bappi is a focused reviewer for CIT.016 Data Communication and CIT.017 Information Security." />
+    <meta name="description" content="Prepare for Operating Systems finals with Bappi: Concurrent Processing, File and Disk Management, multiple choice, and true or false." />
     <script>
       (() => {
         let preference = 'system';
         try {
           const saved = JSON.parse(localStorage.getItem('cit017-reviewer-progress') || 'null');
-          if (saved?.version === 2 && ['system', 'light', 'dark'].includes(saved.appearance)) {
+          if ([2, 3].includes(saved?.version) && ['system', 'light', 'dark'].includes(saved.appearance)) {
             preference = saved.appearance;
           }
         } catch {
@@ -24,7 +24,7 @@
         document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#141416' : '#f6f6f4';
       })();
     </script>
-    <title>Bappi — CS Reviewer</title>
+    <title>Bappi — Finals Reviewer</title>
   </head>
   <body>
     <div id="root"></div>

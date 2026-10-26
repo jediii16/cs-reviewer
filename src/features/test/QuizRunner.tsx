@@ -24,14 +24,8 @@ const topicLabels: Record<QuizTopic, string> = {
   'tcp-ip': 'TCP/IP stack',
   'transmission-media': 'Transmission media',
   multiplexing: 'Multiplexing',
-  'os-introduction': 'Operating systems introduction',
-  'process-management': 'Process management',
-  'memory-management': 'Memory management',
-  'cognate4-introduction': 'Lesson 1',
-  'cognate4-introduction-extension': 'Lesson 2',
-  'cognate4-working-with-images': 'Lesson 3',
-  'cognate4-bitwise-operations': 'Lesson 4',
-  'cognate4-grayscale-methods': 'Lesson 5',
+  'finals-concurrent-processing': 'Concurrent Processing',
+  'finals-file-disk-management': 'File and Disk Management',
 };
 
 export function QuizRunner({ questions, setTitle, instruction, onComplete, onExit }: QuizRunnerProps) {
@@ -168,7 +162,7 @@ export function QuizRunner({ questions, setTitle, instruction, onComplete, onExi
       <h2 id="question-heading">{question.prompt}</h2>
 
       <fieldset className="answer-list" disabled={submitted}>
-        <legend>Choose the best answer</legend>
+        <legend>{question.kind === 'true-false' ? 'True or false' : 'Choose the best answer'}</legend>
         {question.options.map((option) => {
           const isSelected = answerValue === option.id;
           const isCorrectOption = isQuestionCorrect(question, option.id);
@@ -199,6 +193,7 @@ export function QuizRunner({ questions, setTitle, instruction, onComplete, onExi
             <span>{selectedIsCorrect ? 'Correct' : `Not quite — ${getCorrectAnswerLabel(question)}`}</span>
           </strong>
           <p>{question.explanation}</p>
+          {question.source ? <p className="source-reference">Source: {question.source}</p> : null}
         </div>
       ) : null}
 

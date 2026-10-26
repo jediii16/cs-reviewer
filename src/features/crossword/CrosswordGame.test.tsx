@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { cs412Terms } from '../../content/cs412';
+import { crosswordTerms } from '../../test/crosswordFixtures';
 import { createMockCrossword } from './builder';
 import { CrosswordGame } from './CrosswordGame';
 import { createGameState } from './gameState';
@@ -11,7 +11,7 @@ describe('CrosswordGame', () => {
 
   it('focuses a selected clue and accepts continuous typing', async () => {
     const user = userEvent.setup();
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     const entry = puzzle.entries[0];
     render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
     await user.click(screen.getByRole('button', { name: `${entry.number} ${entry.direction} clue` }));
@@ -27,7 +27,7 @@ describe('CrosswordGame', () => {
 
   it('overwrites a filled crossing while keeping fast typing in the selected direction', async () => {
     const user = userEvent.setup();
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     const entry = puzzle.entries.find((candidate) => {
       if (candidate.direction !== 'across') return false;
       return [...candidate.answer].slice(1, -1).some((_, index) => {
@@ -44,7 +44,7 @@ describe('CrosswordGame', () => {
     const crossingKey = `${entry!.row}:${entry!.col + crossingIndex}`;
     const saved = createGameState(puzzle);
     saved.values = { [crossingKey]: entry!.answer[crossingIndex] };
-    localStorage.setItem(`cs412-crossword:${puzzle.id}`, JSON.stringify(saved));
+    localStorage.setItem(`bappi-crossword:${puzzle.id}`, JSON.stringify(saved));
     render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
 
     await user.click(screen.getByRole('button', { name: `${entry!.number} across clue` }));
@@ -57,7 +57,7 @@ describe('CrosswordGame', () => {
 
   it('marks wrong filled cells red even when the puzzle is incomplete', async () => {
     const user = userEvent.setup();
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     const first = puzzle.entries[0];
     render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
     await user.click(screen.getByRole('button', { name: `${first.number} ${first.direction} clue` }));
@@ -71,10 +71,10 @@ describe('CrosswordGame', () => {
 
   it('celebrates a correct puzzle with green cells, confetti, and the falling banner', async () => {
     const user = userEvent.setup();
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     const solved = createGameState(puzzle);
     solved.values = Object.fromEntries(puzzle.cells.map((cell) => [`${cell.row}:${cell.col}`, cell.solution]));
-    localStorage.setItem(`cs412-crossword:${puzzle.id}`, JSON.stringify(solved));
+    localStorage.setItem(`bappi-crossword:${puzzle.id}`, JSON.stringify(solved));
     const { container } = render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
 
     await user.click(screen.getByRole('button', { name: /submit puzzle/i }));
@@ -88,10 +88,10 @@ describe('CrosswordGame', () => {
   it('retracts the success banner while leaving the solved grid green', async () => {
     vi.useFakeTimers();
     try {
-      const puzzle = createMockCrossword(cs412Terms, 412);
+      const puzzle = createMockCrossword(crosswordTerms, 412);
       const solved = createGameState(puzzle);
       solved.values = Object.fromEntries(puzzle.cells.map((cell) => [`${cell.row}:${cell.col}`, cell.solution]));
-      localStorage.setItem(`cs412-crossword:${puzzle.id}`, JSON.stringify(solved));
+      localStorage.setItem(`bappi-crossword:${puzzle.id}`, JSON.stringify(solved));
       const { container } = render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
 
       fireEvent.click(screen.getByRole('button', { name: /submit puzzle/i }));
@@ -106,7 +106,7 @@ describe('CrosswordGame', () => {
 
   it('confirms a word reveal in an in-app modal', async () => {
     const user = userEvent.setup();
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     const first = puzzle.entries[0];
     render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
 
@@ -123,7 +123,7 @@ describe('CrosswordGame', () => {
 
   it('confirms clearing the puzzle in an in-app modal', async () => {
     const user = userEvent.setup();
-    const puzzle = createMockCrossword(cs412Terms, 412);
+    const puzzle = createMockCrossword(crosswordTerms, 412);
     const first = puzzle.entries[0];
     render(<CrosswordGame puzzle={puzzle} onExit={() => undefined} />);
     const firstCell = screen.getByLabelText(`Crossword cell ${first.row + 1}, ${first.col + 1}`);

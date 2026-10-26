@@ -17,6 +17,7 @@ export interface QuizScore {
 interface CreateQuizOptions {
   limit?: number;
   balanceByTopic?: boolean;
+  balanceByKind?: boolean;
 }
 
 function shuffled<T>(items: readonly T[], random: () => number): T[] {
@@ -39,12 +40,13 @@ export function createQuiz(
   ));
   let selected: ChoiceQuestion[];
 
-  if (options.balanceByTopic && limit < questions.length) {
+  if ((options.balanceByTopic || options.balanceByKind) && limit < questions.length) {
     const grouped = new Map<QuizTopic, ChoiceQuestion[]>();
     for (const question of questions) {
-      const group = grouped.get(question.topicId) ?? [];
+      const groupKey = `${options.balanceByTopic ? question.topicId : ''}:${options.balanceByKind ? question.kind : ''}`;
+      const group = grouped.get(groupKey) ?? [];
       group.push(question);
-      grouped.set(question.topicId, group);
+      grouped.set(groupKey, group);
     }
 
     const groups = shuffled(
@@ -66,7 +68,7 @@ export function createQuiz(
 
   return shuffled(selected, random).map((question) => ({
     ...question,
-    options: shuffled(question.options, random),
+    options: question.kind === 'true-false' ? [...question.options] : shuffled(question.options, random),
   }));
 }
 

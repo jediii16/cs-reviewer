@@ -94,7 +94,10 @@ export function buildCrossword(terms: readonly TheoryTerm[], options: { seed: nu
 }
 
 export function createMockCrossword(terms: readonly TheoryTerm[], seed: number): CrosswordPuzzle {
-  const modules = ['introduction', 'crisp-dm', 'warehousing'] as const;
+  const modules = [...new Set(terms.map((term) => term.module))];
+  if (modules.length !== 3 || modules.some((module) => terms.filter((term) => term.module === module).length < 5)) {
+    throw new Error('A balanced mock crossword needs three modules with at least five terms each.');
+  }
   for (let attempt = 0; attempt < 240; attempt += 1) {
     const selected = modules.flatMap((module, index) => seededShuffle(
       terms.filter((term) => term.module === module),
@@ -106,18 +109,11 @@ export function createMockCrossword(terms: readonly TheoryTerm[], seed: number):
   throw new Error('Unable to build a connected 15-answer crossword from this term bank.');
 }
 
-const topicTitles = {
-  introduction: 'Introduction to Data Mining',
-  'crisp-dm': 'CRISP-DM',
-  warehousing: 'Data Warehousing',
-} as const;
-
-export function createTopicCrossword(terms: readonly TheoryTerm[], seed: number): CrosswordPuzzle {
+export function createTopicCrossword(terms: readonly TheoryTerm[], seed: number, title?: string): CrosswordPuzzle {
   if (!terms.length) throw new Error('A topic crossword needs at least one term.');
   const module = terms[0].module;
   if (terms.some((term) => term.module !== module)) throw new Error('A topic crossword can only contain one topic.');
-  if (!(module in topicTitles)) throw new Error(`No topic title is registered for ${module}.`);
-  const topicTitle = topicTitles[module as keyof typeof topicTitles];
+  const topicTitle = title ?? module;
   for (let attempt = 0; attempt < 600; attempt += 1) {
     const puzzle = buildCrossword(terms, {
       seed: seed + attempt * 19,

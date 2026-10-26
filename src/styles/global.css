@@ -4374,3 +4374,18 @@ h1 {
     align-items: flex-start;
   }
 }
+
+/* Finals syllabus */
+.term-label {
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.subject-copy small { color: var(--text-soft); font-size: 0.8rem; font-weight: 400; }
+.source-reference { color: var(--text-soft); font-size: 0.8rem; line-height: 1.6; }
+.finals-syllabus { margin-top: 2.5rem; }
+.finals-syllabus h2 { font-size: 1.15rem; }
+.finals-syllabus ol { padding-left: 1.4rem; }
+.finals-syllabus li { padding: 0.6rem 0 0.6rem 0.4rem; }
+.finals-syllabus p { color: var(--text-soft); margin: 0.4rem 0 0; line-height: 1.6; }

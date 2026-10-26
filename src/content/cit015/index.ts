@@ -1,22 +1,12 @@
-import type { LessonTopic, SubjectManifest } from '../types';
-
-const topic = (id: string, title: string, description: string): LessonTopic => ({
-  id,
-  title,
-  description,
-  sections: [],
-});
+import type { SubjectManifest } from '../types';
+import { concurrentProcessing, fileAndDiskManagement } from './lessons';
 
 export const cit015Subject: SubjectManifest = {
   id: 'cit015',
   code: 'CIT.015',
   title: 'Operating Systems',
-  description: 'Operating-system foundations, process management, and memory management.',
-  reviewModes: ['test'],
-  topics: [
-    topic('os-introduction', 'Introduction to Operating Systems', 'Foundations, functions, types, interfaces, and popular operating systems.'),
-    topic('process-management', 'Process Management', 'Processes, scheduling, process state, and CPU scheduling algorithms.'),
-    topic('memory-management', 'Memory Management', 'Address spaces, loading, swapping, fragmentation, paging, and segmentation.'),
-  ],
+  description: 'Finals review: Concurrent Processing and File and Disk Management.',
+  reviewModes: ['study', 'test'],
+  topics: [concurrentProcessing, fileAndDiskManagement],
   mccumber: { goals: [], states: [], safeguards: [] },
 };

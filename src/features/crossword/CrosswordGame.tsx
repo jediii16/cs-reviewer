@@ -23,7 +23,7 @@ const confettiPieces = Array.from({ length: 42 }, (_, index) => ({
 }));
 
 export function CrosswordGame({ puzzle, onExit }: { puzzle: CrosswordPuzzle; onExit: () => void }) {
-  const storageKey = `cs412-crossword:${puzzle.id}`;
+  const storageKey = `bappi-crossword:${puzzle.id}`;
   const [state, setState] = useState(() => {
     try {
       const saved = localStorage.getItem(storageKey);

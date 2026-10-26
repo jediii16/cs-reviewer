@@ -49,14 +49,14 @@ describe('QuizRunner', () => {
   it('shows readable CIT.015 topic names instead of internal ids', () => {
     render(
       <QuizRunner
-        questions={[{ ...sampleQuestion, topicId: 'os-introduction' }]}
+        questions={[{ ...sampleQuestion, topicId: 'finals-concurrent-processing' }]}
         setTitle="Comprehensive Exam"
         onComplete={vi.fn()}
       />,
     );
 
-    expect(screen.getByText('Operating systems introduction')).toBeVisible();
-    expect(screen.queryByText('os-introduction')).not.toBeInTheDocument();
+    expect(screen.getByText('Concurrent Processing')).toBeVisible();
+    expect(screen.queryByText('finals-concurrent-processing')).not.toBeInTheDocument();
   });
 
   it('renders only multiple-choice controls', () => {
