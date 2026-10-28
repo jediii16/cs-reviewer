@@ -20,9 +20,9 @@ describe('Bappi Jeopardy', () => {
   it('reveals source-based answers and reviews mistakes without recovering lost points', async () => {
     const user = userEvent.setup(); renderGame();
     await user.click(screen.getByRole('button', { name: 'Working with images, 100 points' }));
-    expect(screen.queryByText('What is the upper-left corner?')).not.toBeInTheDocument();
+    expect(screen.queryByText('Upper-left corner')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
-    expect(screen.getByText('What is the upper-left corner?')).toBeVisible();
+    expect(screen.getByText('Upper-left corner')).toBeVisible();
     expect(screen.getByText('Working with Images · PDF pages 6')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Missed it · −100' }));
     expect(within(screen.getByRole('region', { name: 'Jeopardy scores' })).getByText('-100')).toBeVisible();
@@ -35,22 +35,22 @@ describe('Bappi Jeopardy', () => {
   it('restores an open clue and working notes and isolates exam-period saves', async () => {
     const user = userEvent.setup(); const first = renderGame();
     await user.selectOptions(screen.getByRole('combobox', { name: 'Clue timer' }), '30');
-    await user.click(screen.getByRole('button', { name: 'Bit by bit, 500 points' }));
-    await user.type(screen.getByRole('textbox', { name: /your answer/i }), '32-bit signed int');
+    await user.click(screen.getByRole('button', { name: 'Image concepts, 500 points' }));
+    await user.type(screen.getByRole('textbox', { name: /your answer/i }), 'pixel array');
     const stored = JSON.parse(localStorage.getItem(jeopardyStorageKey('test-finals'))!);
     expect(stored.active.deadline).toBeGreaterThan(Date.now());
     first.unmount(); const restored = renderGame();
-    expect(screen.getByRole('textbox', { name: /your answer/i })).toHaveValue('32-bit signed int');
+    expect(screen.getByRole('textbox', { name: /your answer/i })).toHaveValue('pixel array');
     expect(screen.getByRole('timer')).toHaveTextContent(/remaining/);
     restored.unmount(); renderGame('test-midterms');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Bit by bit, 500 points' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Image concepts, 500 points' })).toBeVisible();
   });
   it('selects the answering team, scores their response, and confirms mode resets', async () => {
     const user = userEvent.setup(); renderGame();
     await user.click(screen.getByRole('button', { name: 'Team game' }));
     await user.selectOptions(screen.getByRole('combobox', { name: 'Number of teams' }), '3');
-    await user.click(screen.getByRole('button', { name: 'Bit by bit, 200 points' }));
+    await user.click(screen.getByRole('button', { name: 'Image concepts, 200 points' }));
     await user.click(screen.getByRole('button', { name: 'Team 3' }));
     await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
     await user.click(screen.getByRole('button', { name: 'Got it · +200' }));
@@ -67,7 +67,7 @@ describe('Bappi Jeopardy', () => {
     await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
     await user.click(screen.getByRole('button', { name: 'Got it · +100' }));
     await user.click(screen.getByRole('button', { name: 'Final Jeopardy' }));
-    expect(screen.queryByText(/a grayscale 2×2 image is/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/a histogram-based contrast-enhancement technique that uses/i)).not.toBeInTheDocument();
     await user.clear(screen.getByRole('spinbutton', { name: 'You wager' }));
     await user.type(screen.getByRole('spinbutton', { name: 'You wager' }), '150');
     expect(screen.getByRole('button', { name: 'Show final clue' })).toBeDisabled();

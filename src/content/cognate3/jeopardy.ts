@@ -1,769 +1,105 @@
-// Original practice prompts based on the six supplied Cognate 3 lesson PDFs.
+// Definition-to-term recall based on the six supplied Cognate 3 lesson PDFs.
 export interface JeopardyClue { id: string; prompt: string; answer: string; explanation: string; source: string; pages: string; value: number; category: string; round: number; }
 export interface JeopardyCategory { id: number; name: string; label: string; rounds: JeopardyClue[][]; }
 export const jeopardySources: Record<string, { title: string; file: string }> = {
-  "images": {
-    "title": "Working with Images",
-    "file": "Copy of Lesson 3_ Working with Images.pptx.pdf"
-  },
-  "bits": {
-    "title": "Java Bitwise Operations",
-    "file": "Java Bitwise Operations.pdf"
-  },
-  "gray": {
-    "title": "Grayscale Methods",
-    "file": "Copy of Lession 5_  Grayscale.pdf"
-  },
-  "hist": {
-    "title": "Image Histogram",
-    "file": "Histogram.pdf"
-  },
-  "equal": {
-    "title": "Histogram Equalization",
-    "file": "Copy of Histogram.pdf"
-  },
-  "spatial": {
-    "title": "Spatial Filtering Part I",
-    "file": "Copy-of-Lession-9_-Spatial-Filtering.pdf"
-  }
+  images: { title: 'Working with Images', file: 'Copy of Lesson 3_ Working with Images.pptx.pdf' },
+  bits: { title: 'Java Bitwise Operations', file: 'Java Bitwise Operations.pdf' },
+  gray: { title: 'Grayscale Methods', file: 'Copy of Lession 5_  Grayscale.pdf' },
+  hist: { title: 'Image Histogram', file: 'Histogram.pdf' },
+  equal: { title: 'Histogram Equalization', file: 'Copy of Histogram.pdf' },
+  spatial: { title: 'Spatial Filtering Part I', file: 'Copy-of-Lession-9_-Spatial-Filtering.pdf' },
 };
+type Definition = [definition: string, term: string, explanation: string, source: string, pages: string];
+function category(id: number, name: string, label: string, rounds: Definition[][]): JeopardyCategory {
+  return { id, name, label, rounds: rounds.map((round, r) => round.map(([prompt, answer, explanation, source, pages], v) => ({ id: `r${r}-c${id}-v${v}`, prompt, answer, explanation, source, pages, value: (v + 1) * 100, category: name, round: r }))) };
+}
+// The second board revisits the same lesson vocabulary with different definitions.
+// A clue always asks for a term, never a calculation, code fragment, or operator symbol.
 export const jeopardyCategories: JeopardyCategory[] = [
-  {
-    "id": 0,
-    "name": "Working with images",
-    "label": "THE PIXEL",
-    "rounds": [
-      [
-        {
-          "id": "r0-c0-v0",
-          "prompt": "In the image coordinate system from the lesson, this corner contains the origin (0, 0).",
-          "answer": "What is the upper-left corner?",
-          "explanation": "The x-coordinate increases to the right; the y-coordinate increases downward.",
-          "source": "images",
-          "pages": "6",
-          "value": 100,
-          "category": "Working with images",
-          "round": 0
-        },
-        {
-          "id": "r0-c0-v1",
-          "prompt": "This Java class extends Image and lets an application work directly with image data.",
-          "answer": "What is BufferedImage?",
-          "explanation": "java.awt.image.BufferedImage extends java.awt.Image.",
-          "source": "images",
-          "pages": "9",
-          "value": 200,
-          "category": "Working with images",
-          "round": 0
-        },
-        {
-          "id": "r0-c0-v2",
-          "prompt": "These two BufferedImage methods read a pixel value and change a pixel value, respectively.",
-          "answer": "What are getRGB(x, y) and setRGB(x, y, rgb)?",
-          "explanation": "getRGB returns an integer color value; setRGB writes a specified value at the coordinates.",
-          "source": "images",
-          "pages": "14, 16",
-          "value": 300,
-          "category": "Working with images",
-          "round": 0
-        },
-        {
-          "id": "r0-c0-v3",
-          "prompt": "An image is 640 pixels wide and 480 pixels high. Give its bottom-right pixel coordinates using zero-based indexing.",
-          "answer": "What is (639, 479)?",
-          "explanation": "The last x-coordinate is width − 1; the last y-coordinate is height − 1.",
-          "source": "images",
-          "pages": "6–7",
-          "value": 400,
-          "category": "Working with images",
-          "round": 0
-        },
-        {
-          "id": "r0-c0-v4",
-          "prompt": "Complete the Java call that saves BufferedImage bi to a PNG file named saved.png.",
-          "answer": "What is ImageIO.write(bi, \"png\", new File(\"saved.png\"))?",
-          "explanation": "The parameters are the image, format name, and output File. The call can throw IOException.",
-          "source": "images",
-          "pages": "22–23",
-          "value": 500,
-          "category": "Working with images",
-          "round": 0
-        }
-      ],
-      [
-        {
-          "id": "r1-c0-v0",
-          "prompt": "Image width and height are measured in these discrete picture elements.",
-          "answer": "What are pixels?",
-          "explanation": "The lesson distinguishes discrete pixel indices from continuous spatial coordinates.",
-          "source": "images",
-          "pages": "4",
-          "value": 100,
-          "category": "Working with images",
-          "round": 1
-        },
-        {
-          "id": "r1-c0-v1",
-          "prompt": "Name the ImageIO method used to load a file into a BufferedImage.",
-          "answer": "What is ImageIO.read(new File(\"image.jpg\"))?",
-          "explanation": "The lesson assigns the result of ImageIO.read to a BufferedImage and handles IOException.",
-          "source": "images",
-          "pages": "11–12",
-          "value": 200,
-          "category": "Working with images",
-          "round": 1
-        },
-        {
-          "id": "r1-c0-v2",
-          "prompt": "A pixel is at (4, 2). You move three columns right and one row down. Give the new coordinates.",
-          "answer": "What is (7, 3)?",
-          "explanation": "Moving right adds to x; moving down adds to y in this image coordinate system.",
-          "source": "images",
-          "pages": "6–7",
-          "value": 300,
-          "category": "Working with images",
-          "round": 1
-        },
-        {
-          "id": "r1-c0-v3",
-          "prompt": "Give the BufferedImage constructor pattern used to create an image, then the two methods used to get its dimensions.",
-          "answer": "What are new BufferedImage(width, height, type), getWidth(), and getHeight()?",
-          "explanation": "The constructor specifies dimensions and a predefined image type; the methods return its width and height.",
-          "source": "images",
-          "pages": "18, 20",
-          "value": 400,
-          "category": "Working with images",
-          "round": 1
-        },
-        {
-          "id": "r1-c0-v4",
-          "prompt": "getRGB(x, y) returns an integer in this default color model, with this many bits of precision per color component.",
-          "answer": "What are TYPE_INT_ARGB and 8 bits per component?",
-          "explanation": "The slide specifies the default RGB model TYPE_INT_ARGB and default sRGB colorspace. Color conversion can occur.",
-          "source": "images",
-          "pages": "14",
-          "value": 500,
-          "category": "Working with images",
-          "round": 1
-        }
-      ]
-    ]
-  },
-  {
-    "id": 1,
-    "name": "Bit by bit",
-    "label": "JAVA BITS",
-    "rounds": [
-      [
-        {
-          "id": "r0-c1-v0",
-          "prompt": "This bitwise operator keeps a 1 only when both corresponding input bits are 1. Give its name and symbol.",
-          "answer": "What is AND (&)?",
-          "explanation": "AND keeps the common 1 bits. It is a binary operation.",
-          "source": "bits",
-          "pages": "5",
-          "value": 100,
-          "category": "Bit by bit",
-          "round": 0
-        },
-        {
-          "id": "r0-c1-v1",
-          "prompt": "Evaluate 12 | 5 in decimal. Binary: 1100 | 0101.",
-          "answer": "What is 13?",
-          "explanation": "OR keeps any 1: 1100 | 0101 = 1101, which is decimal 13.",
-          "source": "bits",
-          "pages": "7",
-          "value": 200,
-          "category": "Bit by bit",
-          "round": 0
-        },
-        {
-          "id": "r0-c1-v2",
-          "prompt": "Evaluate 12 ^ 5 in decimal. Binary: 1100 ^ 0101.",
-          "answer": "What is 9?",
-          "explanation": "XOR keeps different bits: 1100 ^ 0101 = 1001, which is decimal 9.",
-          "source": "bits",
-          "pages": "9",
-          "value": 300,
-          "category": "Bit by bit",
-          "round": 0
-        },
-        {
-          "id": "r0-c1-v3",
-          "prompt": "Evaluate (12 & 10) << 1 in decimal. Binary inputs: 1100 and 1010.",
-          "answer": "What is 16?",
-          "explanation": "First 1100 & 1010 = 1000 (8). Shifting left once gives 10000 (16). These positive values do not overflow.",
-          "source": "bits",
-          "pages": "5, 13",
-          "value": 400,
-          "category": "Bit by bit",
-          "round": 0
-        },
-        {
-          "id": "r0-c1-v4",
-          "prompt": "For a Java int, what does ~5 evaluate to?",
-          "answer": "What is −6?",
-          "explanation": "Complement flips every bit of the 32-bit int. With two’s-complement representation, ~n = −n − 1. It is not just a flip of the visible three bits in 101.",
-          "source": "bits",
-          "pages": "10–11",
-          "value": 500,
-          "category": "Bit by bit",
-          "round": 0
-        }
-      ],
-      [
-        {
-          "id": "r1-c1-v0",
-          "prompt": "This bitwise operator keeps a 1 when either input bit is 1, including when both are 1.",
-          "answer": "What is OR (|)?",
-          "explanation": "OR produces 0 only when both input bits are 0.",
-          "source": "bits",
-          "pages": "7",
-          "value": 100,
-          "category": "Bit by bit",
-          "round": 1
-        },
-        {
-          "id": "r1-c1-v1",
-          "prompt": "Evaluate 14 & 11 in decimal. Binary: 1110 & 1011.",
-          "answer": "What is 10?",
-          "explanation": "Keep only common 1s: 1110 & 1011 = 1010, which is decimal 10.",
-          "source": "bits",
-          "pages": "5",
-          "value": 200,
-          "category": "Bit by bit",
-          "round": 1
-        },
-        {
-          "id": "r1-c1-v2",
-          "prompt": "Evaluate 9 ^ 9 and name the rule behind the result.",
-          "answer": "What is 0, because identical bits cancel under XOR?",
-          "explanation": "Each pair is either 0 ^ 0 or 1 ^ 1, and both produce 0.",
-          "source": "bits",
-          "pages": "9",
-          "value": 300,
-          "category": "Bit by bit",
-          "round": 1
-        },
-        {
-          "id": "r1-c1-v3",
-          "prompt": "For positive int values with no overflow, evaluate 7 << 2 and 28 >> 2.",
-          "answer": "What are 28 and 7?",
-          "explanation": "Two left shifts multiply 7 by 4; two signed right shifts divide positive 28 by 4. The slide’s multiply/divide shortcut needs care with negatives and overflow.",
-          "source": "bits",
-          "pages": "13",
-          "value": 400,
-          "category": "Bit by bit",
-          "round": 1
-        },
-        {
-          "id": "r1-c1-v4",
-          "prompt": "Name Java’s signed right shift, unsigned right shift, and left shift symbols, in that order.",
-          "answer": "What are >>, >>>, and <<?",
-          "explanation": "Signed right shift propagates the sign bit. Unsigned right shift fills from the left with zeros. Left shift moves bits left and fills low positions with zeros.",
-          "source": "bits",
-          "pages": "13",
-          "value": 500,
-          "category": "Bit by bit",
-          "round": 1
-        }
-      ]
-    ]
-  },
-  {
-    "id": 2,
-    "name": "Going grayscale",
-    "label": "LIGHT & TONE",
-    "rounds": [
-      [
-        {
-          "id": "r0-c2-v0",
-          "prompt": "A grayscale pixel carries intensity information but none of this color attribute.",
-          "answer": "What is hue?",
-          "explanation": "The lesson describes one sample representing an amount of light: only values, no hue.",
-          "source": "gray",
-          "pages": "3",
-          "value": 100,
-          "category": "Going grayscale",
-          "round": 0
-        },
-        {
-          "id": "r0-c2-v1",
-          "prompt": "Name the grayscale method that uses (R + G + B) / 3.",
-          "answer": "What is the average method?",
-          "explanation": "The three channels contribute equally.",
-          "source": "gray",
-          "pages": "7",
-          "value": 200,
-          "category": "Going grayscale",
-          "round": 0
-        },
-        {
-          "id": "r0-c2-v2",
-          "prompt": "Use the average method for RGB (90, 150, 210).",
-          "answer": "What is 150?",
-          "explanation": "(90 + 150 + 210) / 3 = 450 / 3 = 150.",
-          "source": "gray",
-          "pages": "7",
-          "value": 300,
-          "category": "Going grayscale",
-          "round": 0
-        },
-        {
-          "id": "r0-c2-v3",
-          "prompt": "Use the lightness method for RGB (40, 100, 220).",
-          "answer": "What is 130?",
-          "explanation": "Lightness = (maximum + minimum) / 2 = (220 + 40) / 2 = 130. The middle channel is not used.",
-          "source": "gray",
-          "pages": "9",
-          "value": 400,
-          "category": "Going grayscale",
-          "round": 0
-        },
-        {
-          "id": "r0-c2-v4",
-          "prompt": "Use the lesson’s luminosity weights for RGB (100, 150, 200). Give the unrounded value.",
-          "answer": "What is 143?",
-          "explanation": "0.21(100) + 0.72(150) + 0.07(200) = 21 + 108 + 14 = 143. Use the supplied coefficients.",
-          "source": "gray",
-          "pages": "11",
-          "value": 500,
-          "category": "Going grayscale",
-          "round": 0
-        }
-      ],
-      [
-        {
-          "id": "r1-c2-v0",
-          "prompt": "These three color channels can each be represented as a grayscale image in the lesson’s channel-splitting example.",
-          "answer": "What are red, green, and blue?",
-          "explanation": "A single channel’s intensity can be displayed as grayscale. This differs from combining all three channels into a grayscale value.",
-          "source": "gray",
-          "pages": "5",
-          "value": 100,
-          "category": "Going grayscale",
-          "round": 1
-        },
-        {
-          "id": "r1-c2-v1",
-          "prompt": "Which color channel receives the highest weight in the lesson’s luminosity method, and what is its coefficient?",
-          "answer": "What are green and 0.72?",
-          "explanation": "The lesson uses 0.21R + 0.72G + 0.07B; green has the largest coefficient.",
-          "source": "gray",
-          "pages": "11",
-          "value": 200,
-          "category": "Going grayscale",
-          "round": 1
-        },
-        {
-          "id": "r1-c2-v2",
-          "prompt": "Use the lightness method for RGB (20, 80, 200).",
-          "answer": "What is 110?",
-          "explanation": "(max + min) / 2 = (200 + 20) / 2 = 110.",
-          "source": "gray",
-          "pages": "9",
-          "value": 300,
-          "category": "Going grayscale",
-          "round": 1
-        },
-        {
-          "id": "r1-c2-v3",
-          "prompt": "For RGB (100, 0, 0), give the average, lightness, and luminosity results, before rounding.",
-          "answer": "What are 33⅓, 50, and 21?",
-          "explanation": "Average = 100/3; lightness = (100 + 0)/2; luminosity = 0.21(100). Different methods need not produce the same intensity.",
-          "source": "gray",
-          "pages": "7, 9, 11",
-          "value": 400,
-          "category": "Going grayscale",
-          "round": 1
-        },
-        {
-          "id": "r1-c2-v4",
-          "prompt": "For RGB (80, 80, 80), calculate all three grayscale results and explain why they match.",
-          "answer": "What is 80 for all three methods?",
-          "explanation": "Average = 240/3 = 80; lightness = (80+80)/2 = 80. Luminosity = (0.21+0.72+0.07)×80 = 80 because the weights sum to 1.",
-          "source": "gray",
-          "pages": "7, 9, 11",
-          "value": 500,
-          "category": "Going grayscale",
-          "round": 1
-        }
-      ]
-    ]
-  },
-  {
-    "id": 3,
-    "name": "Read the histogram",
-    "label": "THE DISTRIBUTION",
-    "rounds": [
-      [
-        {
-          "id": "r0-c3-v0",
-          "prompt": "In an image histogram, the horizontal axis shows these values.",
-          "answer": "What are gray-level intensities?",
-          "explanation": "The x-axis gives intensity values; the y-axis counts how often they occur.",
-          "source": "hist",
-          "pages": "5",
-          "value": 100,
-          "category": "Read the histogram",
-          "round": 0
-        },
-        {
-          "id": "r0-c3-v1",
-          "prompt": "An image histogram’s vertical axis measures this quantity.",
-          "answer": "What is the frequency or count of pixels at each intensity?",
-          "explanation": "A taller bar means more pixels have that intensity, not that those pixels are necessarily brighter.",
-          "source": "hist",
-          "pages": "4–5",
-          "value": 200,
-          "category": "Read the histogram",
-          "round": 0
-        },
-        {
-          "id": "r0-c3-v2",
-          "prompt": "This information about pixel locations is lost in a histogram, so the original image cannot be uniquely reconstructed.",
-          "answer": "What is the spatial arrangement of pixels?",
-          "explanation": "A histogram keeps tonal counts, not pixel positions. Different arrangements can have identical histograms.",
-          "source": "hist",
-          "pages": "5, 9–11",
-          "value": 300,
-          "category": "Read the histogram",
-          "round": 0
-        },
-        {
-          "id": "r0-c3-v3",
-          "prompt": "An image contains [0, 0, 85, 85, 85, 255]. Give the nonzero histogram counts.",
-          "answer": "What are H(0)=2, H(85)=3, and H(255)=1?",
-          "explanation": "Count each distinct intensity. The histogram counts sum to the six pixels in the image.",
-          "source": "hist",
-          "pages": "5, 7–8",
-          "value": 400,
-          "category": "Read the histogram",
-          "round": 0
-        },
-        {
-          "id": "r0-c3-v4",
-          "prompt": "Two 2×2 images are [0,255; 0,255] and [0,0; 255,255]. Do they have the same histogram? Explain.",
-          "answer": "What is yes: both contain two 0s and two 255s?",
-          "explanation": "One arrangement is vertical and the other is horizontal, but the intensity frequencies match exactly. A histogram cannot distinguish those positions.",
-          "source": "hist",
-          "pages": "5, 9–11",
-          "value": 500,
-          "category": "Read the histogram",
-          "round": 0
-        }
-      ],
-      [
-        {
-          "id": "r1-c3-v0",
-          "prompt": "An image histogram provides this kind of information about an image in a compact form.",
-          "answer": "What is statistical information about intensity distribution?",
-          "explanation": "It summarizes the frequency of gray levels, rather than the image’s spatial structure.",
-          "source": "hist",
-          "pages": "5",
-          "value": 100,
-          "category": "Read the histogram",
-          "round": 1
-        },
-        {
-          "id": "r1-c3-v1",
-          "prompt": "In the lesson’s exposure examples, a histogram concentrated toward the dark, left side suggests this exposure condition.",
-          "answer": "What is underexposure?",
-          "explanation": "The exposure slide compares underexposed, properly exposed, and overexposed images. Dark intensities appear toward the left.",
-          "source": "hist",
-          "pages": "16",
-          "value": 200,
-          "category": "Read the histogram",
-          "round": 1
-        },
-        {
-          "id": "r1-c3-v2",
-          "prompt": "An image has 25 pixels. Its histogram has counts 5 at intensity 0 and 8 at intensity 128. All remaining pixels are 255. Find H(255).",
-          "answer": "What is 12?",
-          "explanation": "The histogram must account for all pixels: 25 − 5 − 8 = 12.",
-          "source": "hist",
-          "pages": "5, 7–8",
-          "value": 300,
-          "category": "Read the histogram",
-          "round": 1
-        },
-        {
-          "id": "r1-c3-v3",
-          "prompt": "Every pixel increases by 10 and none reaches the maximum allowed value. In which direction does the histogram shift?",
-          "answer": "What is 10 intensity levels to the right?",
-          "explanation": "Each count moves from intensity i to i+10. The grayscale-intensity slide illustrates darker and brighter versions. No clipping is assumed.",
-          "source": "hist",
-          "pages": "14",
-          "value": 400,
-          "category": "Read the histogram",
-          "round": 1
-        },
-        {
-          "id": "r1-c3-v4",
-          "prompt": "An image uses intensities 20, 20, 70, 100, 100, 220. Give its number of distinct levels and its max-minus-min contrast.",
-          "answer": "What are 4 distinct levels and a contrast of 200?",
-          "explanation": "The distinct values are 20, 70, 100, 220. Contrast in this lesson is 220 − 20 = 200. Slide 17 calls the number of distinct values “dynamic range”; that is the lesson’s wording.",
-          "source": "hist",
-          "pages": "17–18",
-          "value": 500,
-          "category": "Read the histogram",
-          "round": 1
-        }
-      ]
-    ]
-  },
-  {
-    "id": 4,
-    "name": "Contrast & equalize",
-    "label": "MAKE IT CLEAR",
-    "rounds": [
-      [
-        {
-          "id": "r0-c4-v0",
-          "prompt": "The lesson defines this as the difference between an image’s maximum and minimum pixel values.",
-          "answer": "What is contrast?",
-          "explanation": "For these clues, use the slide’s numerical definition: maximum intensity minus minimum intensity.",
-          "source": "equal",
-          "pages": "8",
-          "value": 100,
-          "category": "Contrast & equalize",
-          "round": 0
-        },
-        {
-          "id": "r0-c4-v1",
-          "prompt": "Name the technique that expands an image’s intensity range using its minimum and maximum values.",
-          "answer": "What is histogram stretching or contrast stretching?",
-          "explanation": "The slide maps (f − fmin)/(fmax − fmin) to the available output range.",
-          "source": "hist",
-          "pages": "20",
-          "value": 200,
-          "category": "Contrast & equalize",
-          "round": 0
-        },
-        {
-          "id": "r0-c4-v2",
-          "prompt": "An image has a minimum intensity of 35 and a maximum of 195. Calculate its contrast using the lesson’s definition.",
-          "answer": "What is 160?",
-          "explanation": "Contrast = 195 − 35 = 160.",
-          "source": "hist",
-          "pages": "18",
-          "value": 300,
-          "category": "Contrast & equalize",
-          "round": 0
-        },
-        {
-          "id": "r0-c4-v3",
-          "prompt": "Name the two primary probability functions calculated during histogram equalization, in order.",
-          "answer": "What are PMF, then CDF?",
-          "explanation": "First compute the probability mass function from intensity counts, then its cumulative distribution function.",
-          "source": "equal",
-          "pages": "18",
-          "value": 400,
-          "category": "Contrast & equalize",
-          "round": 0
-        },
-        {
-          "id": "r0-c4-v4",
-          "prompt": "Stretch an 8-bit image with fmin=50 and fmax=150. What output intensity does f=100 map to before rounding?",
-          "answer": "What is 127.5?",
-          "explanation": "g = (100 − 50)/(150 − 50) × 255 = 0.5 × 255 = 127.5. A stored integer depends on the chosen rounding rule.",
-          "source": "hist",
-          "pages": "20",
-          "value": 500,
-          "category": "Contrast & equalize",
-          "round": 0
-        }
-      ],
-      [
-        {
-          "id": "r1-c4-v0",
-          "prompt": "True or false: the lesson guarantees histogram equalization always improves an image’s contrast.",
-          "answer": "What is false?",
-          "explanation": "The slides explicitly say equalization may make some images worse; it does not guarantee improvement.",
-          "source": "equal",
-          "pages": "12",
-          "value": 100,
-          "category": "Contrast & equalize",
-          "round": 1
-        },
-        {
-          "id": "r1-c4-v1",
-          "prompt": "An image’s intensities are crowded into a narrow band near the middle. Does this suggest high or low contrast?",
-          "answer": "What is low contrast?",
-          "explanation": "A narrow used intensity range means a small difference between the darkest and brightest pixels.",
-          "source": "equal",
-          "pages": "8, 10",
-          "value": 200,
-          "category": "Contrast & equalize",
-          "round": 1
-        },
-        {
-          "id": "r1-c4-v2",
-          "prompt": "An intensity occurs 6 times in an image of 16 pixels. Calculate its PMF value.",
-          "answer": "What is 6/16 = 0.375?",
-          "explanation": "PMF at an intensity is its count divided by the total number of pixels.",
-          "source": "equal",
-          "pages": "18–19",
-          "value": 300,
-          "category": "Contrast & equalize",
-          "round": 1
-        },
-        {
-          "id": "r1-c4-v3",
-          "prompt": "The lowest three gray levels have PMFs 0.2, 0.3, and 0.1. Find the CDF at the third level.",
-          "answer": "What is 0.6?",
-          "explanation": "The cumulative distribution adds all probabilities through the current level: 0.2 + 0.3 + 0.1.",
-          "source": "equal",
-          "pages": "18–19",
-          "value": 400,
-          "category": "Contrast & equalize",
-          "round": 1
-        },
-        {
-          "id": "r1-c4-v4",
-          "prompt": "Use the slide’s direct equalization mapping q=255×CDF. If the cumulative count is 9 out of 16 pixels, find q before rounding.",
-          "answer": "What is 143.4375?",
-          "explanation": "CDF = 9/16, so q = 255×9/16 = 143.4375. The slide’s table lists 143 for this entry. This question uses direct CDF scaling, without CDF-min subtraction.",
-          "source": "equal",
-          "pages": "19",
-          "value": 500,
-          "category": "Contrast & equalize",
-          "round": 1
-        }
-      ]
-    ]
-  },
-  {
-    "id": 5,
-    "name": "Spatial filters",
-    "label": "THE NEIGHBORHOOD",
-    "rounds": [
-      [
-        {
-          "id": "r0-c5-v0",
-          "prompt": "Give one of the common names for the small subimage of coefficients used in spatial filtering.",
-          "answer": "What is a filter, mask, or kernel?",
-          "explanation": "The lesson also lists template and window. The values inside are called coefficients.",
-          "source": "spatial",
-          "pages": "3",
-          "value": 100,
-          "category": "Spatial filters",
-          "round": 0
-        },
-        {
-          "id": "r0-c5-v1",
-          "prompt": "This nonlinear filter is particularly effective at removing salt-and-pepper noise.",
-          "answer": "What is the median filter?",
-          "explanation": "Median filtering removes isolated extreme values by using an ordered neighborhood’s middle value.",
-          "source": "spatial",
-          "pages": "17",
-          "value": 200,
-          "category": "Spatial filters",
-          "round": 0
-        },
-        {
-          "id": "r0-c5-v2",
-          "prompt": "This filter blurs with a kernel shaped like a bell-shaped hump.",
-          "answer": "What is the Gaussian filter?",
-          "explanation": "The Gaussian filter removes detail and noise, using a different weighting pattern from a uniform mean filter.",
-          "source": "spatial",
-          "pages": "15",
-          "value": 300,
-          "category": "Spatial filters",
-          "round": 0
-        },
-        {
-          "id": "r0-c5-v3",
-          "prompt": "A uniform 3×3 mean filter covers [10,20,30; 40,50,60; 70,80,90]. Calculate the output.",
-          "answer": "What is 50?",
-          "explanation": "The nine values sum to 450. A normalized 3×3 mean kernel multiplies the sum by 1/9: 450/9 = 50.",
-          "source": "spatial",
-          "pages": "7, 13",
-          "value": 400,
-          "category": "Spatial filters",
-          "round": 0
-        },
-        {
-          "id": "r0-c5-v4",
-          "prompt": "Conservative smoothing sees center=250 and neighboring values ranging from 20 to 80. What does it output, and why?",
-          "answer": "What is 80, because the center exceeds the neighborhood maximum?",
-          "explanation": "The pseudocode clips an outlying center to the nearest neighborhood extreme. A center below 20 becomes 20; one already in [20,80] stays unchanged.",
-          "source": "spatial",
-          "pages": "19–20",
-          "value": 500,
-          "category": "Spatial filters",
-          "round": 0
-        }
-      ],
-      [
-        {
-          "id": "r1-c5-v0",
-          "prompt": "Name any two applications of spatial filtering listed in the lesson.",
-          "answer": "What are any two of sharpening, edge detection, blurring, and noise reduction?",
-          "explanation": "All four are listed on the introductory slide.",
-          "source": "spatial",
-          "pages": "2",
-          "value": 100,
-          "category": "Spatial filters",
-          "round": 1
-        },
-        {
-          "id": "r1-c5-v1",
-          "prompt": "The values inside a filter mask are called this, rather than pixels.",
-          "answer": "What are coefficients?",
-          "explanation": "The coefficients control how neighboring image pixels contribute to the output.",
-          "source": "spatial",
-          "pages": "3",
-          "value": 200,
-          "category": "Spatial filters",
-          "round": 1
-        },
-        {
-          "id": "r1-c5-v2",
-          "prompt": "What is the median of [0,10,10,10,20,20,20,30,255]?",
-          "answer": "What is 20?",
-          "explanation": "There are nine sorted values, so take the fifth one. The extreme values 0 and 255 do not control the median.",
-          "source": "spatial",
-          "pages": "17",
-          "value": 300,
-          "category": "Spatial filters",
-          "round": 1
-        },
-        {
-          "id": "r1-c5-v3",
-          "prompt": "A 3×3 weighted mask is [1,2,1; 2,4,2; 1,2,1]. By what sum should its weighted output be divided to form an average?",
-          "answer": "What is 16?",
-          "explanation": "The coefficients sum to 1+2+1+2+4+2+1+2+1 = 16. The lesson shows the normalized mask with a 1/16 multiplier.",
-          "source": "spatial",
-          "pages": "7–8",
-          "value": 400,
-          "category": "Spatial filters",
-          "round": 1
-        },
-        {
-          "id": "r1-c5-v4",
-          "prompt": "For conservative smoothing, neighbors range from 15 to 90. Give the outputs for centers 5, 60, and 120, respectively.",
-          "answer": "What are 15, 60, and 90?",
-          "explanation": "5 is below the minimum and becomes 15; 60 lies inside the range and stays 60; 120 exceeds the maximum and becomes 90. The center is excluded when finding the neighboring extremes.",
-          "source": "spatial",
-          "pages": "19–20",
-          "value": 500,
-          "category": "Spatial filters",
-          "round": 1
-        }
-      ]
-    ]
-  }
+  category(0, 'Working with images', 'IMAGE FOUNDATIONS', [[
+    ['The corner of an image where the coordinate system begins.', 'Upper-left corner', 'The lesson places the image origin in the upper-left corner. The vertical direction runs downward.', 'images', '6'],
+    ['A Java image class that allows an application to work directly with image data.', 'BufferedImage', 'BufferedImage extends the Image class and provides direct access to image data.', 'images', '9'],
+    ['The Java superclass that represents graphical images as rectangular arrays of pixels.', 'Image class', 'The Image class is the superclass; BufferedImage extends it.', 'images', '9'],
+    ['The Java API used to load and save images in supported file formats.', 'Image I/O API', 'The lesson uses Image I/O for both reading external image files and writing images to files.', 'images', '11–12, 22–23'],
+    ['Discrete coordinates that identify individual locations in an image array.', 'Pixel indices', 'Pixel indices describe individual pixel positions. The lesson distinguishes them from continuous spatial coordinates.', 'images', '4'],
+  ], [
+    ['A system for describing positions within an image, independently of the drawing surface.', 'Image coordinate system', 'An image has its own coordinate system as well as a width and height measured in pixels.', 'images', '4'],
+    ['Continuous coordinates used to describe positions in image space.', 'Spatial coordinates', 'Spatial coordinates are continuous; pixel indices are discrete.', 'images', '4'],
+    ['The horizontal dimension of an image, measured in pixels.', 'Image width', 'Width describes the horizontal extent of an image.', 'images', '4, 18'],
+    ['The vertical dimension of an image, measured in pixels.', 'Image height', 'Height describes the vertical extent of an image.', 'images', '4, 18'],
+    ['File representations used to store images, including PNG, JPEG, GIF, and BMP.', 'Image file formats', 'The lesson lists these formats among those supported by the Java Image I/O API.', 'images', '11'],
+  ]]),
+  category(1, 'Image concepts', 'KNOW THE TERMS', [[
+    ['An individual picture element in a digital image.', 'Pixel', 'Images are described by their dimensions in pixels, and each pixel can carry image data.', 'images', '4, 9'],
+    ['The amount of light represented by a grayscale pixel.', 'Intensity', 'The grayscale lesson describes each pixel as a sample carrying only intensity information.', 'gray', '3'],
+    ['The three color components red, green, and blue considered together.', 'RGB', 'The lesson shows a color image separated into its red, green, and blue components.', 'gray', '5'],
+    ['The color attribute that is absent from a grayscale image, which retains only intensity.', 'Hue', 'The lesson describes grayscale as having values but no hue.', 'gray', '3'],
+    ['The positions of pixels within an image, which a histogram does not preserve.', 'Spatial arrangement', 'A histogram records intensity frequencies rather than where individual pixels are located.', 'hist', '5'],
+  ], [
+    ['The width and height that describe the size of an image.', 'Image dimensions', 'The working-with-images lesson describes image size through its width and height, measured in pixels.', 'images', '4'],
+    ['Operations that manipulate integer data at the level of individual bits.', 'Bitwise operations', 'The lesson defines these as bit-level operations used in low-level programming and bit manipulation.', 'bits', '3'],
+    ['A single component of a multichannel image, such as its red, green, or blue component.', 'Color channel', 'An individual color channel can be displayed as a grayscale image.', 'gray', '4–5'],
+    ['An image representation that combines red, green, and blue components.', 'RGB color image', 'The channel illustration begins with a color image and separates it into three component images.', 'gray', '5'],
+    ['A representation of an image as rows and columns of picture elements.', 'Pixel array', 'The lesson describes graphical images as rectangular arrays of pixels.', 'images', '9'],
+  ]]),
+  category(2, 'Going grayscale', 'METHODS & MEANING', [[
+    ['An image whose pixels carry intensity information without hue.', 'Grayscale image', 'A grayscale pixel represents an amount of light rather than a color hue.', 'gray', '3'],
+    ['A grayscale conversion method that gives equal importance to the red, green, and blue channels.', 'Average method', 'This method uses all three channel values equally to obtain one gray level.', 'gray', '7'],
+    ['A grayscale conversion method that uses only the brightest and darkest RGB channel values.', 'Lightness method', 'This method combines the maximum and minimum channel values, leaving out the middle value.', 'gray', '9'],
+    ['A grayscale conversion method that gives green the greatest importance and blue the least.', 'Luminosity method / weighted method', 'The lesson assigns different weights to the channels, with green contributing the most.', 'gray', '11'],
+    ['A grayscale view that displays the intensity of just one component of a color image.', 'Single-channel grayscale image', 'The lesson demonstrates grayscale views of separate red, green, and blue channels.', 'gray', '4–5'],
+  ], [
+    ['A conversion technique that treats all three RGB components equally when producing a gray level.', 'Average method', 'Equal contribution from the channels is the defining feature of the average method.', 'gray', '7'],
+    ['A conversion technique based on the extreme RGB component values rather than all three equally.', 'Lightness method', 'The largest and smallest channel values determine the gray level in this method.', 'gray', '9'],
+    ['A conversion technique that assigns different importance to the RGB components when producing a gray level.', 'Luminosity method / weighted method', 'The lesson also calls this the weighted method because the channels contribute unequally.', 'gray', '11'],
+    ['The single light-related sample stored for each pixel in a grayscale image.', 'Intensity value / gray level', 'A grayscale pixel carries a light-intensity value and no hue.', 'gray', '3'],
+    ['An image representation in which each pixel contains only an amount of light.', 'Grayscale', 'The lesson defines grayscale through intensity-only pixel information.', 'gray', '3'],
+  ]]),
+  category(3, 'Read the histogram', 'DISTRIBUTION TERMS', [[
+    ['A frequency distribution showing how often each different value in a data set occurs.', 'Histogram', 'This is the general definition given before the lesson applies histograms to images.', 'hist', '4'],
+    ['A frequency distribution showing how often each pixel intensity occurs in an image.', 'Image histogram', 'It summarizes pixel intensity counts in a compact statistical form.', 'hist', '5'],
+    ['The number of times a particular intensity value occurs in an image.', 'Frequency / pixel count', 'The vertical axis of an image histogram represents the frequency of each intensity.', 'hist', '5'],
+    ['The image values represented along the horizontal axis of an image histogram.', 'Gray-level intensities', 'The horizontal axis identifies the intensity values whose occurrences are being counted.', 'hist', '5'],
+    ['The pattern of dark and light intensity values summarized by an image histogram.', 'Tonal distribution', 'The lesson says a histogram describes tonal distribution rather than pixel positions.', 'hist', '11'],
+  ], [
+    ['A compact statistical summary of pixel intensities that leaves out their locations.', 'Image histogram', 'A histogram contains intensity frequencies but no spatial arrangement information.', 'hist', '5'],
+    ['The information about pixel positions that is missing from an image histogram.', 'Spatial arrangement', 'Different spatial arrangements can produce the same intensity-frequency distribution.', 'hist', '5, 9–11'],
+    ['The intensity-count information represented by the vertical axis of an image histogram.', 'Frequency', 'This axis counts pixels at each gray level.', 'hist', '5'],
+    ['The brightness-related values whose occurrences are counted in a grayscale image histogram.', 'Gray-level intensities', 'These values identify the different intensity levels represented in the image.', 'hist', '5, 14'],
+    ['An exposure condition associated with an image dominated by dark tones.', 'Underexposure', 'The exposure slide compares underexposed, properly exposed, and overexposed images with their histograms.', 'hist', '16'],
+  ]]),
+  category(4, 'Contrast & equalize', 'ENHANCEMENT TERMS', [[
+    ['The difference between the maximum and minimum pixel intensities used in an image.', 'Contrast', 'The lesson defines image contrast through the range of intensities effectively used.', 'equal', '8'],
+    ['A condition in which an image uses a narrow range of intensities and appears flat or hazy.', 'Low contrast', 'The lesson associates low contrast with a compressed tonal range and a softer appearance.', 'equal', '8–10'],
+    ['A condition in which strong differences between light and dark make subjects stand out.', 'High contrast', 'The lesson describes high contrast as bold and dramatic, with a wider tonal separation.', 'equal', '8–10'],
+    ['A contrast-enhancement technique that expands the range of intensities used by an image.', 'Histogram stretching / contrast stretching', 'Stretching spreads the used intensity range toward the available output range.', 'hist', '20'],
+    ['A histogram-based technique used to enhance image contrast, though it does not guarantee improvement in every image.', 'Histogram equalization', 'The lesson explicitly notes that equalization may make some images worse.', 'equal', '12'],
+  ], [
+    ['A process that increases contrast by spreading a compressed intensity range across a broader range.', 'Histogram stretching / contrast stretching', 'The histogram-stretching lesson connects a wider used intensity range with increased contrast.', 'hist', '18, 20'],
+    ['A compressed tonal range with little difference between the darkest and brightest parts of an image.', 'Low contrast', 'Low-contrast images use a relatively narrow range of intensities.', 'equal', '8–10'],
+    ['A broad separation between light and dark tones that gives an image a bold appearance.', 'High contrast', 'The contrast lesson associates this condition with dramatic tonal differences.', 'equal', '8–10'],
+    ['A function describing the probability of each possible pixel intensity.', 'Probability mass function / PMF', 'The lesson identifies this as the first probability function used in histogram equalization.', 'equal', '18–19'],
+    ['A function describing accumulated probabilities up to and including a given intensity.', 'Cumulative distribution function / CDF', 'The lesson calculates this after the probability mass function during histogram equalization.', 'equal', '18–19'],
+  ]]),
+  category(5, 'Spatial filters', 'FILTER DEFINITIONS', [[
+    ['An image-enhancement technique that uses spatial characteristics and neighboring pixel values.', 'Spatial filtering', 'The lesson lists sharpening, edge detection, blurring, and noise reduction among its uses.', 'spatial', '2–3'],
+    ['A simple low-pass filter that averages a pixel neighborhood and reduces local differences.', 'Mean filter / average filter', 'The mean filter improves noisy images but also reduces sharpness.', 'spatial', '13'],
+    ['A blurring filter whose kernel has the shape of a bell-shaped hump.', 'Gaussian filter', 'The Gaussian filter removes detail and noise using a bell-shaped weighting pattern.', 'spatial', '15'],
+    ['A nonlinear filter that is particularly effective at removing salt-and-pepper noise.', 'Median filter', 'The lesson identifies this noise-removal method as nonlinear.', 'spatial', '17'],
+    ['A smoothing technique that replaces only extreme values to remove noise spikes while preserving sharp detail.', 'Conservative smoothing', 'It sacrifices some noise-suppression power to preserve high-spatial-frequency details such as edges.', 'spatial', '19'],
+  ], [
+    ['A small subimage used with a pixel neighborhood during spatial filtering.', 'Filter mask / kernel', 'The lesson also calls it a filter, template, or window.', 'spatial', '3'],
+    ['The numerical values inside a filter mask, rather than image pixel values.', 'Coefficients', 'The lesson uses this term for the values within the filter subimage.', 'spatial', '3'],
+    ['A family of spatial filters that smooth local variation and blur image detail.', 'Smoothing spatial filters', 'The lesson presents averaging and weighted-averaging masks under this heading.', 'spatial', '6–9, 13'],
+    ['A filter that reduces noise by replacing a neighborhood value with its middle-ranked intensity.', 'Median filter', 'The median is the middle value after the neighborhood values are ordered; it is especially useful for impulse noise.', 'spatial', '17'],
+    ['A noise-reduction method designed to remove spikes while retaining high-spatial-frequency details such as sharp edges.', 'Conservative smoothing', 'The lesson emphasizes preserving detail and replacing only extreme values.', 'spatial', '19–20'],
+  ]]),
 ];
 export const jeopardyClues = jeopardyCategories.flatMap(category => category.rounds.flat());
 export const finalJeopardyClue: JeopardyClue = {
-  "id": "final",
-  "prompt": "A grayscale 2×2 image is [0,0; 100,200]. First find H(0), then PMF(0), then CDF(100). Finally use the slide’s direct equalization rule q=255×CDF to map intensity 100, before rounding.",
-  "answer": "What are 2, 0.5, 0.75, and 191.25?",
-  "explanation": "Two of the four pixels are 0, so H(0)=2 and PMF(0)=2/4=0.5. Three pixels have intensity ≤100, so CDF(100)=3/4=0.75. The mapped value is 255×0.75=191.25. This follows the supplied direct-CDF convention.",
-  "source": "equal",
-  "pages": "18–19",
-  "value": 0,
-  "category": "Final Jeopardy",
-  "round": 2
+  id: 'final', category: 'Final Jeopardy', round: 2, value: 0,
+  prompt: 'A histogram-based contrast-enhancement technique that uses an intensity probability distribution and its cumulative distribution.',
+  answer: 'Histogram equalization',
+  explanation: 'The lesson describes histogram equalization using a probability mass function followed by a cumulative distribution function. Its purpose is contrast enhancement.',
+  source: 'equal', pages: '12, 18–19',
 };

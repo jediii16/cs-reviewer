@@ -4,7 +4,7 @@ Bappi is a browser-only study desk with a restored gray/white and blue interface
 
 ## Cognate 3 Jeopardy
 
-Open **Cognate 3** on the home subject list or **Jeopardy** in navigation. The native game at `/subjects/cognate3/jeopardy` includes 60 source-based clues, two boards, solo or 2–4 teams, answer explanations with PDF page references, missed-clue review, timers, and a final wager. Scores and open-clue notes save separately per exam period under `bappi-cognate3-jeopardy-v1:<period-id>`. The game does not alter quiz accuracy or lesson progress.
+Open **Cognate 3** on the home subject list or **Jeopardy** in navigation. The native game at `/subjects/cognate3/jeopardy` includes 60 definition-to-term clues, two boards, solo or 2–4 teams, answer explanations with PDF page references, missed-clue review, timers, and a final wager. Scores and open-clue notes save separately per exam period under `bappi-cognate3-jeopardy-v1:<period-id>`. The game does not alter quiz accuracy or lesson progress. All clues, including the final, use definitions rather than calculations, code, or operator-symbol identification. The second board revisits lesson vocabulary with different wording to reinforce recall.
 
 ## Study and practice
 

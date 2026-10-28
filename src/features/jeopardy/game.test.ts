@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { jeopardyCategories, jeopardyClues, jeopardySources } from '../../content/cognate3/jeopardy';
+import { jeopardyCategories, jeopardyClues, jeopardySources, finalJeopardyClue } from '../../content/cognate3/jeopardy';
 import { loadJeopardyGame, missedClues, newJeopardyGame, playerScore, recordClue } from './game';
 
 describe('Cognate 3 Jeopardy state', () => {
@@ -12,6 +12,12 @@ describe('Cognate 3 Jeopardy state', () => {
       for (const round of category.rounds) expect(round.map(clue => clue.value)).toEqual([100, 200, 300, 400, 500]);
     }
     for (const clue of jeopardyClues) { expect(jeopardySources[clue.source]).toBeDefined(); expect(clue.pages).toMatch(/\d/); }
+  });
+  it('uses definition-to-term recall throughout both boards and the final', () => {
+    for (const clue of [...jeopardyClues, finalJeopardyClue]) {
+      expect(clue.prompt).not.toMatch(/\b(calculate|evaluate|compute|solve|operator|operators|symbol|symbols)\b|[\d=+*^&|~<>]/i);
+      expect(clue.answer).not.toMatch(/[\d=+*^&|~<>]/);
+    }
   });
   it('scores one attempt, prevents repeat awards, and reviews without changing scores', () => {
     let game = newJeopardyGame();
@@ -35,7 +41,7 @@ describe('Cognate 3 Jeopardy state', () => {
   });
   it('restores notes and deadlines, but discards malformed saved games', () => {
     const game = newJeopardyGame();
-    game.active = { id: 'r1-c2-v4', revealed: false, draft: '80 for all three', team: 0, deadline: 12345, review: false };
+    game.active = { id: 'r1-c2-v4', revealed: false, draft: 'Grayscale', team: 0, deadline: 12345, review: false };
     expect(loadJeopardyGame(JSON.stringify(game))).toEqual(game);
     expect(loadJeopardyGame('{broken')).toEqual(newJeopardyGame());
     expect(loadJeopardyGame(JSON.stringify({ ...game, active: { ...game.active, id: 'unknown' } }))).toEqual(newJeopardyGame());
