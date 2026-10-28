@@ -1,0 +1,86 @@
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { App } from '../../app/App';
+import { JeopardyGame } from './JeopardyGame';
+import { jeopardyStorageKey } from './game';
+
+beforeEach(() => { localStorage.removeItem(jeopardyStorageKey('test-finals')); localStorage.removeItem(jeopardyStorageKey('test-midterms')); });
+const renderGame = (periodId = 'test-finals') => render(<JeopardyGame periodId={periodId} />);
+describe('Bappi Jeopardy', () => {
+  it('is reachable from the Bappi desk and remains inside its shell', async () => {
+    const user = userEvent.setup(); render(<MemoryRouter><App /></MemoryRouter>);
+    expect(screen.getByRole('link', { name: 'Jeopardy' })).toHaveAttribute('href', '/subjects/cognate3/jeopardy');
+    await user.click(screen.getByRole('link', { name: /cognate 3.*jeopardy/i }));
+    expect(screen.getByRole('heading', { name: /cognate 3 jeopardy/i })).toBeVisible();
+    expect(screen.getByRole('link', { name: 'Bappi home' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Working with images, 100 points' })).toBeVisible();
+  });
+  it('reveals source-based answers and reviews mistakes without recovering lost points', async () => {
+    const user = userEvent.setup(); renderGame();
+    await user.click(screen.getByRole('button', { name: 'Working with images, 100 points' }));
+    expect(screen.queryByText('What is the upper-left corner?')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
+    expect(screen.getByText('What is the upper-left corner?')).toBeVisible();
+    expect(screen.getByText('Working with Images · PDF pages 6')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Missed it · −100' }));
+    expect(within(screen.getByRole('region', { name: 'Jeopardy scores' })).getByText('-100')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Revisit missed clues (1)' }));
+    await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
+    await user.click(screen.getByRole('button', { name: 'Got it now' }));
+    expect(screen.getByRole('button', { name: 'Revisit missed clues (0)' })).toBeVisible();
+    expect(within(screen.getByRole('region', { name: 'Jeopardy scores' })).getByText('-100')).toBeVisible();
+  });
+  it('restores an open clue and working notes and isolates exam-period saves', async () => {
+    const user = userEvent.setup(); const first = renderGame();
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Clue timer' }), '30');
+    await user.click(screen.getByRole('button', { name: 'Bit by bit, 500 points' }));
+    await user.type(screen.getByRole('textbox', { name: /your answer/i }), '32-bit signed int');
+    const stored = JSON.parse(localStorage.getItem(jeopardyStorageKey('test-finals'))!);
+    expect(stored.active.deadline).toBeGreaterThan(Date.now());
+    first.unmount(); const restored = renderGame();
+    expect(screen.getByRole('textbox', { name: /your answer/i })).toHaveValue('32-bit signed int');
+    expect(screen.getByRole('timer')).toHaveTextContent(/remaining/);
+    restored.unmount(); renderGame('test-midterms');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Bit by bit, 500 points' })).toBeVisible();
+  });
+  it('selects the answering team, scores their response, and confirms mode resets', async () => {
+    const user = userEvent.setup(); renderGame();
+    await user.click(screen.getByRole('button', { name: 'Team game' }));
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Number of teams' }), '3');
+    await user.click(screen.getByRole('button', { name: 'Bit by bit, 200 points' }));
+    await user.click(screen.getByRole('button', { name: 'Team 3' }));
+    await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
+    await user.click(screen.getByRole('button', { name: 'Got it · +200' }));
+    const saved = JSON.parse(localStorage.getItem(jeopardyStorageKey('test-finals'))!);
+    expect(saved.results['r0-c1-v1'].team).toBe(2); expect(saved.turn).toBe(0);
+    await user.click(screen.getByRole('button', { name: 'Solo practice' }));
+    expect(screen.getByRole('heading', { name: 'Start a fresh game?' })).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Keep playing' }));
+    expect(screen.getByRole('button', { name: 'Team game' })).toHaveAttribute('aria-pressed', 'true');
+  });
+  it('sets a wager before revealing the final and locks its score only once', async () => {
+    const user = userEvent.setup(); renderGame();
+    await user.click(screen.getByRole('button', { name: 'Working with images, 100 points' }));
+    await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
+    await user.click(screen.getByRole('button', { name: 'Got it · +100' }));
+    await user.click(screen.getByRole('button', { name: 'Final Jeopardy' }));
+    expect(screen.queryByText(/a grayscale 2×2 image is/i)).not.toBeInTheDocument();
+    await user.clear(screen.getByRole('spinbutton', { name: 'You wager' }));
+    await user.type(screen.getByRole('spinbutton', { name: 'You wager' }), '150');
+    expect(screen.getByRole('button', { name: 'Show final clue' })).toBeDisabled();
+    await user.clear(screen.getByRole('spinbutton', { name: 'You wager' }));
+    await user.type(screen.getByRole('spinbutton', { name: 'You wager' }), '50');
+    await user.click(screen.getByRole('button', { name: 'Show final clue' }));
+    await user.click(screen.getByRole('button', { name: 'Reveal answer' }));
+    await user.click(screen.getByRole('checkbox', { name: 'You answered correctly (50 pts wagered)' }));
+    await user.click(screen.getByRole('button', { name: 'Lock final scores' }));
+    expect(screen.getByText('150 points')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Back to board' }));
+    await user.click(screen.getByRole('button', { name: 'View final results' }));
+    expect(screen.getByText('150 points')).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Lock final scores' })).not.toBeInTheDocument();
+  });
+});

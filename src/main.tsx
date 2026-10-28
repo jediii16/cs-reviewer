@@ -6,6 +6,7 @@ import '@fontsource-variable/inter';
 import './styles/tokens.css';
 import './styles/global.css';
 import './styles/remake.css';
+import './styles/classic.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

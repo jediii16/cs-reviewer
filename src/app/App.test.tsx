@@ -11,7 +11,7 @@ afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 describe('Bappi study desk navigation', () => {
   it('offers current lessons, practice, review, and settings from the desk', async () => {
     const user = userEvent.setup(); renderApp();
-    expect(screen.getByRole('heading', { name: /a little progress,/i })).toBeVisible();
+    expect(screen.getByRole('heading', { name: /what are we reviewing today/i })).toBeVisible();
     expect(screen.getByRole('link', { name: 'Lessons' })).toHaveAttribute('href', '/subjects/cit015/study');
     expect(screen.getByRole('link', { name: 'Practice' })).toHaveAttribute('href', '/subjects/cit015/test');
     expect(screen.getByRole('link', { name: 'Review' })).toHaveAttribute('href', '/review');
@@ -21,7 +21,7 @@ describe('Bappi study desk navigation', () => {
     expect(screen.getByRole('link', { name: 'Test' })).toHaveAttribute('href', '/subjects/cit015/test');
   });
   it.each(['/subjects/cit016/study', '/subjects/cit017/test', '/subjects/cs412/crossword', '/subjects/cs412/preprocessing', '/subjects/cognate4/crossword', '/subjects/cit015/flashcards'])('keeps retired route %s out of the current syllabus', (path) => {
-    renderApp(path); expect(screen.getByRole('heading', { name: /a little progress,/i })).toBeVisible();
+    renderApp(path); expect(screen.getByRole('heading', { name: /what are we reviewing today/i })).toBeVisible();
   });
   it('separates section review from practice and can reset a subject', async () => {
     const user = userEvent.setup(); renderApp('/subjects/cit015/study');

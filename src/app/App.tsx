@@ -9,12 +9,14 @@ import { SearchPage } from './routes/SearchPage';
 import { ReviewPage } from './routes/ReviewPage';
 import { SettingsPage } from './routes/SettingsPage';
 import { OSCrosswordPage } from './routes/OSCrosswordPage';
+import { JeopardyPage } from './routes/JeopardyPage';
 
 export function App() {
   return (
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
+        <Route path="subjects/cognate3/jeopardy" element={<JeopardyPage />} />
         <Route path="subjects/:subjectId" element={<SubjectPage />} />
         <Route path="subjects/:subjectId/study" element={<StudyPage />} />
         <Route path="subjects/:subjectId/flashcards" element={<FlashcardsPage />} />

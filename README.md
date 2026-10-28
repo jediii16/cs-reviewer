@@ -1,6 +1,10 @@
 # Bappi — A little study companion
 
-Bappi is a browser-only study desk with a warm paper and green interface, desktop sidebar navigation, a mobile navigation bar, and optional focus tools. The current Finals syllabus contains CIT.015 Operating Systems: Concurrent Processing and File and Disk Management.
+Bappi is a browser-only study desk with a restored gray/white and blue interface, compact header, subject list, and responsive navigation, and optional focus tools. The current Finals syllabus contains CIT.015 Operating Systems: Concurrent Processing and File and Disk Management.
+
+## Cognate 3 Jeopardy
+
+Open **Cognate 3** on the home subject list or **Jeopardy** in navigation. The native game at `/subjects/cognate3/jeopardy` includes 60 source-based clues, two boards, solo or 2–4 teams, answer explanations with PDF page references, missed-clue review, timers, and a final wager. Scores and open-clue notes save separately per exam period under `bappi-cognate3-jeopardy-v1:<period-id>`. The game does not alter quiz accuracy or lesson progress.
 
 ## Study and practice
 

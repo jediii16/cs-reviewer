@@ -1,0 +1,74 @@
+/* Restore Bappi's pre-Finals palette from tokens.css and its sans-serif UI. */
+body { font-size: 16px; line-height: 1.55; }
+h1, h2, h3, .page-intro h1, .jeopardy-board-heading h2, .jeopardy-final h2, .jeopardy-prompt, .jeopardy-final-results h3 { font-family: var(--font-ui); }
+h1 { font-weight: 700; letter-spacing: -.052em; }
+h1 em { font-style: normal; font-weight: inherit; color: inherit; }
+.classic-shell .site-header { height: 68px; }
+.classic-shell .site-header-inner { max-width: 1120px; margin: auto; padding-inline: 24px; }
+.classic-shell .brand { font-size: 16px; gap: 9px; }
+.classic-header-actions { display: flex; align-items: center; gap: 8px; }
+.classic-shell .tools-trigger { height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.classic-shell .tools-tray { top: 51px; }
+.classic-navigation { display: flex; align-items: center; justify-content: space-between; max-width: 1120px; padding: 18px 24px; margin: 0 auto; gap: 20px; }
+.classic-navigation nav { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.classic-navigation nav a { display: flex; align-items: center; gap: 7px; text-decoration: none; color: var(--text-soft); font-size: 12px; padding: 8px 10px; border-radius: 7px; }
+.classic-navigation nav a.active { color: var(--accent); background: var(--accent-soft); }
+.classic-navigation nav svg { width: 15px; height: 15px; }
+.classic-period { position: relative; flex-shrink: 0; }
+.classic-period select { appearance: none; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); color: var(--text); font-size: 11px; padding: 9px 27px 9px 12px; }
+.classic-period > svg { position: absolute; pointer-events: none; right: 9px; top: 11px; width: 12px; height: 12px; }
+.classic-shell .main-content { max-width: 1120px; padding: 48px 24px 100px; margin: auto; }
+.classic-home { padding-top: 12px; }
+.classic-home .home-hero { margin-bottom: 32px; }
+.classic-home .home-intro { max-width: 650px; }
+.classic-home h1 { font-size: clamp(30px,4.4vw,49px); line-height: 1.1; margin: 0; }
+.classic-home .home-intro p { margin: 18px 0 0; color: var(--text-soft); font-size: 14px; }
+.classic-home .subject-list { gap: 12px; }
+.classic-home .subject-row { max-width: none; border-radius: 14px; padding: 20px 24px; min-height: 94px; }
+.classic-resume { display: flex; gap: 20px; justify-content: space-between; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--border); margin-top: 14px; }
+.classic-resume strong { font-size: 13px; font-weight: 600; }
+.classic-resume p { font-size: 12px; color: var(--text-soft); margin: 4px 0 0; }
+.classic-stats { margin: 20px 0; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: none; padding: 0 0 20px; }
+.classic-stats > div { background: none; border: 0; }
+.classic-stats strong { font-size: 24px; }
+.classic-shortcuts { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+.classic-recommendation { color: var(--text-soft); font-size: 12px; margin-top: 20px; }
+.classic-recommendation a { color: var(--accent); text-underline-offset: 3px; }
+.classic-shell .page-intro h1 { font-size: clamp(31px,4vw,45px); font-weight: 650; letter-spacing: -.04em; }
+.classic-shell .page-intro p { font-size: 13px; }
+.jeopardy-board-heading h2, .jeopardy-final h2 { font-size: 21px; font-weight: 600; }
+.jeopardy-prompt { font-size: 23px; font-weight: 500; letter-spacing: -.025em; }
+.jeopardy-category h3 { background: var(--surface-subtle); border-color: var(--border); }
+.jeopardy-final { background: var(--surface); border-color: var(--border); }
+.jeopardy-score.is-active { background: var(--surface); border-color: var(--border-strong); }
+.jeopardy-score > strong, .jeopardy-tile strong { font-variant-numeric: tabular-nums; }
+.jeopardy-tile strong { color: var(--accent); }
+.jeopardy-tile.is-correct strong { color: var(--success); }.jeopardy-tile.is-wrong strong { color: var(--danger); }
+@media(max-width:760px) {
+  .classic-shell .site-header-inner { padding-inline: 18px; }
+  .classic-header-actions { gap: 6px; }
+  .classic-header-actions > .icon-button { width: 34px; height: 38px; }
+  .classic-navigation { padding: 12px 18px; gap: 8px; align-items: flex-start; }
+  .classic-navigation nav { gap: 2px; }
+  .classic-navigation nav a { font-size: 10px; padding: 8px 7px; }
+  .classic-navigation nav a svg { display: none; }
+  .classic-period select { font-size: 10px; padding: 8px 23px 8px 9px; }
+  .classic-shell .main-content { padding: 32px 20px 100px; }
+  .classic-home .home-hero { display: block; position: relative; margin-bottom: 25px; }
+  .classic-home .home-intro { max-width: calc(100% - 65px); }
+  .classic-home .home-intro p { font-size: 12px; line-height: 1.7; }
+  .classic-home .bappi-playground { position: absolute; top: 0; right: 0; width: 60px; height: 70px; min-height: 70px; }
+  .classic-home .bappi-roamer, .classic-home .home-mascot { width: 58px; height: 58px; }
+  .classic-home .subject-row { padding: 17px 18px; min-height: 90px; }
+  .classic-home .subject-copy strong { font-size: 15px; }
+  .classic-home .subject-copy span { font-size: 12px; }
+  .classic-stats { gap: 8px; }
+  .classic-stats > div { padding-inline: 4px; }
+  .classic-stats strong { font-size: 22px; }
+  .classic-stats > div > span { font-size: 10px; }
+  .classic-resume { flex-wrap: wrap; gap: 8px; }
+  .classic-shell .tools-trigger span { display: none; }
+  .classic-shell .tools-trigger { width: 38px; justify-content: center; padding: 0; }
+  .classic-shell .page-intro h1 { font-size: 32px; }
+}
+@media(max-width:420px) { .classic-navigation { flex-wrap: wrap; }.classic-period { margin-left: auto; }.classic-shell .main-content { padding-top: 22px; } }

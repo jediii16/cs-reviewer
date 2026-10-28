@@ -30,7 +30,7 @@ test('the new desk renders cleanly on desktop and mobile', async ({ page }, info
   const errors: string[] = []; page.on('pageerror', (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /a little progress, every day/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /what are we reviewing today/i })).toBeVisible();
   await expect(page.getByText('Concepts practiced', { exact: true })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
   await page.screenshot({ path: `tmp/remake-desk-${info.project.name}.png`, fullPage: true });
